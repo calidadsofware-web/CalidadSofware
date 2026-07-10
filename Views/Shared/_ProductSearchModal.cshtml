@@ -1,0 +1,76 @@
+@model IReadOnlyList<Pagina_Web.Models.ViewModels.ProductRowViewModel>
+
+<div class="modal fade" id="productSearchModal" tabindex="-1" aria-labelledby="productSearchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content search-modal">
+            <div class="modal-header">
+                <div>
+                    <h2 class="modal-title fs-4" id="productSearchModalLabel">Buscar Producto</h2>
+                    <p class="text-muted mb-0">Seleccione un producto para agregarlo a la operacion.</p>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                <div class="filter-panel mb-3" data-filter-scope data-target="#productSearchModal table">
+                    <div>
+                        <label class="form-label">Codigo</label>
+                        <input class="form-control" placeholder="Ej. PROD-001" data-filter-field />
+                    </div>
+                    <div>
+                        <label class="form-label">Nombre o descripcion</label>
+                        <input class="form-control" placeholder="Buscar por nombre o descripcion" data-filter-field />
+                    </div>
+                    <div class="filter-actions">
+                        <button type="button" class="btn btn-primary" data-action="filter">Buscar</button>
+                        <button type="button" class="btn btn-outline-primary" data-action="clear-filter">Limpiar</button>
+                    </div>
+                </div>
+
+                <div class="table-responsive data-panel">
+                    <table class="table align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th>Codigo</th>
+                                <th>Producto</th>
+                                <th>Descripcion</th>
+                                <th class="text-end">Stock</th>
+                                <th class="text-end">Precio referencial</th>
+                                <th class="text-end">Accion</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var product in Model)
+                            {
+                                <tr>
+                                    <td class="fw-semibold">@product.Code</td>
+                                    <td>@product.Name</td>
+                                    <td>@product.Description</td>
+                                    <td class="text-end">@product.Stock</td>
+                                    <td class="text-end">S/. @product.Price.ToString("0.00")</td>
+                                    <td class="text-end">
+                                        <button type="button"
+                                                class="btn btn-sm btn-outline-primary"
+                                                data-action="select-product"
+                                                data-code="@product.Code"
+                                                data-name="@product.Name"
+                                                data-description="@product.Description"
+                                                data-category="@product.Category"
+                                                data-brand="@product.Brand"
+                                                data-stock="@product.Stock"
+                                                data-price="@product.Price">
+                                            Seleccionar
+                                        </button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" data-action="add-first-product">Agregar</button>
+            </div>
+        </div>
+    </div>
+</div>

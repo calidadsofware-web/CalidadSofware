@@ -1,0 +1,170 @@
+@using System.Security.Claims
+@inject Pagina_Web.Services.IAppStateService AppState
+@{
+    var currentController = ViewContext.RouteData.Values["controller"]?.ToString() ?? string.Empty;
+    var currentAction = ViewContext.RouteData.Values["action"]?.ToString() ?? string.Empty;
+    var dashboard = User.Identity?.IsAuthenticated == true ? AppState.GetDashboard() : new Pagina_Web.Models.ViewModels.DashboardViewModel();
+    var roleDisplay = User.FindFirst("role_display")?.Value ?? "Usuario";
+    var userName = User.Identity?.Name ?? "Usuario DataCell";
+
+    bool IsAction(string action) =>
+        string.Equals(currentController, "CasosUso", StringComparison.OrdinalIgnoreCase)
+        && string.Equals(currentAction, action, StringComparison.OrdinalIgnoreCase);
+
+    bool IsController(string controller) =>
+        string.Equals(currentController, controller, StringComparison.OrdinalIgnoreCase);
+
+    bool IsGroup(params string[] actions) => actions.Any(IsAction);
+
+    bool InRole(params string[] roles) => roles.Any(User.IsInRole);
+
+    string ActiveAction(string action) => IsAction(action) ? "active" : string.Empty;
+}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - DataCell</title>
+    <script type="importmap"></script>
+    <link rel="icon" type="image/png" href="~/img/datacell-logo.png" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/Pagina_Web.styles.css" asp-append-version="true" />
+</head>
+<body>
+    <div class="app-shell">
+        <aside class="sidebar">
+            <a class="brand" asp-controller="Home" asp-action="Index" aria-label="DataCell panel">
+                <span class="brand-mark"><img src="~/img/datacell-logo.png" alt="" /></span>
+                <span>
+                    <strong>DATACELL</strong>
+                    <small>ACCESORIOS PARA CELULARES</small>
+                </span>
+            </a>
+
+            <nav class="side-nav" aria-label="Menu principal">
+                <a class="nav-link @(IsController("Home") ? "active" : "")" asp-controller="Home" asp-action="Index">
+                    Panel operativo
+                </a>
+
+                @if (InRole("ADMINISTRADOR", "CAJERO"))
+                {
+                    <details class="nav-section" @(IsGroup("GenerarCdp", "GenerarReportePago") ? "open" : "")>
+                        <summary>Ventas</summary>
+                        <a class="nav-link @ActiveAction("GenerarCdp")" asp-controller="CasosUso" asp-action="GenerarCdp">
+                            Generar CDP
+                        </a>
+                        <a class="nav-link @ActiveAction("GenerarReportePago")" asp-controller="CasosUso" asp-action="GenerarReportePago">
+                            Reporte de pagos
+                        </a>
+                    </details>
+                }
+
+                @if (InRole("ADMINISTRADOR", "ASISTENTE_COMPRAS", "ALMACEN"))
+                {
+                    <details class="nav-section" @(IsGroup("RegistrarSolicitudCompra", "BuscarSolicitudCompra", "RegistrarSolicitudCotizacion", "BuscarProveedor") ? "open" : "")>
+                        <summary>Compras y proveedores</summary>
+                        @if (InRole("ADMINISTRADOR", "ASISTENTE_COMPRAS", "ALMACEN"))
+                        {
+                            <a class="nav-link @ActiveAction("RegistrarSolicitudCompra")" asp-controller="CasosUso" asp-action="RegistrarSolicitudCompra">
+                                Solicitud de compra
+                            </a>
+                            <a class="nav-link @ActiveAction("BuscarSolicitudCompra")" asp-controller="CasosUso" asp-action="BuscarSolicitudCompra">
+                                Buscar solicitud
+                            </a>
+                        }
+                        @if (InRole("ADMINISTRADOR", "ASISTENTE_COMPRAS"))
+                        {
+                            <a class="nav-link @ActiveAction("RegistrarSolicitudCotizacion")" asp-controller="CasosUso" asp-action="RegistrarSolicitudCotizacion">
+                                Solicitud de cotizacion
+                            </a>
+                        }
+                        <a class="nav-link @ActiveAction("BuscarProveedor")" asp-controller="CasosUso" asp-action="BuscarProveedor">
+                            Proveedores
+                        </a>
+                    </details>
+                }
+
+                <details class="nav-section" @(IsGroup("BuscarProducto", "RegistrarIngresoProductos") ? "open" : "")>
+                    <summary>Inventario y catalogo</summary>
+                    <a class="nav-link @ActiveAction("BuscarProducto")" asp-controller="CasosUso" asp-action="BuscarProducto">
+                        Productos
+                    </a>
+                    @if (InRole("ADMINISTRADOR", "ALMACEN"))
+                    {
+                        <a class="nav-link @ActiveAction("RegistrarIngresoProductos")" asp-controller="CasosUso" asp-action="RegistrarIngresoProductos">
+                            Ingreso de productos
+                        </a>
+                    }
+                </details>
+
+                <details class="nav-section" @(IsGroup("BuscarCliente", "RegistrarReclamoCliente") ? "open" : "")>
+                    <summary>Clientes</summary>
+                    <a class="nav-link @ActiveAction("BuscarCliente")" asp-controller="CasosUso" asp-action="BuscarCliente">
+                        Buscar cliente
+                    </a>
+                    @if (InRole("ADMINISTRADOR", "CAJERO"))
+                    {
+                        <a class="nav-link @ActiveAction("RegistrarReclamoCliente")" asp-controller="CasosUso" asp-action="RegistrarReclamoCliente">
+                            Registrar reclamo
+                        </a>
+                    }
+                </details>
+
+                @if (InRole("ADMINISTRADOR"))
+                {
+                    <details class="nav-section" @(IsController("Database") ? "open" : "")>
+                        <summary>Administracion</summary>
+                        <a class="nav-link @(IsController("Database") ? "active" : "")" asp-controller="Database" asp-action="Index">
+                            Conexion MySQL
+                        </a>
+                    </details>
+                }
+            </nav>
+
+            <div class="daily-summary">
+                <span>Resumen operativo</span>
+                <dl>
+                    @foreach (var metric in dashboard.Metrics.Take(3))
+                    {
+                        <dt>@metric.Label</dt>
+                        <dd>@metric.Value</dd>
+                    }
+                </dl>
+            </div>
+        </aside>
+
+        <div class="content-shell">
+            <header class="topbar">
+                <div class="topbar-actions">
+                    <details class="user-menu">
+                        <summary class="user-chip">@roleDisplay</summary>
+                        <div class="user-panel">
+                            <strong>@userName</strong>
+                            <span>@roleDisplay</span>
+                            <a asp-controller="Account" asp-action="Logout">Cerrar sesion</a>
+                        </div>
+                    </details>
+                </div>
+            </header>
+
+            <main class="app-main" role="main">
+                @if (TempData["SuccessMessage"] is string message)
+                {
+                    <div class="alert alert-success app-alert" role="alert">@message</div>
+                }
+                @RenderBody()
+            </main>
+        </div>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

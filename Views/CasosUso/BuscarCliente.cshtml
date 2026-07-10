@@ -1,0 +1,71 @@
+@model Pagina_Web.Models.ViewModels.UseCasePageViewModel
+
+@{
+    ViewData["Title"] = "Buscar cliente";
+}
+
+<partial name="_UseCaseHeader" model="Model" />
+
+<section class="panel">
+    <form method="get" class="filter-panel" data-filter-scope data-target="[data-search-table='clients']">
+        <div>
+            <label class="form-label">Documento</label>
+            <input class="form-control" placeholder="DNI o RUC" data-filter-field />
+        </div>
+        <div>
+            <label class="form-label">Nombre o apellido</label>
+            <input class="form-control" placeholder="Buscar cliente" data-filter-field />
+        </div>
+        <div>
+            <label class="form-label">Estado</label>
+            <select class="form-select" data-filter-field>
+                <option>Todos</option>
+                <option>Activo</option>
+                <option>Observado</option>
+            </select>
+        </div>
+        <div class="filter-actions">
+            <button class="btn btn-primary" type="submit" data-action="filter">Buscar</button>
+            <button class="btn btn-outline-primary" type="button" data-action="clear-filter">Limpiar</button>
+        </div>
+    </form>
+</section>
+
+<section class="panel mt-3">
+    <div class="panel-title">
+        <div>
+            <h2>Clientes registrados</h2>
+            <p>Use esta lista para ventas, reclamos y consulta comercial.</p>
+        </div>
+        <button class="btn btn-primary" type="button" data-action="quick-create" data-type="client">Crear cliente</button>
+    </div>
+    <div class="table-responsive data-panel">
+        <table class="table align-middle mb-0" data-search-table="clients" data-export-table>
+            <thead>
+                <tr>
+                    <th>Documento</th>
+                    <th>Cliente</th>
+                    <th>Telefono</th>
+                    <th>Correo</th>
+                    <th>Ultimo CDP</th>
+                    <th>Estado</th>
+                    <th class="text-end">Accion</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var client in Model.Clients)
+                {
+                    <tr>
+                        <td class="fw-semibold">@client.Document</td>
+                        <td>@client.FullName</td>
+                        <td>@client.Phone</td>
+                        <td>@client.Email</td>
+                        <td>@client.LastPurchase</td>
+                        <td>@client.Status</td>
+                        <td class="text-end"><button class="btn btn-sm btn-outline-primary" type="button" data-action="show-row-detail">Seleccionar</button></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</section>

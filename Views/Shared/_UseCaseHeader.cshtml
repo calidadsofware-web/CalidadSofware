@@ -1,0 +1,21 @@
+@model Pagina_Web.Models.ViewModels.UseCasePageViewModel
+
+<section class="page-heading">
+    <div>
+        <p class="eyebrow">@Model.Eyebrow</p>
+        <h1>@Model.Title</h1>
+        <p class="lead text-muted mb-0">@Model.Description</p>
+    </div>
+    <span class="section-pill">@Model.Section</span>
+</section>
+
+<div class="metric-strip">
+    @foreach (var metric in Model.Metrics)
+    {
+        <div class="metric-card">
+            <span>@metric.Label</span>
+            <strong>@metric.Value</strong>
+            <small>@metric.Hint</small>
+        </div>
+    }
+</div>

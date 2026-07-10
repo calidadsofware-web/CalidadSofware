@@ -1,0 +1,65 @@
+@model Pagina_Web.Models.ViewModels.UseCasePageViewModel
+
+@{
+    ViewData["Title"] = "Buscar solicitud de compra";
+}
+
+<partial name="_UseCaseHeader" model="Model" />
+
+<section class="panel">
+    <form method="get" class="filter-panel" data-filter-scope data-target="[data-search-table='purchase-requests']">
+        <div>
+            <label class="form-label">N solicitud</label>
+            <input class="form-control" placeholder="SC-2026-0007" data-filter-field />
+        </div>
+        <div>
+            <label class="form-label">Proveedor</label>
+            <input class="form-control" placeholder="Razon social" data-filter-field />
+        </div>
+        <div>
+            <label class="form-label">Estado</label>
+            <select class="form-select" data-filter-field>
+                <option>Todos</option>
+                <option>Pendiente</option>
+                <option>Aprobada</option>
+                <option>Recibida</option>
+            </select>
+        </div>
+        <div class="filter-actions">
+            <button class="btn btn-primary" type="submit" data-action="filter">Buscar</button>
+            <button class="btn btn-outline-primary" type="button" data-action="clear-filter">Limpiar</button>
+        </div>
+    </form>
+</section>
+
+<section class="panel mt-3">
+    <div class="table-responsive data-panel">
+        <table class="table align-middle mb-0" data-search-table="purchase-requests" data-export-table>
+            <thead>
+                <tr>
+                    <th>N solicitud</th>
+                    <th>Proveedor</th>
+                    <th>Fecha</th>
+                    <th>Estado</th>
+                    <th>Solicitante</th>
+                    <th class="text-end">Total estimado</th>
+                    <th class="text-end">Accion</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var request in Model.PurchaseRequests)
+                {
+                    <tr>
+                        <td class="fw-semibold">@request.Number</td>
+                        <td>@request.Supplier</td>
+                        <td>@request.CreatedAt</td>
+                        <td>@request.Status</td>
+                        <td>@request.RequestedBy</td>
+                        <td class="text-end">S/. @request.EstimatedTotal.ToString("0.00")</td>
+                        <td class="text-end"><button class="btn btn-sm btn-outline-primary" type="button" data-action="show-row-detail">Ver detalle</button></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</section>

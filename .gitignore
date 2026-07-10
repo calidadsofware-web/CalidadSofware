@@ -1,0 +1,20 @@
+# Build output
+bin/
+obj/
+
+# Local IDE and OS files
+.vs/
+.vscode/
+*.user
+*.suo
+*.rsuser
+.DS_Store
+Thumbs.db
+
+# Logs and temporary files
+*.log
+*.tmp
+*.temp
+
+# Generated verification output
+artifacts/build-*/
