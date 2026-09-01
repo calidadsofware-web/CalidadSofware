@@ -280,6 +280,21 @@ a {
   font-weight: 800;
 }
 
+.user-menu-logout {
+    width: 100%;
+    border: 0;
+    background: transparent;
+    color: #0759cf;
+    cursor: pointer;
+    font-weight: 800;
+    padding: 0;
+    text-align: left;
+}
+
+.user-menu-logout:hover {
+    text-decoration: underline;
+}
+
 .user-chip {
   background: #edf4ff;
   border-radius: 999px;

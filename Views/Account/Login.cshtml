@@ -37,17 +37,21 @@
             <form method="post">
                 @Html.AntiForgeryToken()
                 <input type="hidden" asp-for="ReturnUrl" />
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
                 <div class="mb-3">
                     <label class="form-label" asp-for="Email">Correo</label>
                     <input class="form-control" asp-for="Email" autocomplete="username" placeholder="Ingrese su correo" />
+                    <span asp-validation-for="Email" class="text-danger"></span>
                 </div>
                 <div class="mb-3">
                     <label class="form-label" asp-for="Password">Contrasena</label>
                     <input class="form-control" asp-for="Password" type="password" autocomplete="current-password" placeholder="Ingrese su contrasena" />
+                    <span asp-validation-for="Password" class="text-danger"></span>
                 </div>
                 <button class="btn btn-primary w-100" type="submit">Ingresar</button>
             </form>
         </section>
     </main>
+    <partial name="_ValidationScriptsPartial" />
 </body>
 </html>

@@ -1,3 +1,4 @@
+using System.Data;
 using System.Data.Common;
 using Microsoft.EntityFrameworkCore;
 using Pagina_Web.Data;
@@ -17,7 +18,7 @@ public class DatabaseHealthService(
 
         if (!status.IsConfigured)
         {
-            status.ErrorMessage = "No existe la cadena de conexion ConnectionStrings:DataCell.";
+            status.ErrorMessage ??= "No existe la cadena de conexion ConnectionStrings:DataCell.";
             return status;
         }
 
@@ -37,7 +38,10 @@ public class DatabaseHealthService(
         }
         finally
         {
-            await context.Database.CloseConnectionAsync();
+            if (context.Database.GetDbConnection().State != ConnectionState.Closed)
+            {
+                await context.Database.CloseConnectionAsync();
+            }
         }
 
         return status;
@@ -45,22 +49,37 @@ public class DatabaseHealthService(
 
     private static DatabaseConnectionStatusViewModel BuildInitialStatus(string? connectionString)
     {
-        var status = new DatabaseConnectionStatusViewModel
-        {
-            IsConfigured = !string.IsNullOrWhiteSpace(connectionString)
-        };
-
         if (string.IsNullOrWhiteSpace(connectionString))
         {
-            return status;
+            return new DatabaseConnectionStatusViewModel();
         }
 
-        var builder = new DbConnectionStringBuilder { ConnectionString = connectionString };
-        status.Server = TryGetConnectionValue(builder, "server");
-        status.Port = TryGetConnectionValue(builder, "port");
-        status.DatabaseName = TryGetConnectionValue(builder, "database");
+        if (connectionString.Contains("TU_CLAVE", StringComparison.OrdinalIgnoreCase))
+        {
+            return new DatabaseConnectionStatusViewModel
+            {
+                ErrorMessage = "Configure una clave real en ConnectionStrings:DataCell antes de validar la conexion."
+            };
+        }
 
-        return status;
+        try
+        {
+            var builder = new DbConnectionStringBuilder { ConnectionString = connectionString };
+            return new DatabaseConnectionStatusViewModel
+            {
+                IsConfigured = true,
+                Server = TryGetConnectionValue(builder, "server"),
+                Port = TryGetConnectionValue(builder, "port"),
+                DatabaseName = TryGetConnectionValue(builder, "database")
+            };
+        }
+        catch (ArgumentException)
+        {
+            return new DatabaseConnectionStatusViewModel
+            {
+                ErrorMessage = "La cadena de conexion DataCell no tiene un formato valido."
+            };
+        }
     }
 
     private static string? TryGetConnectionValue(DbConnectionStringBuilder builder, string key)

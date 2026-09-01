@@ -1,10 +1,14 @@
 (function () {
   const money = new Intl.NumberFormat("es-PE", { style: "currency", currency: "PEN" });
 
-  function parseMoney(value) {
-    const normalized = String(value || "0").replace(/[^\d.,-]/g, "").replace(",", ".");
-    const parsed = Number.parseFloat(normalized);
-    return Number.isNaN(parsed) ? 0 : parsed;
+  function escapeHtml(value) {
+    return String(value ?? "").replace(/[&<>"']/g, (character) => ({
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      "\"": "&quot;",
+      "'": "&#039;"
+    })[character]);
   }
 
   function notify(message, type = "success") {
@@ -73,10 +77,10 @@
     const tbody = operationTable();
     if (!tbody) return;
 
-    const existing = tbody.querySelector(`[data-product-code="${product.code}"]`);
+    const existing = Array.from(tbody.rows).find((row) => row.dataset.productCode === product.code);
     if (existing) {
       const input = existing.querySelector("[data-quantity]");
-      input.value = Number.parseInt(input.value || "0", 10) + quantity;
+      input.value = Math.min(10000, Number.parseInt(input.value || "0", 10) + quantity);
       recalcOperationTotals();
       notify(`${product.name} actualizado en la lista.`);
       return;
@@ -88,27 +92,32 @@
     row.dataset.productName = product.name;
     row.dataset.price = String(product.price);
 
+    const code = escapeHtml(product.code);
+    const name = escapeHtml(product.name);
+    const safeQuantity = Math.min(10000, Math.max(1, Number.parseInt(quantity, 10) || 1));
+    const stock = Math.max(0, Number.parseInt(product.stock, 10) || 0);
+
     if (mode === "cdp") {
       row.innerHTML = `
-        <td class="fw-semibold">${product.code}</td>
-        <td>${product.name}</td>
-        <td class="text-end"><input class="form-control table-input" name="qty_${product.code}" data-quantity value="${quantity}" min="1" type="number" /></td>
+        <td class="fw-semibold">${code}</td>
+        <td>${name}</td>
+        <td class="text-end"><input class="form-control table-input" name="qty_${code}" data-quantity value="${safeQuantity}" min="1" max="10000" type="number" /></td>
         <td class="text-end">${money.format(product.price)}</td>
-        <td class="text-end" data-line-total>${money.format(product.price * quantity)}</td>
+        <td class="text-end" data-line-total>${money.format(product.price * safeQuantity)}</td>
         <td class="text-end"><button class="btn btn-sm btn-outline-danger" type="button" data-action="remove-row">Quitar</button></td>`;
     } else if (mode === "entry") {
       row.innerHTML = `
-        <td>${product.name}</td>
+        <td>${name}</td>
         <td class="text-end">0</td>
-        <td class="text-end"><input class="form-control table-input" name="received_${product.code}" data-quantity value="10" min="1" type="number" /></td>
+        <td class="text-end"><input class="form-control table-input" name="received_${code}" data-quantity value="10" min="1" max="10000" type="number" /></td>
         <td><span class="status-pill status-warn">Nuevo</span></td>
         <td class="text-end"><button class="btn btn-sm btn-outline-danger" type="button" data-action="remove-row">Quitar</button></td>`;
     } else {
       row.innerHTML = `
-        <td>${product.name}</td>
-        <td class="text-end">${product.stock}</td>
-        <td class="text-end">${Math.max(5, Math.round(product.stock * .15))}</td>
-        <td class="text-end"><input class="form-control table-input" name="request_${product.code}" data-quantity value="10" min="1" type="number" /></td>
+        <td>${name}</td>
+        <td class="text-end">${stock}</td>
+        <td class="text-end">${Math.max(5, Math.round(stock * .15))}</td>
+        <td class="text-end"><input class="form-control table-input" name="request_${code}" data-quantity value="10" min="1" max="10000" type="number" /></td>
         <td class="text-end"><button class="btn btn-sm btn-outline-danger" type="button" data-action="remove-row">Quitar</button></td>`;
     }
 
@@ -124,7 +133,9 @@
     let subtotal = 0;
     table.querySelectorAll("tbody tr").forEach((row) => {
       const price = Number.parseFloat(row.dataset.price || "0");
-      const quantity = Number.parseInt(row.querySelector("[data-quantity]")?.value || "0", 10);
+      const input = row.querySelector("[data-quantity]");
+      const quantity = Math.min(10000, Math.max(1, Number.parseInt(input?.value || "1", 10) || 1));
+      if (input) input.value = quantity;
       const lineTotal = price * quantity;
       subtotal += lineTotal;
       const totalCell = row.querySelector("[data-line-total]");
@@ -143,7 +154,7 @@
     const lines = rows.map((row) => {
       const name = row.dataset.productName || row.children[1]?.textContent || row.children[0]?.textContent;
       const qty = row.querySelector("[data-quantity]")?.value || "1";
-      return `<li>${name} x ${qty}</li>`;
+      return `<li>${escapeHtml(name)} x ${escapeHtml(qty)}</li>`;
     }).join("");
     const total = document.querySelector("[data-total]")?.textContent || "";
     showDialog("Vista previa de la operacion", `<ul class="preview-list">${lines}</ul><strong>Total: ${total || "Segun evaluacion"}</strong>`);
@@ -169,8 +180,8 @@
       <div class="record-detail">
         ${fields.map((field) => `
           <div class="record-detail-item">
-            <span>${field.label}</span>
-            <strong>${field.value}</strong>
+            <span>${escapeHtml(field.label)}</span>
+            <strong>${escapeHtml(field.value)}</strong>
           </div>`).join("")}
       </div>`);
   }
@@ -268,6 +279,11 @@
     const contact = modal.querySelector("[data-quick-contact]")?.value || "Sin contacto";
     const phone = modal.querySelector("[data-quick-phone]")?.value || "---";
     const email = modal.querySelector("[data-quick-email]")?.value || "---";
+    const recordLabel = {
+      product: "Producto",
+      supplier: "Proveedor",
+      client: "Cliente"
+    }[type] || "Registro";
 
     if (!code.trim() || !name.trim()) {
       notify("Complete los campos obligatorios antes de guardar.", "error");
@@ -291,7 +307,7 @@
       if (tbody) {
         tbody.insertAdjacentHTML("afterbegin", `
           <tr>
-            <td class="fw-semibold">${code}</td><td>${name}</td><td>${category}</td><td>${brand}</td>
+            <td class="fw-semibold">${escapeHtml(code)}</td><td>${escapeHtml(name)}</td><td>${escapeHtml(category)}</td><td>${escapeHtml(brand)}</td>
             <td class="text-end">${stock}</td><td class="text-end">${money.format(price)}</td>
             <td class="text-end"><button class="btn btn-sm btn-outline-primary" type="button" data-action="show-row-detail">Ver detalle</button></td>
           </tr>`);
@@ -301,30 +317,37 @@
     if (type === "supplier") {
       const list = document.querySelector("[data-supplier-list]");
       if (list) {
-        list.insertAdjacentHTML("beforeend", `<div><span>${name}</span><button class="btn btn-sm btn-link" type="button" data-action="remove-row">Quitar</button></div>`);
+        list.insertAdjacentHTML("beforeend", `<div><span>${escapeHtml(name)}</span><input type="hidden" name="proveedor" value="${escapeHtml(name)}"><button class="btn btn-sm btn-link" type="button" data-action="remove-row">Quitar</button></div>`);
       }
       const tbody = document.querySelector("[data-search-table='suppliers'] tbody");
       if (tbody) {
-        tbody.insertAdjacentHTML("afterbegin", `<tr><td class="fw-semibold">${code}</td><td>${name}</td><td>${contact}</td><td>${phone}</td><td>${email}</td><td>Activo</td><td class="text-end"><button class="btn btn-sm btn-outline-primary" type="button" data-action="select-supplier">Seleccionar</button></td></tr>`);
+        tbody.insertAdjacentHTML("afterbegin", `<tr><td class="fw-semibold">${escapeHtml(code)}</td><td>${escapeHtml(name)}</td><td>${escapeHtml(contact)}</td><td>${escapeHtml(phone)}</td><td>${escapeHtml(email)}</td><td>Activo</td><td class="text-end"><button class="btn btn-sm btn-outline-primary" type="button" data-action="select-supplier">Seleccionar</button></td></tr>`);
       }
     }
 
     if (type === "client") {
       const tbody = document.querySelector("[data-search-table='clients'] tbody");
       if (tbody) {
-        tbody.insertAdjacentHTML("afterbegin", `<tr><td class="fw-semibold">${code}</td><td>${name}</td><td>${phone}</td><td>${email}</td><td>Sin compras</td><td>Activo</td><td class="text-end"><button class="btn btn-sm btn-outline-primary" type="button" data-action="select-client">Seleccionar</button></td></tr>`);
+        tbody.insertAdjacentHTML("afterbegin", `<tr><td class="fw-semibold">${escapeHtml(code)}</td><td>${escapeHtml(name)}</td><td>${escapeHtml(phone)}</td><td>${escapeHtml(email)}</td><td>Sin compras</td><td>Activo</td><td class="text-end"><button class="btn btn-sm btn-outline-primary" type="button" data-action="select-client">Seleccionar</button></td></tr>`);
       }
       const clientInput = document.querySelector("input[name='cliente']");
       if (clientInput) clientInput.value = name;
     }
 
     bootstrap.Modal.getOrCreateInstance(modal).hide();
-    notify(`${title} guardado en el prototipo.`);
+    notify(`${recordLabel} guardado en el prototipo.`);
   }
 
   function exportTable(format) {
     const table = document.querySelector("[data-export-table]") || document.querySelector("table");
     if (!table) return;
+
+    if (format === "pdf") {
+      window.print();
+      notify("Use la opcion Guardar como PDF del cuadro de impresion.");
+      return;
+    }
+
     const rows = Array.from(table.querySelectorAll("tr"))
       .map((row) => Array.from(row.children).map((cell) => `"${cell.textContent.trim().replace(/"/g, '""')}"`).join(","))
       .join("\n");
@@ -332,10 +355,10 @@
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.download = `datacell-reporte.${format === "excel" ? "csv" : "txt"}`;
+    link.download = "datacell-reporte.csv";
     link.click();
     URL.revokeObjectURL(url);
-    notify(format === "excel" ? "Reporte exportado en CSV compatible con Excel." : "Reporte generado para impresion/PDF.");
+    notify("Reporte exportado en CSV compatible con Excel.");
   }
 
   document.addEventListener("click", (event) => {

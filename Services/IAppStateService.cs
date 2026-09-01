@@ -6,9 +6,11 @@ public interface IAppStateService
 {
     DashboardViewModel GetDashboard();
     UseCasePageViewModel BuildPage(string section, string title, string eyebrow, string description);
-    void RegisterCdp(IFormCollection form, string userName);
-    void RegisterProductEntry(IFormCollection form, string userName);
-    void RegisterPurchaseRequest(IFormCollection form, string userName);
-    void RegisterCustomerClaim(IFormCollection form, string userName);
-    void RegisterQuotationRequest(IFormCollection form, string userName);
+    OperationResult RegisterCdp(IFormCollection form);
+    OperationResult RegisterProductEntry(IFormCollection form);
+    OperationResult RegisterPurchaseRequest(IFormCollection form, string userName);
+    OperationResult RegisterCustomerClaim(IFormCollection form);
+    OperationResult RegisterQuotationRequest(IFormCollection form, string userName);
 }
+
+public sealed record OperationResult(bool Succeeded, string Message);

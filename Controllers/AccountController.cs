@@ -26,6 +26,11 @@ public class AccountController(IUserAccessService userAccessService) : Controlle
     [AllowAnonymous]
     public async Task<IActionResult> Login(LoginViewModel model)
     {
+        if (!ModelState.IsValid)
+        {
+            return View(model);
+        }
+
         var user = userAccessService.Validate(model.Email, model.Password);
 
         if (user is null)
@@ -56,6 +61,8 @@ public class AccountController(IUserAccessService userAccessService) : Controlle
         return RedirectToAction("Index", "Home");
     }
 
+    [HttpPost]
+    [ValidateAntiForgeryToken]
     [Authorize]
     public async Task<IActionResult> Logout()
     {

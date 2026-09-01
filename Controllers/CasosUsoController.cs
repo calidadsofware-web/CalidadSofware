@@ -22,9 +22,7 @@ public class CasosUsoController(IAppStateService appStateService) : Controller
     [Authorize(Roles = "ADMINISTRADOR,CAJERO")]
     public IActionResult GenerarCdp(IFormCollection form)
     {
-        appStateService.RegisterCdp(form, CurrentUserName);
-        TempData["SuccessMessage"] = "CDP generado correctamente. Ventas, pagos y stock fueron actualizados.";
-        return RedirectToAction(nameof(GenerarCdp));
+        return RedirectWithMessage(appStateService.RegisterCdp(form), nameof(GenerarCdp));
     }
 
     [Authorize(Roles = "ADMINISTRADOR,ALMACEN")]
@@ -42,9 +40,7 @@ public class CasosUsoController(IAppStateService appStateService) : Controller
     [Authorize(Roles = "ADMINISTRADOR,ALMACEN")]
     public IActionResult RegistrarIngresoProductos(IFormCollection form)
     {
-        appStateService.RegisterProductEntry(form, CurrentUserName);
-        TempData["SuccessMessage"] = "Ingreso registrado correctamente. El stock disponible fue actualizado.";
-        return RedirectToAction(nameof(RegistrarIngresoProductos));
+        return RedirectWithMessage(appStateService.RegisterProductEntry(form), nameof(RegistrarIngresoProductos));
     }
 
     [Authorize(Roles = "ADMINISTRADOR,ASISTENTE_COMPRAS,ALMACEN")]
@@ -62,9 +58,7 @@ public class CasosUsoController(IAppStateService appStateService) : Controller
     [Authorize(Roles = "ADMINISTRADOR,ASISTENTE_COMPRAS,ALMACEN")]
     public IActionResult RegistrarSolicitudCompra(IFormCollection form)
     {
-        appStateService.RegisterPurchaseRequest(form, CurrentUserName);
-        TempData["SuccessMessage"] = "Solicitud de compra registrada y agregada al seguimiento.";
-        return RedirectToAction(nameof(RegistrarSolicitudCompra));
+        return RedirectWithMessage(appStateService.RegisterPurchaseRequest(form, CurrentUserName), nameof(RegistrarSolicitudCompra));
     }
 
     [Authorize(Roles = "ADMINISTRADOR,CAJERO")]
@@ -82,9 +76,7 @@ public class CasosUsoController(IAppStateService appStateService) : Controller
     [Authorize(Roles = "ADMINISTRADOR,CAJERO")]
     public IActionResult RegistrarReclamoCliente(IFormCollection form)
     {
-        appStateService.RegisterCustomerClaim(form, CurrentUserName);
-        TempData["SuccessMessage"] = "Reclamo registrado y agregado a la bandeja de seguimiento.";
-        return RedirectToAction(nameof(RegistrarReclamoCliente));
+        return RedirectWithMessage(appStateService.RegisterCustomerClaim(form), nameof(RegistrarReclamoCliente));
     }
 
     [Authorize(Roles = "ADMINISTRADOR,ASISTENTE_COMPRAS")]
@@ -102,9 +94,7 @@ public class CasosUsoController(IAppStateService appStateService) : Controller
     [Authorize(Roles = "ADMINISTRADOR,ASISTENTE_COMPRAS")]
     public IActionResult RegistrarSolicitudCotizacion(IFormCollection form)
     {
-        appStateService.RegisterQuotationRequest(form, CurrentUserName);
-        TempData["SuccessMessage"] = "Solicitud de cotizacion enviada y registrada como pendiente.";
-        return RedirectToAction(nameof(RegistrarSolicitudCotizacion));
+        return RedirectWithMessage(appStateService.RegisterQuotationRequest(form, CurrentUserName), nameof(RegistrarSolicitudCotizacion));
     }
 
     [Authorize(Roles = "ADMINISTRADOR,CAJERO")]
@@ -156,6 +146,12 @@ public class CasosUsoController(IAppStateService appStateService) : Controller
     }
 
     private string CurrentUserName => User.Identity?.Name ?? "Usuario DataCell";
+
+    private IActionResult RedirectWithMessage(OperationResult result, string action)
+    {
+        TempData[result.Succeeded ? "SuccessMessage" : "ErrorMessage"] = result.Message;
+        return RedirectToAction(action);
+    }
 
     private Models.ViewModels.UseCasePageViewModel BuildPage(string section, string title, string eyebrow, string description)
     {

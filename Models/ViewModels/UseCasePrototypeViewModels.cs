@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace Pagina_Web.Models.ViewModels;
 
 public class UseCasePageViewModel
@@ -11,6 +13,7 @@ public class UseCasePageViewModel
     public IReadOnlyList<ClientRowViewModel> Clients { get; set; } = [];
     public IReadOnlyList<SupplierRowViewModel> Suppliers { get; set; } = [];
     public IReadOnlyList<PurchaseRequestRowViewModel> PurchaseRequests { get; set; } = [];
+    public IReadOnlyList<QuotationRequestRowViewModel> QuotationRequests { get; set; } = [];
     public IReadOnlyList<PaymentReportRowViewModel> Payments { get; set; } = [];
 }
 
@@ -26,7 +29,12 @@ public class DashboardViewModel
 
 public class LoginViewModel
 {
+    [Required(ErrorMessage = "Ingrese su correo.")]
+    [EmailAddress(ErrorMessage = "Ingrese un correo valido.")]
     public string Email { get; set; } = string.Empty;
+
+    [Required(ErrorMessage = "Ingrese su contrasena.")]
+    [DataType(DataType.Password)]
     public string Password { get; set; } = string.Empty;
     public string? ReturnUrl { get; set; }
     public string? ErrorMessage { get; set; }
@@ -65,6 +73,13 @@ public record PurchaseRequestRowViewModel(
     string Status,
     string RequestedBy,
     decimal EstimatedTotal);
+
+public record QuotationRequestRowViewModel(
+    string Number,
+    string Supplier,
+    string CreatedAt,
+    string RequestedBy,
+    int ProductCount);
 
 public record PaymentReportRowViewModel(
     string Document,

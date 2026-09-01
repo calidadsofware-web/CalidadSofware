@@ -20,18 +20,18 @@
         <div class="form-grid">
             <div>
                 <label class="form-label">Cliente</label>
-                <input class="form-control" value="Camila Rojas" />
+                <input class="form-control" name="cliente" value="Camila Rojas" />
             </div>
             <div>
                 <label class="form-label">CDP relacionado</label>
-                <select class="form-select">
+                <select class="form-select" name="cdp">
                     <option>B001-000122</option>
                     <option>B001-000118</option>
                 </select>
             </div>
             <div>
                 <label class="form-label">Tipo de reclamo</label>
-                <select class="form-select">
+                <select class="form-select" name="tipoReclamo">
                     <option>Producto defectuoso</option>
                     <option>Cambio solicitado</option>
                     <option>Atencion recibida</option>
@@ -39,7 +39,7 @@
             </div>
             <div>
                 <label class="form-label">Canal</label>
-                <select class="form-select">
+                <select class="form-select" name="canal">
                     <option>Presencial</option>
                     <option>WhatsApp</option>
                     <option>Correo</option>
@@ -48,7 +48,7 @@
         </div>
 
         <label class="form-label mt-3">Descripcion del reclamo</label>
-        <textarea class="form-control" rows="5">Cliente indica que el cargador no realiza carga rapida.</textarea>
+        <textarea class="form-control" name="descripcion" rows="5">Cliente indica que el cargador no realiza carga rapida.</textarea>
 
         <div class="panel-subtitle">
             <h3>Clientes recientes</h3>
@@ -91,7 +91,7 @@
             <span><strong>Cierre</strong> Cambio, devolucion o rechazo</span>
         </div>
         <label class="form-label">Prioridad</label>
-        <select class="form-select">
+        <select class="form-select" name="prioridad">
             <option>Media</option>
             <option>Alta</option>
             <option>Baja</option>

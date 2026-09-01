@@ -20,15 +20,15 @@
         <div class="form-grid">
             <div>
                 <label class="form-label">Responsable</label>
-                <input class="form-control" value="Asistente de Compras" />
+                <input class="form-control" name="responsable" value="Asistente de Compras" />
             </div>
             <div>
                 <label class="form-label">Fecha limite</label>
-                <input class="form-control" type="date" value="2026-07-15" />
+                <input class="form-control" name="fechaLimite" type="date" value="2026-07-15" />
             </div>
             <div class="span-2">
                 <label class="form-label">Observaciones</label>
-                <textarea class="form-control" rows="3">Cotizacion para reposicion de accesorios con mayor rotacion.</textarea>
+                <textarea class="form-control" name="observaciones" rows="3">Cotizacion para reposicion de accesorios con mayor rotacion.</textarea>
             </div>
         </div>
 
@@ -85,10 +85,24 @@
             {
                 <div>
                     <span>@supplier.BusinessName</span>
+                    <input type="hidden" name="proveedor" value="@supplier.BusinessName" />
                     <button class="btn btn-sm btn-link" type="button" data-action="remove-row">Quitar</button>
                 </div>
             }
         </div>
+
+        @if (Model.QuotationRequests.Any())
+        {
+            <div class="compact-list mt-3">
+                @foreach (var request in Model.QuotationRequests.Take(3))
+                {
+                    <div>
+                        <span><strong>@request.Number</strong> @request.Supplier</span>
+                        <span class="status-pill status-warn">Pendiente</span>
+                    </div>
+                }
+            </div>
+        }
 
         <div class="info-box">
             Agregue productos y seleccione proveedores para enviar la solicitud de cotizacion.

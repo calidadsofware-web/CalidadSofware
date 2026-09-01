@@ -5,6 +5,9 @@ namespace Pagina_Web.Services;
 
 public class AppStateService : IAppStateService
 {
+    private const decimal IgvRate = 0.18m;
+    private const int MaximumOperationQuantity = 10_000;
+
     private readonly object syncRoot = new();
     private readonly List<ProductState> products =
     [
@@ -46,8 +49,11 @@ public class AppStateService : IAppStateService
         new("B001-000118", "Jorge Salas", DateTime.Today.AddDays(-1), "Transferencia", "Pagado", 120.00m)
     ];
 
+    private readonly List<QuotationRequestState> quotationRequests = [];
+
     private int receiptSequence = 125;
     private int purchaseRequestSequence = 8;
+    private int quotationRequestSequence = 8;
     private int openClaims = 3;
 
     public DashboardViewModel GetDashboard()
@@ -91,80 +97,140 @@ public class AppStateService : IAppStateService
                 Clients = clients.ToList(),
                 Suppliers = suppliers.ToList(),
                 PurchaseRequests = purchaseRequests.OrderByDescending(request => request.CreatedAt).Select(ToPurchaseRequestRow).ToList(),
+                QuotationRequests = quotationRequests.OrderByDescending(request => request.CreatedAt).Select(ToQuotationRequestRow).ToList(),
                 Payments = payments.OrderByDescending(payment => payment.Date).Select(ToPaymentRow).ToList()
             };
         }
     }
 
-    public void RegisterCdp(IFormCollection form, string userName)
+    public OperationResult RegisterCdp(IFormCollection form)
     {
         lock (syncRoot)
         {
-            var selectedProducts = form.Keys
-                .Where(key => key.StartsWith("qty_", StringComparison.OrdinalIgnoreCase))
-                .Select(key => key[4..])
-                .Select(code => products.FirstOrDefault(product => product.Code.Equals(code, StringComparison.OrdinalIgnoreCase)))
-                .Where(product => product is not null)
-                .Cast<ProductState>()
-                .ToList();
-
-            if (selectedProducts.Count == 0)
+            var requestedProducts = ReadProductQuantities(form, "qty_");
+            if (requestedProducts.Count == 0)
             {
-                selectedProducts = products.Take(3).ToList();
+                return new OperationResult(false, "Agregue al menos un producto antes de generar el CDP.");
             }
-            var total = 0m;
 
-            foreach (var product in selectedProducts)
+            var subtotal = 0m;
+            var adjustedQuantity = false;
+
+            foreach (var (product, requestedQuantity) in requestedProducts)
             {
-                var quantity = Math.Max(1, ReadInt(form, $"qty_{product.Code}", 1));
-                product.Stock = Math.Max(0, product.Stock - quantity);
-                total += product.Price * quantity;
+                var quantity = Math.Min(requestedQuantity, product.Stock);
+                adjustedQuantity |= quantity != requestedQuantity;
+
+                if (quantity == 0)
+                {
+                    continue;
+                }
+
+                product.Stock -= quantity;
+                subtotal += product.Price * quantity;
+            }
+
+            if (subtotal == 0)
+            {
+                return new OperationResult(false, "No se pudo generar el CDP: los productos seleccionados no tienen stock disponible.");
             }
 
             var client = ReadString(form, "cliente", "Cliente venta rapida");
-            var method = ReadString(form, "metodoPago", "Efectivo");
-            var document = ReadString(form, "tipoCdp", "Boleta").Equals("Factura", StringComparison.OrdinalIgnoreCase)
+            var method = ReadOption(form, "metodoPago", "Efectivo", "Efectivo", "Tarjeta", "Yape", "Transferencia");
+            var document = ReadOption(form, "tipoCdp", "Boleta", "Boleta", "Factura").Equals("Factura", StringComparison.OrdinalIgnoreCase)
                 ? $"F001-{receiptSequence:000000}"
                 : $"B001-{receiptSequence:000000}";
 
             receiptSequence++;
-            payments.Insert(0, new PaymentState(document, client, DateTime.Today, method, "Pagado", total));
+            payments.Insert(0, new PaymentState(document, client, DateTime.Today, method, "Pagado", CalculateTotal(subtotal)));
+
+            var message = adjustedQuantity
+                ? $"CDP {document} generado. Las cantidades se ajustaron al stock disponible."
+                : $"CDP {document} generado correctamente. Ventas, pagos y stock fueron actualizados.";
+            return new OperationResult(true, message);
         }
     }
 
-    public void RegisterProductEntry(IFormCollection form, string userName)
+    public OperationResult RegisterProductEntry(IFormCollection form)
     {
         lock (syncRoot)
         {
-            foreach (var product in products.Where(product => product.Stock <= product.MinStock + 10).Take(3))
+            var receivedProducts = ReadProductQuantities(form, "received_");
+            if (receivedProducts.Count == 0)
             {
-                var received = Math.Max(1, ReadInt(form, $"received_{product.Code}", 20));
+                return new OperationResult(false, "Agregue al menos un producto recibido antes de registrar el ingreso.");
+            }
+
+            foreach (var (product, received) in receivedProducts)
+            {
                 product.Stock += received;
             }
+
+            return new OperationResult(true, "Ingreso registrado correctamente. El stock disponible fue actualizado.");
         }
     }
 
-    public void RegisterPurchaseRequest(IFormCollection form, string userName)
+    public OperationResult RegisterPurchaseRequest(IFormCollection form, string userName)
     {
         lock (syncRoot)
         {
+            var requestedProducts = ReadProductQuantities(form, "request_");
+            if (requestedProducts.Count == 0)
+            {
+                return new OperationResult(false, "Agregue al menos un producto antes de guardar la solicitud de compra.");
+            }
+
             var supplier = ReadString(form, "proveedor", suppliers.First().BusinessName);
-            var estimatedTotal = products.OrderBy(product => product.Stock).Take(3).Sum(product => product.Price * 20);
-            purchaseRequests.Insert(0, new PurchaseRequestState($"SC-2026-{purchaseRequestSequence:0000}", supplier, DateTime.Today, "Pendiente", userName, estimatedTotal));
+            var estimatedTotal = requestedProducts.Sum(item => item.Product.Price * item.Quantity);
+            purchaseRequests.Insert(0, new PurchaseRequestState($"SC-{DateTime.Today.Year}-{purchaseRequestSequence:0000}", supplier, DateTime.Today, "Pendiente", userName, estimatedTotal));
             purchaseRequestSequence++;
+            return new OperationResult(true, "Solicitud de compra registrada y agregada al seguimiento.");
         }
     }
 
-    public void RegisterCustomerClaim(IFormCollection form, string userName)
+    public OperationResult RegisterCustomerClaim(IFormCollection form)
     {
         lock (syncRoot)
         {
+            if (string.IsNullOrWhiteSpace(form["descripcion"]))
+            {
+                return new OperationResult(false, "Ingrese una descripcion para registrar el reclamo.");
+            }
+
             openClaims++;
+            return new OperationResult(true, "Reclamo registrado y agregado a la bandeja de seguimiento.");
         }
     }
 
-    public void RegisterQuotationRequest(IFormCollection form, string userName)
+    public OperationResult RegisterQuotationRequest(IFormCollection form, string userName)
     {
+        lock (syncRoot)
+        {
+            var requestedProducts = ReadProductQuantities(form, "request_");
+            if (requestedProducts.Count == 0)
+            {
+                return new OperationResult(false, "Agregue al menos un producto antes de enviar la solicitud de cotizacion.");
+            }
+
+            var selectedSuppliers = form["proveedor"]
+                .Where(supplier => !string.IsNullOrWhiteSpace(supplier))
+                .Select(supplier => supplier!.Trim())
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .ToList();
+            if (selectedSuppliers.Count == 0)
+            {
+                return new OperationResult(false, "Seleccione al menos un proveedor antes de enviar la solicitud de cotizacion.");
+            }
+
+            foreach (var supplier in selectedSuppliers)
+            {
+                var requestNumber = $"SC-{DateTime.Today.Year}-{quotationRequestSequence:0000}";
+                quotationRequests.Insert(0, new QuotationRequestState(requestNumber, supplier, DateTime.Today, userName, requestedProducts.Count));
+                quotationRequestSequence++;
+            }
+
+            return new OperationResult(true, $"Se enviaron {selectedSuppliers.Count} solicitud(es) de cotizacion para {requestedProducts.Count} producto(s).");
+        }
     }
 
     private IReadOnlyList<SummaryMetricViewModel> BuildMetrics()
@@ -210,6 +276,16 @@ public class AppStateService : IAppStateService
             payment.Total);
     }
 
+    private static QuotationRequestRowViewModel ToQuotationRequestRow(QuotationRequestState request)
+    {
+        return new QuotationRequestRowViewModel(
+            request.Number,
+            request.Supplier,
+            request.CreatedAt.ToString("dd/MM/yyyy"),
+            request.RequestedBy,
+            request.ProductCount);
+    }
+
     private static int ReadInt(IFormCollection form, string key, int fallback)
     {
         return int.TryParse(form[key], out var value) ? value : fallback;
@@ -219,6 +295,28 @@ public class AppStateService : IAppStateService
     {
         return string.IsNullOrWhiteSpace(form[key]) ? fallback : form[key].ToString();
     }
+
+    private List<(ProductState Product, int Quantity)> ReadProductQuantities(IFormCollection form, string prefix)
+    {
+        return form.Keys
+            .Where(key => key.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+            .Select(key => new
+            {
+                Product = products.FirstOrDefault(product => product.Code.Equals(key[prefix.Length..], StringComparison.OrdinalIgnoreCase)),
+                Quantity = ReadInt(form, key, 0)
+            })
+            .Where(item => item.Product is not null && item.Quantity > 0)
+            .Select(item => (item.Product!, Math.Min(item.Quantity, MaximumOperationQuantity)))
+            .ToList();
+    }
+
+    private static string ReadOption(IFormCollection form, string key, string fallback, params string[] allowedValues)
+    {
+        var value = ReadString(form, key, fallback);
+        return allowedValues.FirstOrDefault(option => option.Equals(value, StringComparison.OrdinalIgnoreCase)) ?? fallback;
+    }
+
+    private static decimal CalculateTotal(decimal subtotal) => subtotal * (1 + IgvRate);
 
     private static string FormatMoney(decimal value)
     {
@@ -238,5 +336,6 @@ public class AppStateService : IAppStateService
     }
 
     private sealed record PurchaseRequestState(string Number, string Supplier, DateTime CreatedAt, string Status, string RequestedBy, decimal EstimatedTotal);
+    private sealed record QuotationRequestState(string Number, string Supplier, DateTime CreatedAt, string RequestedBy, int ProductCount);
     private sealed record PaymentState(string Document, string Client, DateTime Date, string Method, string Status, decimal Total);
 }
