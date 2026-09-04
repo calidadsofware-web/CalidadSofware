@@ -16,5 +16,13 @@ Thumbs.db
 *.tmp
 *.temp
 
+# Local databases and private configuration
+*.db
+*.db-shm
+*.db-wal
+.env
+appsettings.Local.json
+supabase/.temp/
+
 # Generated verification output
 artifacts/build-*/

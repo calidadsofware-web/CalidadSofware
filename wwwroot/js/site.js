@@ -1,5 +1,26 @@
 (function () {
   const money = new Intl.NumberFormat("es-PE", { style: "currency", currency: "PEN" });
+  const sidebarToggle = document.querySelector("[data-sidebar-toggle]");
+
+  function setSidebar(open) {
+    document.body.classList.toggle("sidebar-open", open);
+    sidebarToggle?.setAttribute("aria-expanded", String(open));
+  }
+
+  sidebarToggle?.addEventListener("click", () => {
+    setSidebar(!document.body.classList.contains("sidebar-open"));
+  });
+
+  document.querySelector("[data-sidebar-close]")?.addEventListener("click", () => setSidebar(false));
+  document.querySelectorAll("#appSidebar a").forEach((link) => {
+    link.addEventListener("click", () => setSidebar(false));
+  });
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") setSidebar(false);
+  });
+  window.matchMedia("(min-width: 761px)").addEventListener("change", (event) => {
+    if (event.matches) setSidebar(false);
+  });
 
   function escapeHtml(value) {
     return String(value ?? "").replace(/[&<>"']/g, (character) => ({

@@ -24,14 +24,14 @@ public class AccountController(IUserAccessService userAccessService) : Controlle
     [HttpPost]
     [ValidateAntiForgeryToken]
     [AllowAnonymous]
-    public async Task<IActionResult> Login(LoginViewModel model)
+    public async Task<IActionResult> Login(LoginViewModel model, CancellationToken cancellationToken)
     {
         if (!ModelState.IsValid)
         {
             return View(model);
         }
 
-        var user = userAccessService.Validate(model.Email, model.Password);
+        var user = await userAccessService.ValidateAsync(model.Email, model.Password, cancellationToken);
 
         if (user is null)
         {

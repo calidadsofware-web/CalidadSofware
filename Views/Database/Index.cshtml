@@ -6,8 +6,8 @@
 
 <section class="page-heading">
     <div>
-        <p class="eyebrow">DataCellDB</p>
-        <h1>Estado de conexion MySQL</h1>
+        <p class="eyebrow">DataCell en Supabase</p>
+        <h1>Estado de conexion PostgreSQL</h1>
     </div>
     <span class="status-pill @(Model.CanConnect ? "status-ok" : "status-error")">
         @(Model.CanConnect ? "Conectado" : "Pendiente")
@@ -24,13 +24,13 @@
     <div class="col-md-3">
         <div class="metric-card">
             <span>Puerto</span>
-            <strong>@(Model.Port ?? "3306")</strong>
+            <strong>@(Model.Port ?? "5432")</strong>
         </div>
     </div>
     <div class="col-md-3">
         <div class="metric-card">
             <span>Base</span>
-            <strong>@(Model.DatabaseName ?? "DataCellDB")</strong>
+            <strong>@(Model.DatabaseName ?? "postgres")</strong>
         </div>
     </div>
     <div class="col-md-3">

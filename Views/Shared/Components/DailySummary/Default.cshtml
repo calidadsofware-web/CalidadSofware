@@ -1,0 +1,12 @@
+@model IEnumerable<Pagina_Web.Models.ViewModels.SummaryMetricViewModel>
+
+<div class="daily-summary">
+    <span>Resumen operativo</span>
+    <dl>
+        @foreach (var metric in Model)
+        {
+            <dt>@metric.Label</dt>
+            <dd>@metric.Value</dd>
+        }
+    </dl>
+</div>

@@ -1,105 +1,77 @@
-# DataCell - ASP.NET MVC + MySQL
+# DataCell
 
-Proyecto MVC para la gestion comercial e inventario de DataCell.
+Sistema web MVC para ventas, compras e inventario. La aplicacion usa ASP.NET Core MVC sobre .NET 10, Entity Framework Core y PostgreSQL de Supabase. En desarrollo puede iniciarse sin credenciales externas mediante una base SQLite local.
 
-## Arquitectura actual
+## Estado del proyecto
 
-- `Controllers`: entrada MVC para las vistas.
-- `Views`: pantallas Razor.
-- `Data/Entities`: entidades que reflejan las tablas de MySQL.
-- `Data/DataCellDbContext.cs`: contexto EF Core conectado a `DataCellDB`.
-- `Services`: autenticacion demo, estado operativo del sistema, reglas de actualizacion y diagnostico de BD.
-- `Database/DataCellDB.sql`: script MySQL corregido para crear la base y datos demo.
-- `wwwroot/img/datacell-logo.png`: imagen usada como favicon y logo del sidebar.
+- Arquitectura MVC conservada y separada en presentacion, aplicacion y persistencia.
+- Las operaciones ya se guardan en base de datos; se retiro el estado singleton en memoria.
+- Modelo PostgreSQL normalizado en `public`, visible directamente en Table Editor, con claves foraneas, restricciones, indices, transacciones y RLS defensivo.
+- Migraciones versionadas en `supabase/migrations/`: esquema inicial y reconciliacion de seguridad/roles.
+- La fuente MySQL original queda solo como referencia historica en `Database/DataCellDB.sql`.
+- Analizadores de .NET y advertencias como errores habilitados.
 
-## Preparar MySQL
+La arquitectura y el modelo se explican en [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) y [docs/DATABASE-MODEL.md](docs/DATABASE-MODEL.md). Los permisos estan definidos en [docs/ROLES.md](docs/ROLES.md) y la evidencia de metodologia cascada esta en [docs/WATERFALL.md](docs/WATERFALL.md).
 
-El script `Database/DataCellDB.sql` reinicia la base `DataCellDB`.
+## Ejecutar localmente
 
-Opcion con MySQL Workbench:
-
-1. Abre MySQL Workbench.
-2. Conectate al servidor local `localhost:3306`.
-3. Abre `Database/DataCellDB.sql`.
-4. Ejecuta todo el script.
-
-Opcion con terminal:
+Requisitos: SDK de .NET 10. No se necesita MySQL para el modo local.
 
 ```powershell
-& "C:\Program Files\MySQL\MySQL Server 9.3\bin\mysql.exe" -h localhost -P 3306 -u root -p
-```
-
-Dentro de MySQL:
-
-```sql
-source C:/Users/joela/Desktop/Pagina_Web/Database/DataCellDB.sql
-```
-
-## Configurar la conexion
-
-Edita `appsettings.json` si tu usuario o password son distintos:
-
-```json
-"ConnectionStrings": {
-  "DataCell": "server=localhost;port=3306;database=DataCellDB;user=root;password=TU_CLAVE;SslMode=Disabled;"
-}
-```
-
-## Ejecutar y probar
-
-```powershell
+dotnet restore
 dotnet build
 dotnet run --urls http://localhost:5008
 ```
 
-Abre:
+Abrir `http://localhost:5008`. Si `ConnectionStrings:DataCell` esta vacia, se crea automaticamente `Data/datacell-dev.db` con datos de demostracion.
 
-- `http://localhost:5008/`
+Usuarios de prueba:
 
-El sistema solicita login antes de entrar al panel operativo. La pantalla `/Database` valida la conexion y muestra conteos de las tablas principales; solo el rol administrador puede verla.
+| Rol | Correo | Clave |
+|---|---|---|
+| Administrador | `daniel@datacell.local` | `Daniel123!` |
+| Asistente de compras | `joel@datacell.local` | `Joel123!` |
+| Almacen | `luis@datacell.local` | `Luis123!` |
+| Cajero | `stefano@datacell.local` | `Stefano123!` |
+| Administrador | `gerardo@datacell.local` | `Gerardo123!` |
 
-## Usuarios y roles de prueba (solo README)
+Estas credenciales son datos demo y deben reemplazarse antes de produccion.
 
-Estos usuarios son para iniciar sesion durante la evaluacion del prototipo; por seguridad se documentan solo en este README y no se muestran en la pantalla de login.
+## Conectar Supabase
 
-- Aguirre Espinoza, Daniel Francisco: `daniel@datacell.local` / `Daniel123!` / Administrador
-- Diaz Gutierrez, Joel Alexander: `joel@datacell.local` / `Joel123!` / Asistente de Compras
-- Durand Durand, Luis Fabricio: `luis@datacell.local` / `Luis123!` / Almacen
-- Gomez Medina, Stefano Jose: `stefano@datacell.local` / `Stefano123!` / Cajero
-- Palacios Bazan, Gerardo Favian: `gerardo@datacell.local` / `Gerardo123!` / Administrador
+La aplicacion se conecta directamente a PostgreSQL desde el servidor; no expone la clave en JavaScript ni en archivos versionados. Configure la cadena mediante secretos de usuario:
 
-Permisos principales:
+```powershell
+dotnet user-secrets init
+dotnet user-secrets set "ConnectionStrings:DataCell" "Host=HOST_SUPABASE;Port=5432;Database=postgres;Username=postgres.PROJECT_REF;Password=CLAVE;SSL Mode=Require;Trust Server Certificate=true"
+```
 
-- Administrador: acceso completo.
-- Cajero: genera CDP, reportes de pago, clientes y reclamos.
-- Almacen: ingreso de productos, catalogo, solicitudes y proveedores.
-- Asistente de Compras: solicitudes de compra, cotizaciones y proveedores.
+Use la cadena de **Supavisor session mode** si la red local no soporta IPv6; para un servidor con IPv6 se puede usar la conexion directa. Luego aplique la migracion versionada con la CLI de Supabase y reinicie la aplicacion.
 
-## Prototipos GUI implementados
+La migracion remota se debe ejecutar exclusivamente en la organizacion de `calidadsofware@gmail.com`. No se deben usar ni modificar proyectos de `dashboard-comercial`. Las tablas quedan en `public` para aparecer directamente en la vista inicial de Table Editor, sin configuracion adicional.
 
-Los prototipos respetan el sidebar y la paleta azul de DataCell, y estan organizados por modulos reales del sistema:
+## Verificacion
 
-- `http://localhost:5008/CasosUso/GenerarCdp`
-- `http://localhost:5008/CasosUso/RegistrarIngresoProductos`
-- `http://localhost:5008/CasosUso/RegistrarSolicitudCompra`
-- `http://localhost:5008/CasosUso/RegistrarReclamoCliente`
-- `http://localhost:5008/CasosUso/RegistrarSolicitudCotizacion`
-- `http://localhost:5008/CasosUso/GenerarReportePago`
-- `http://localhost:5008/CasosUso/BuscarProducto`
-- `http://localhost:5008/CasosUso/BuscarSolicitudCompra`
-- `http://localhost:5008/CasosUso/BuscarCliente`
-- `http://localhost:5008/CasosUso/BuscarProveedor`
+```powershell
+dotnet restore
+dotnet build --no-restore
+dotnet list package --vulnerable --include-transitive
+```
 
-La pantalla de inicio ahora funciona como panel operativo: muestra ventas del dia, solicitudes pendientes, stock bajo, reclamos y pagos recientes.
+Tras iniciar sesion, `/Database` muestra el proveedor activo, la conectividad y los conteos principales. Las operaciones de venta, pago, ingreso, inventario, solicitud de compra, cotizacion y reclamo persisten mediante servicios asincronos y transacciones donde se modifican varias tablas.
 
-Los datos se actualizan durante la ejecucion de la app. Por ejemplo, al generar un CDP se agrega el pago al reporte, aumenta la venta del dia y disminuye el stock de los productos seleccionados. Para persistencia definitiva en MySQL se debe completar la siguiente fase de repositorios/servicios contra `DataCellDbContext`.
+## Estructura
 
-## Interacciones GUI
-
-- Los botones de buscar/limpiar filtran las tablas visibles.
-- Los modales de producto permiten seleccionar y agregar productos a CDP, solicitudes e ingresos.
-- Las filas agregadas pueden retirarse con `Quitar`.
-- Las cantidades recalculan subtotal, IGV y total en CDP.
-- `Vista previa` abre un resumen de la operacion.
-- `Crear cliente`, `Crear proveedor` y `Crear producto` agregan registros rapidos al prototipo.
-- `Exportar PDF` y `Exportar Excel` generan archivos descargables de la tabla del reporte.
+```text
+Controllers/              Adaptadores HTTP y controladores MVC
+Controllers/Mapping/      Conversion y validacion de formularios
+Models/Requests/          Comandos de entrada tipados
+Models/ViewModels/        Modelos exclusivos de las vistas
+Services/                 Casos de uso de lectura, escritura y acceso
+Data/Entities/            Entidades del dominio persistente
+Data/Configurations/      Mapeo EF Core, relaciones, indices y restricciones
+Views/                    Interfaz Razor
+supabase/migrations/      Esquema PostgreSQL versionado
+Database/                 Fuente MySQL heredada y notas de migracion
+docs/                     Arquitectura, modelo y proceso cascada
+```

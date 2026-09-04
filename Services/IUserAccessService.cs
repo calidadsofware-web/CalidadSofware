@@ -4,5 +4,8 @@ namespace Pagina_Web.Services;
 
 public interface IUserAccessService
 {
-    AuthenticatedUserViewModel? Validate(string email, string password);
+    Task<AuthenticatedUserViewModel?> ValidateAsync(
+        string email,
+        string password,
+        CancellationToken cancellationToken = default);
 }

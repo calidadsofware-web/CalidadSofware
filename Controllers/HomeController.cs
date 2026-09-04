@@ -6,12 +6,12 @@ using Pagina_Web.Services;
 
 namespace Pagina_Web.Controllers;
 
-public class HomeController(IAppStateService appStateService) : Controller
+public class HomeController(IDataCellQueryService queryService) : Controller
 {
     [Authorize]
-    public IActionResult Index()
+    public async Task<IActionResult> Index(CancellationToken cancellationToken)
     {
-        return View(appStateService.GetDashboard());
+        return View(await queryService.GetDashboardAsync(cancellationToken));
     }
 
     [Authorize]

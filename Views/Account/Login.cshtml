@@ -8,47 +8,39 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Acceso - DataCell</title>
-    <link rel="icon" type="image/png" href="~/img/datacell-logo.png" />
+    <link rel="icon" type="image/png" href="~/img/datacell-mark-v2.png" />
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 </head>
 <body class="login-page">
     <main class="login-shell">
-        <section class="login-brand">
-            <span class="brand-mark"><img src="~/img/datacell-logo.png" alt="" /></span>
-            <h1>DATACELL</h1>
-            <p>Acceso al sistema de gestion comercial, compras e inventario.</p>
-            <div class="login-points">
-                <span>Control por roles</span>
-                <span>Ventas e inventario sincronizados</span>
-                <span>Seguimiento de compras y reclamos</span>
+        <section class="login-card" aria-labelledby="login-title">
+            <div class="login-card-heading">
+                <span class="login-kicker">Intranet DataCell</span>
+                <h1 id="login-title">Iniciar sesión</h1>
+                <p>Ingresa con las credenciales asignadas a tu rol.</p>
             </div>
-        </section>
-
-        <section class="login-card">
-            <h2>Iniciar sesion</h2>
-            <p class="text-muted">Ingrese con las credenciales asignadas por el administrador.</p>
 
             @if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
             {
-                <div class="alert alert-danger">@Model.ErrorMessage</div>
+                <div class="alert alert-danger" role="alert">@Model.ErrorMessage</div>
             }
 
-            <form method="post">
+            <form method="post" class="login-form">
                 @Html.AntiForgeryToken()
                 <input type="hidden" asp-for="ReturnUrl" />
                 <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
                 <div class="mb-3">
                     <label class="form-label" asp-for="Email">Correo</label>
-                    <input class="form-control" asp-for="Email" autocomplete="username" placeholder="Ingrese su correo" />
+                    <input class="form-control" asp-for="Email" autocomplete="username" inputmode="email" placeholder="nombre@datacell.local" autofocus />
                     <span asp-validation-for="Email" class="text-danger"></span>
                 </div>
                 <div class="mb-3">
-                    <label class="form-label" asp-for="Password">Contrasena</label>
-                    <input class="form-control" asp-for="Password" type="password" autocomplete="current-password" placeholder="Ingrese su contrasena" />
+                    <label class="form-label" asp-for="Password">Contraseña</label>
+                    <input class="form-control" asp-for="Password" type="password" autocomplete="current-password" placeholder="Ingresa tu contraseña" />
                     <span asp-validation-for="Password" class="text-danger"></span>
                 </div>
-                <button class="btn btn-primary w-100" type="submit">Ingresar</button>
+                <button class="btn btn-primary login-submit" type="submit">Ingresar al sistema</button>
             </form>
         </section>
     </main>

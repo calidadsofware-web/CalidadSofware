@@ -1,160 +1,120 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Pagina_Web.Controllers.Mapping;
+using Pagina_Web.Security;
 using Pagina_Web.Services;
 
 namespace Pagina_Web.Controllers;
 
 [Authorize]
-public class CasosUsoController(IAppStateService appStateService) : Controller
+public sealed class CasosUsoController(
+    IDataCellQueryService queryService,
+    IDataCellCommandService commandService) : Controller
 {
-    [Authorize(Roles = "ADMINISTRADOR,CAJERO")]
-    public IActionResult GenerarCdp()
-    {
-        return View(BuildPage(
-            "Ventas",
-            "Generar CDP",
-            "Comprobante de pago",
-            "Registra el cliente, valida productos, descuenta stock y actualiza ventas del dia."));
-    }
+    [Authorize(Policy = AppPolicies.Sales)]
+    public Task<IActionResult> GenerarCdp(CancellationToken cancellationToken) =>
+        PageAsync("Ventas", "Generar comprobante de pago", "Venta y cobranza",
+            "Confirma al cliente y los productos; el sistema calcula el total, registra el pago y descuenta el inventario.",
+            UseCaseData.Products | UseCaseData.Clients, cancellationToken);
 
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    [Authorize(Roles = "ADMINISTRADOR,CAJERO")]
-    public IActionResult GenerarCdp(IFormCollection form)
-    {
-        return RedirectWithMessage(appStateService.RegisterCdp(form), nameof(GenerarCdp));
-    }
+    [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = AppPolicies.Sales)]
+    public async Task<IActionResult> GenerarCdp(IFormCollection form, CancellationToken cancellationToken) =>
+        RedirectWithMessage(
+            await commandService.RegisterCdpAsync(UseCaseRequestMapper.ToSale(form), CurrentUserEmail, cancellationToken),
+            nameof(GenerarCdp));
 
-    [Authorize(Roles = "ADMINISTRADOR,ALMACEN")]
-    public IActionResult RegistrarIngresoProductos()
-    {
-        return View(BuildPage(
-            "Inventario",
-            "Registrar ingreso de productos",
-            "Recepcion de mercaderia",
-            "Registra el ingreso fisico desde una compra aprobada y actualiza el stock."));
-    }
+    [Authorize(Policy = AppPolicies.Warehouse)]
+    public Task<IActionResult> RegistrarIngresoProductos(CancellationToken cancellationToken) =>
+        PageAsync("Inventario", "Registrar ingreso de productos", "Recepción de mercadería",
+            "Verifica la orden y las cantidades recibidas antes de actualizar el stock y su trazabilidad.",
+            UseCaseData.Products, cancellationToken);
 
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    [Authorize(Roles = "ADMINISTRADOR,ALMACEN")]
-    public IActionResult RegistrarIngresoProductos(IFormCollection form)
-    {
-        return RedirectWithMessage(appStateService.RegisterProductEntry(form), nameof(RegistrarIngresoProductos));
-    }
+    [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = AppPolicies.Warehouse)]
+    public async Task<IActionResult> RegistrarIngresoProductos(IFormCollection form, CancellationToken cancellationToken) =>
+        RedirectWithMessage(
+            await commandService.RegisterProductEntryAsync(UseCaseRequestMapper.ToProductEntry(form), CurrentUserEmail, cancellationToken),
+            nameof(RegistrarIngresoProductos));
 
-    [Authorize(Roles = "ADMINISTRADOR,ASISTENTE_COMPRAS,ALMACEN")]
-    public IActionResult RegistrarSolicitudCompra()
-    {
-        return View(BuildPage(
-            "Compras",
-            "Registrar solicitud de compra",
-            "Reposicion de stock",
-            "Crea una solicitud de compra a partir de productos con stock bajo o necesidad operativa."));
-    }
+    [Authorize(Policy = AppPolicies.Procurement)]
+    public Task<IActionResult> RegistrarSolicitudCompra(CancellationToken cancellationToken) =>
+        PageAsync("Compras", "Registrar solicitud de compra", "Reposición de stock",
+            "Solicita los productos necesarios, define su prioridad y deja la compra lista para revisión.",
+            UseCaseData.Products | UseCaseData.Suppliers, cancellationToken);
 
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    [Authorize(Roles = "ADMINISTRADOR,ASISTENTE_COMPRAS,ALMACEN")]
-    public IActionResult RegistrarSolicitudCompra(IFormCollection form)
-    {
-        return RedirectWithMessage(appStateService.RegisterPurchaseRequest(form, CurrentUserName), nameof(RegistrarSolicitudCompra));
-    }
+    [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = AppPolicies.Procurement)]
+    public async Task<IActionResult> RegistrarSolicitudCompra(IFormCollection form, CancellationToken cancellationToken) =>
+        RedirectWithMessage(
+            await commandService.RegisterPurchaseRequestAsync(UseCaseRequestMapper.ToPurchaseRequest(form), CurrentUserEmail, cancellationToken),
+            nameof(RegistrarSolicitudCompra));
 
-    [Authorize(Roles = "ADMINISTRADOR,CAJERO")]
-    public IActionResult RegistrarReclamoCliente()
-    {
-        return View(BuildPage(
-            "Clientes",
-            "Registrar reclamo de cliente",
-            "Atencion postventa",
-            "Relaciona el reclamo con cliente, CDP y producto para dar seguimiento formal."));
-    }
+    [Authorize(Policy = AppPolicies.Sales)]
+    public Task<IActionResult> RegistrarReclamoCliente(CancellationToken cancellationToken) =>
+        PageAsync("Clientes", "Registrar reclamo de cliente", "Atención posventa",
+            "Documenta lo ocurrido y vincúlalo con el cliente y su comprobante para facilitar el seguimiento.",
+            UseCaseData.Clients, cancellationToken);
 
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    [Authorize(Roles = "ADMINISTRADOR,CAJERO")]
-    public IActionResult RegistrarReclamoCliente(IFormCollection form)
-    {
-        return RedirectWithMessage(appStateService.RegisterCustomerClaim(form), nameof(RegistrarReclamoCliente));
-    }
+    [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = AppPolicies.Sales)]
+    public async Task<IActionResult> RegistrarReclamoCliente(IFormCollection form, CancellationToken cancellationToken) =>
+        RedirectWithMessage(
+            await commandService.RegisterCustomerClaimAsync(UseCaseRequestMapper.ToCustomerClaim(form), CurrentUserEmail, cancellationToken),
+            nameof(RegistrarReclamoCliente));
 
-    [Authorize(Roles = "ADMINISTRADOR,ASISTENTE_COMPRAS")]
-    public IActionResult RegistrarSolicitudCotizacion()
-    {
-        return View(BuildPage(
-            "Cotizaciones",
-            "Registrar solicitud de cotizacion",
-            "Abastecimiento",
-            "Selecciona productos y proveedores para solicitar precios antes de comprar."));
-    }
+    [Authorize(Policy = AppPolicies.Quotations)]
+    public Task<IActionResult> RegistrarSolicitudCotizacion(CancellationToken cancellationToken) =>
+        PageAsync("Cotizaciones", "Registrar solicitud de cotización", "Abastecimiento",
+            "Compara alternativas enviando una misma lista de productos a uno o varios proveedores.",
+            UseCaseData.Products | UseCaseData.Suppliers | UseCaseData.QuotationRequests, cancellationToken);
 
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    [Authorize(Roles = "ADMINISTRADOR,ASISTENTE_COMPRAS")]
-    public IActionResult RegistrarSolicitudCotizacion(IFormCollection form)
-    {
-        return RedirectWithMessage(appStateService.RegisterQuotationRequest(form, CurrentUserName), nameof(RegistrarSolicitudCotizacion));
-    }
+    [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = AppPolicies.Quotations)]
+    public async Task<IActionResult> RegistrarSolicitudCotizacion(IFormCollection form, CancellationToken cancellationToken) =>
+        RedirectWithMessage(
+            await commandService.RegisterQuotationRequestAsync(UseCaseRequestMapper.ToQuotationRequest(form), CurrentUserEmail, cancellationToken),
+            nameof(RegistrarSolicitudCotizacion));
 
-    [Authorize(Roles = "ADMINISTRADOR,CAJERO")]
-    public IActionResult GenerarReportePago()
-    {
-        return View(BuildPage(
-            "Reportes",
-            "Generar reporte de pago",
-            "Control financiero",
-            "Consulta pagos por fecha, metodo y estado para sustentar cierres de caja."));
-    }
+    [Authorize(Policy = AppPolicies.Sales)]
+    public Task<IActionResult> GenerarReportePago(CancellationToken cancellationToken) =>
+        PageAsync("Reportes", "Generar reporte de pago", "Control financiero",
+            "Revisa pagos por fecha, método y estado para agilizar el cierre y la conciliación de caja.",
+            UseCaseData.Payments, cancellationToken);
 
-    public IActionResult BuscarProducto()
-    {
-        return View(BuildPage(
-            "Productos",
-            "Buscar producto",
-            "Consulta de catalogo",
-            "Ubica accesorios por codigo, descripcion, marca, categoria y disponibilidad."));
-    }
+    public Task<IActionResult> BuscarProducto(CancellationToken cancellationToken) =>
+        PageAsync("Productos", "Buscar producto", "Consulta de catálogo",
+            "Encuentra accesorios por código, descripción, marca o categoría y consulta su disponibilidad actual.",
+            UseCaseData.Products, cancellationToken);
 
-    [Authorize(Roles = "ADMINISTRADOR,ASISTENTE_COMPRAS,ALMACEN")]
-    public IActionResult BuscarSolicitudCompra()
-    {
-        return View(BuildPage(
-            "Compras",
-            "Buscar solicitud de compra",
-            "Seguimiento de solicitudes",
-            "Filtra solicitudes por numero, proveedor, estado y rango de fechas."));
-    }
+    [Authorize(Policy = AppPolicies.Procurement)]
+    public Task<IActionResult> BuscarSolicitudCompra(CancellationToken cancellationToken) =>
+        PageAsync("Compras", "Buscar solicitud de compra", "Seguimiento de solicitudes",
+            "Localiza solicitudes por número, proveedor, estado o fecha para continuar su atención.",
+            UseCaseData.PurchaseRequests, cancellationToken);
 
-    public IActionResult BuscarCliente()
-    {
-        return View(BuildPage(
-            "Clientes",
-            "Buscar cliente",
-            "Consulta comercial",
-            "Encuentra clientes para ventas, reclamos e historial de atencion."));
-    }
+    public Task<IActionResult> BuscarCliente(CancellationToken cancellationToken) =>
+        PageAsync("Clientes", "Buscar cliente", "Consulta comercial",
+            "Encuentra clientes y consulta la información necesaria para ventas y atención posventa.",
+            UseCaseData.Clients, cancellationToken);
 
-    [Authorize(Roles = "ADMINISTRADOR,ASISTENTE_COMPRAS,ALMACEN")]
-    public IActionResult BuscarProveedor()
-    {
-        return View(BuildPage(
-            "Proveedores",
-            "Buscar proveedor",
-            "Directorio de abastecimiento",
-            "Consulta proveedores para cotizaciones, compras y recepcion de mercaderia."));
-    }
+    [Authorize(Policy = AppPolicies.Procurement)]
+    public Task<IActionResult> BuscarProveedor(CancellationToken cancellationToken) =>
+        PageAsync("Proveedores", "Buscar proveedor", "Directorio de abastecimiento",
+            "Consulta contactos confiables para cotizaciones, órdenes de compra y recepción de mercadería.",
+            UseCaseData.Suppliers, cancellationToken);
 
-    private string CurrentUserName => User.Identity?.Name ?? "Usuario DataCell";
+    private string CurrentUserEmail => User.FindFirstValue(ClaimTypes.Email) ?? string.Empty;
+
+    private async Task<IActionResult> PageAsync(
+        string section,
+        string title,
+        string eyebrow,
+        string description,
+        UseCaseData requiredData,
+        CancellationToken cancellationToken) =>
+        View(await queryService.BuildPageAsync(
+            section, title, eyebrow, description, requiredData, cancellationToken));
 
     private IActionResult RedirectWithMessage(OperationResult result, string action)
     {
         TempData[result.Succeeded ? "SuccessMessage" : "ErrorMessage"] = result.Message;
         return RedirectToAction(action);
-    }
-
-    private Models.ViewModels.UseCasePageViewModel BuildPage(string section, string title, string eyebrow, string description)
-    {
-        return appStateService.BuildPage(section, title, eyebrow, description);
     }
 }

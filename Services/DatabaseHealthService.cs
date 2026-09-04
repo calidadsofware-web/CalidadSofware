@@ -8,19 +8,13 @@ namespace Pagina_Web.Services;
 
 public class DatabaseHealthService(
     DataCellDbContext context,
-    IConfiguration configuration,
+    DatabaseRuntimeOptions runtimeOptions,
     ILogger<DatabaseHealthService> logger) : IDatabaseHealthService
 {
     public async Task<DatabaseConnectionStatusViewModel> CheckAsync(CancellationToken cancellationToken = default)
     {
-        var connectionString = configuration.GetConnectionString("DataCell");
-        var status = BuildInitialStatus(connectionString);
-
-        if (!status.IsConfigured)
-        {
-            status.ErrorMessage ??= "No existe la cadena de conexion ConnectionStrings:DataCell.";
-            return status;
-        }
+        var connection = context.Database.GetDbConnection();
+        var status = BuildInitialStatus(connection.ConnectionString, runtimeOptions.Provider);
 
         try
         {
@@ -28,7 +22,7 @@ public class DatabaseHealthService(
 
             status.CanConnect = true;
             status.ProviderName = context.Database.ProviderName;
-            status.ServerVersion = await GetServerVersionAsync(cancellationToken);
+            status.ServerVersion = connection.ServerVersion;
             status.TableCounts = await GetTableCountsAsync(cancellationToken);
         }
         catch (Exception ex)
@@ -47,30 +41,17 @@ public class DatabaseHealthService(
         return status;
     }
 
-    private static DatabaseConnectionStatusViewModel BuildInitialStatus(string? connectionString)
+    private static DatabaseConnectionStatusViewModel BuildInitialStatus(string connectionString, string provider)
     {
-        if (string.IsNullOrWhiteSpace(connectionString))
-        {
-            return new DatabaseConnectionStatusViewModel();
-        }
-
-        if (connectionString.Contains("TU_CLAVE", StringComparison.OrdinalIgnoreCase))
-        {
-            return new DatabaseConnectionStatusViewModel
-            {
-                ErrorMessage = "Configure una clave real en ConnectionStrings:DataCell antes de validar la conexion."
-            };
-        }
-
         try
         {
             var builder = new DbConnectionStringBuilder { ConnectionString = connectionString };
             return new DatabaseConnectionStatusViewModel
             {
                 IsConfigured = true,
-                Server = TryGetConnectionValue(builder, "server"),
-                Port = TryGetConnectionValue(builder, "port"),
-                DatabaseName = TryGetConnectionValue(builder, "database")
+                Server = TryGetConnectionValue(builder, "Host") ?? (provider.StartsWith("SQLite") ? "Local" : null),
+                Port = TryGetConnectionValue(builder, "Port") ?? (provider == "PostgreSQL" ? "5432" : "-"),
+                DatabaseName = TryGetConnectionValue(builder, "Database") ?? TryGetConnectionValue(builder, "Data Source")
             };
         }
         catch (ArgumentException)
@@ -87,16 +68,6 @@ public class DatabaseHealthService(
         return builder.TryGetValue(key, out var value) ? value?.ToString() : null;
     }
 
-    private async Task<string?> GetServerVersionAsync(CancellationToken cancellationToken)
-    {
-        var connection = context.Database.GetDbConnection();
-        await using var command = connection.CreateCommand();
-        command.CommandText = "SELECT VERSION();";
-
-        var version = await command.ExecuteScalarAsync(cancellationToken);
-        return version?.ToString();
-    }
-
     private async Task<IReadOnlyList<TableCountViewModel>> GetTableCountsAsync(CancellationToken cancellationToken)
     {
         return
@@ -109,6 +80,7 @@ public class DatabaseHealthService(
             new("Marcas", await context.Marcas.CountAsync(cancellationToken)),
             new("Productos", await context.Productos.CountAsync(cancellationToken)),
             new("Ventas", await context.Ventas.CountAsync(cancellationToken)),
+            new("Pagos", await context.Pagos.CountAsync(cancellationToken)),
             new("Reclamos de cliente", await context.ReclamosCliente.CountAsync(cancellationToken)),
             new("Compras", await context.Compras.CountAsync(cancellationToken)),
             new("Solicitudes de cotizacion", await context.SolicitudesCotizacion.CountAsync(cancellationToken)),

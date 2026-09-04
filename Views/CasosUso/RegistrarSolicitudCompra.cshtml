@@ -29,7 +29,7 @@
             </div>
             <div>
                 <label class="form-label">Prioridad</label>
-                <select class="form-select">
+                <select class="form-select" name="prioridad">
                     <option>Alta</option>
                     <option>Media</option>
                     <option>Baja</option>
@@ -41,7 +41,7 @@
             </div>
             <div>
                 <label class="form-label">Fecha requerida</label>
-                <input class="form-control" type="date" value="2026-07-12" />
+                <input class="form-control" name="fechaRequerida" type="date" value="@DateTime.Today.AddDays(7).ToString("yyyy-MM-dd")" />
             </div>
         </div>
 
@@ -86,7 +86,7 @@
             La solicitud pasa a estado PENDIENTE y luego puede aprobarse para generar una compra.
         </div>
         <label class="form-label">Justificacion</label>
-        <textarea class="form-control" rows="5">Reposicion por productos en nivel minimo de stock.</textarea>
+        <textarea class="form-control" name="justificacion" rows="5">Reposicion por productos en nivel minimo de stock.</textarea>
         <div class="action-row stacked">
             <button class="btn btn-light" type="reset">Cancelar</button>
             <button class="btn btn-primary" type="submit">Guardar solicitud</button>
