@@ -1,28 +1,11 @@
-# Build output
-bin/
-obj/
+.netlify/
+supabase/.temp/
+web/node_modules/
+web/dist/
+web/.env*
+!web/.env.example
 
-# Local IDE and OS files
-.vs/
-.vscode/
-*.user
-*.suo
-*.rsuser
 .DS_Store
 Thumbs.db
-
-# Logs and temporary files
 *.log
 *.tmp
-*.temp
-
-# Local databases and private configuration
-*.db
-*.db-shm
-*.db-wal
-.env
-appsettings.Local.json
-supabase/.temp/
-
-# Generated verification output
-artifacts/build-*/
