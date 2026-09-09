@@ -12,19 +12,3 @@ major_version = 17
 [db.migrations]
 enabled = true
 schema_paths = ["./schema.sql"]
-
-[auth]
-enabled = true
-site_url = "https://datacell-calidadsofware.netlify.app"
-additional_redirect_urls = ["http://127.0.0.1:8888", "https://datacell-calidadsofware.netlify.app"]
-jwt_expiry = 3600
-enable_signup = false
-enable_anonymous_sign_ins = false
-minimum_password_length = 8
-password_requirements = "lower_upper_letters_digits"
-
-[auth.email]
-enable_signup = false
-enable_confirmations = true
-double_confirm_changes = true
-secure_password_change = true

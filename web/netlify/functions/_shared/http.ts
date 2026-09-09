@@ -7,13 +7,14 @@ export class HttpError extends Error {
   }
 }
 
-export function json(data: unknown, status = 200): Response {
+export function json(data: unknown, status = 200, extraHeaders: HeadersInit = {}): Response {
   return Response.json(data, {
     status,
     headers: {
       "Cache-Control": "no-store",
       "Content-Type": "application/json; charset=utf-8",
       "X-Content-Type-Options": "nosniff",
+      ...extraHeaders,
     },
   });
 }

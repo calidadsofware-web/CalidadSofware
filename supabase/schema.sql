@@ -1,5 +1,5 @@
 -- DataCell: esquema PostgreSQL actual para Supabase.
--- La aplicación React usa funciones de Netlify y Supabase Auth; las tablas no se exponen al cliente.
+-- La aplicación React usa funciones de Netlify; las tablas no se exponen al cliente.
 
 revoke all on all tables in schema public from anon, authenticated;
 revoke all on all sequences in schema public from anon, authenticated;
@@ -317,11 +317,11 @@ insert into public.roles(nombre) values
     ('ADMINISTRADOR'), ('CAJERO'), ('ALMACEN'), ('ASISTENTE_COMPRAS');
 
 insert into public.usuarios(nombres, apellidos, correo, password_hash, id_rol) values
-    ('Gerardo Favian', 'Palacios Bazan', 'gerardofavianpalaciosbazan@gmail.com', 'SUPABASE_AUTH_MANAGED', (select id_rol from public.roles where nombre = 'ADMINISTRADOR')),
-    ('Joel Alexander', 'Diaz Gutierrez', 'joelalexanderdiazgutierrez@gmail.com', 'SUPABASE_AUTH_MANAGED', (select id_rol from public.roles where nombre = 'ASISTENTE_COMPRAS')),
-    ('Luis Fabricio', 'Durand Durand', 'luisfabricioduranddurand@gmail.com', 'SUPABASE_AUTH_MANAGED', (select id_rol from public.roles where nombre = 'ALMACEN')),
-    ('Marlon Mario', 'Piscoya Jayme', 'marlonmariopiscoyajayme@gmail.com', 'SUPABASE_AUTH_MANAGED', (select id_rol from public.roles where nombre = 'CAJERO')),
-    ('Roberto Jim Marlo', 'Garcia Esquen', 'robertojimmarlogarciaesquen@gmail.com', 'SUPABASE_AUTH_MANAGED', (select id_rol from public.roles where nombre = 'ADMINISTRADOR'));
+    ('Gerardo Favian', 'Palacios Bazan', 'gerardofavianpalaciosbazan@gmail.com', 'scrypt$16384$8$1$8BiALHKGFdaz8OE3_I4NuA$jwbsqLTm4VEiy8q_ifAEyi7j-LvfJ1I0dBAaB0V-ePaMLLKYavvIiOSr3GlV6ACTQ8i1VHDT9gjiMVqbySSFcg', (select id_rol from public.roles where nombre = 'ADMINISTRADOR')),
+    ('Joel Alexander', 'Diaz Gutierrez', 'joelalexanderdiazgutierrez@gmail.com', 'scrypt$16384$8$1$lE2n8FwwdRJzt34MK2zcRg$z-v31LDm7jS8zafwwXkrcNtGMcnYCUQ3WVQtH5EkQz22ZqV5i0QLTSKnfiKc2D0LsVf6nVaRcDInsD1SRUSmRQ', (select id_rol from public.roles where nombre = 'ASISTENTE_COMPRAS')),
+    ('Luis Fabricio', 'Durand Durand', 'luisfabricioduranddurand@gmail.com', 'scrypt$16384$8$1$gMHYT_bgOwoaiLiZHaGeoA$7b8A3lWUQ6yrNB1WaZxFDTofw6q3bIHw4u5FKECbFu0M8fvr2CtEdYZXBpxhxkKxnqmyXIedEYXv5jV4sK7eJw', (select id_rol from public.roles where nombre = 'ALMACEN')),
+    ('Marlon Mario', 'Piscoya Jayme', 'marlonmariopiscoyajayme@gmail.com', 'scrypt$16384$8$1$vN6a9vdIjFfKFyYyfDkXUg$cvQU4qt8VRke_41bikY4yAIPLSt-pKr0ar4JV_orHiuwgXWGbQUIhBzgE5b7Mli5wXtoJdW03qVr8DXBQYCywg', (select id_rol from public.roles where nombre = 'CAJERO')),
+    ('Roberto Jim Marlo', 'Garcia Esquen', 'robertojimmarlogarciaesquen@gmail.com', 'scrypt$16384$8$1$WRLs6CqZIb4paooVAtpCEw$fveL7MkSeBqtO-snsk3BTwAsL3kbgb4ESt3aoiUEhbFTua9t9pot2RtoDvbqn-wQ99GbtmdJqxjf2J5eNjJx0g', (select id_rol from public.roles where nombre = 'ADMINISTRADOR'));
 
 insert into public.categorias(nombre) values
     ('Protectores'), ('Cargadores'), ('Audio'), ('Energia'), ('Cables');

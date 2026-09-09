@@ -3,6 +3,7 @@ supabase/.temp/
 web/node_modules/
 web/dist/
 web/.env*
+web/.env.netlify
 !web/.env.example
 
 .DS_Store

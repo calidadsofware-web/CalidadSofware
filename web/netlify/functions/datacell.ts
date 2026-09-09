@@ -1,5 +1,5 @@
 import type { Config, Context } from "@netlify/functions";
-import { APP_ROLES, POLICIES, requireAppUser, requireRole } from "./_shared/auth.js";
+import { APP_ROLES, expiredSessionCookie, POLICIES, requireAppUser, requireRole, sessionCookie, signIn } from "./_shared/auth.js";
 import {
   registerClaim,
   registerPurchaseRequest,
@@ -32,10 +32,26 @@ export default async function handler(request: Request, _context: Context): Prom
     }
 
     assertSameOrigin(request);
-    const user = await requireAppUser(request);
     const body = await readJson<CommandBody>(request);
     const action = typeof body.action === "string" ? body.action : "";
     const payload = typeof body.payload === "object" && body.payload !== null ? body.payload : {};
+
+    if (action === "sign-in") {
+      const credentials = payload as { email?: unknown; password?: unknown };
+      const result = await signIn(credentials.email, credentials.password);
+      return json({ ok: true, data: { user: result.user } }, 200, { "Set-Cookie": sessionCookie(result.session) });
+    }
+
+    if (action === "sign-out") {
+      return json({ ok: true, data: {} }, 200, { "Set-Cookie": expiredSessionCookie() });
+    }
+
+    if (action === "session") {
+      const user = await requireAppUser(request);
+      return json({ ok: true, data: { user } });
+    }
+
+    const user = await requireAppUser(request);
     let message: string;
 
     switch (action) {

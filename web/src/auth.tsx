@@ -1,11 +1,10 @@
-import type { User } from "@supabase/supabase-js";
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
-import { supabase, supabaseConfigurationError } from "./supabase";
+import { getCurrentSession, signIn as requestSignIn, signOut as requestSignOut } from "./api";
+import type { AppUser } from "./types";
 
 interface AuthValue {
-  identityUser: User | null;
+  identityUser: AppUser | null;
   loading: boolean;
-  configurationError: string | null;
   signIn: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
 }
@@ -13,42 +12,30 @@ interface AuthValue {
 const AuthContext = createContext<AuthValue | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [identityUser, setIdentityUser] = useState<User | null>(null);
+  const [identityUser, setIdentityUser] = useState<AppUser | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (supabaseConfigurationError) {
-      setLoading(false);
-      return;
-    }
-
     let active = true;
-    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (active) setIdentityUser(session?.user ?? null);
-    });
-    void supabase.auth.getSession().then(({ data }) => {
+    void getCurrentSession().then((user) => {
       if (active) {
-        setIdentityUser(data.session?.user ?? null);
+        setIdentityUser(user);
         setLoading(false);
       }
     });
     return () => {
       active = false;
-      listener.subscription.unsubscribe();
     };
   }, []);
 
   const value = useMemo<AuthValue>(() => ({
     identityUser,
     loading,
-    configurationError: supabaseConfigurationError,
     signIn: async (email, password) => {
-      const { data, error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
-      if (error || !data.user) throw error ?? new Error("No fue posible iniciar sesión.");
-      setIdentityUser(data.user);
+      setIdentityUser(await requestSignIn(email, password));
     },
     signOut: async () => {
-      await supabase.auth.signOut();
+      await requestSignOut();
       setIdentityUser(null);
     },
   }), [identityUser, loading]);
