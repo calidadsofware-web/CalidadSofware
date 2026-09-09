@@ -18,7 +18,8 @@ function can(role: AppRole, policy: keyof typeof ROLE_ACCESS): boolean {
 }
 
 export function App() {
-  const { identityUser, loading } = useAuth();
+  const { identityUser, loading, configurationError } = useAuth();
+  if (configurationError) return <FullScreenMessage title="Configuración pendiente" text={configurationError} />;
   if (loading) return <FullScreenMessage title="Preparando DataCell" text="Validando la sesión segura…" />;
   return identityUser ? <DataCellShell /> : <LoginPage />;
 }

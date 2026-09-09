@@ -1,10 +1,11 @@
 import type { User } from "@supabase/supabase-js";
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
-import { supabase } from "./supabase";
+import { supabase, supabaseConfigurationError } from "./supabase";
 
 interface AuthValue {
   identityUser: User | null;
   loading: boolean;
+  configurationError: string | null;
   signIn: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
 }
@@ -16,6 +17,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (supabaseConfigurationError) {
+      setLoading(false);
+      return;
+    }
+
     let active = true;
     const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
       if (active) setIdentityUser(session?.user ?? null);
@@ -35,6 +41,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const value = useMemo<AuthValue>(() => ({
     identityUser,
     loading,
+    configurationError: supabaseConfigurationError,
     signIn: async (email, password) => {
       const { data, error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
       if (error || !data.user) throw error ?? new Error("No fue posible iniciar sesión.");
