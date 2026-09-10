@@ -1,4 +1,5 @@
 .netlify/
+web/.netlify/
 supabase/.temp/
 web/node_modules/
 web/dist/

@@ -1,4 +1,5 @@
 coverage
 dist
+.netlify
 node_modules
 package-lock.json

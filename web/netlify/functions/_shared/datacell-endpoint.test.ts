@@ -12,7 +12,7 @@ const mocks = vi.hoisted(() => ({
   signIn: vi.fn(),
 }));
 
-vi.mock("./_shared/auth.js", () => ({
+vi.mock("./auth.js", () => ({
   APP_ROLES: {
     administrator: "ADMINISTRADOR",
     cashier: "CAJERO",
@@ -32,7 +32,7 @@ vi.mock("./_shared/auth.js", () => ({
   signIn: mocks.signIn,
 }));
 
-vi.mock("./_shared/commands/index.js", () => ({
+vi.mock("./commands/index.js", () => ({
   registerClaim: mocks.registerClaim,
   registerPurchaseRequest: mocks.registerPurchaseRequest,
   registerQuotation: mocks.registerQuotation,
@@ -40,9 +40,9 @@ vi.mock("./_shared/commands/index.js", () => ({
   registerSale: mocks.registerSale,
 }));
 
-vi.mock("./_shared/data.js", () => ({ getAppData: mocks.getAppData }));
+vi.mock("./data.js", () => ({ getAppData: mocks.getAppData }));
 
-import handler from "./datacell.js";
+import handler from "../datacell.js";
 
 const user = {
   id: 1,
