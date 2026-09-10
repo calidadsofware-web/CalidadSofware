@@ -43,6 +43,7 @@ vi.mock("./commands/index.js", () => ({
 vi.mock("./data.js", () => ({ getAppData: mocks.getAppData }));
 
 import handler from "../datacell.js";
+import { HttpError } from "./http.js";
 
 const user = {
   id: 1,
@@ -78,6 +79,17 @@ describe("endpoint DataCell", () => {
     const response = await handler(post("sign-in", { email: user.email, password: "clave" }));
     expect(response.status).toBe(200);
     expect(response.headers.get("set-cookie")).toContain("HttpOnly");
+  });
+
+  it("informa una sesión ausente sin generar un error HTTP en la carga inicial", async () => {
+    mocks.requireAppUser.mockRejectedValueOnce(new HttpError(401, "Debes iniciar sesión."));
+    const response = await handler(post("session"));
+    expect(response.status).toBe(200);
+    await expect(response.json()).resolves.toMatchObject({
+      ok: true,
+      data: { user: null },
+    });
+    expect(response.headers.get("set-cookie")).toContain("Max-Age=0");
   });
 
   it.each([

@@ -9,12 +9,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     let active = true;
-    void getCurrentSession().then((user) => {
-      if (active) {
-        setIdentityUser(user);
-        setLoading(false);
-      }
-    });
+    void getCurrentSession()
+      .catch(() => null)
+      .then((user) => {
+        if (active) {
+          setIdentityUser(user);
+          setLoading(false);
+        }
+      });
     return () => {
       active = false;
     };

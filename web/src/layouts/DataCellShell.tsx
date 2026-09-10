@@ -134,7 +134,7 @@ export function DataCellShell() {
       </a>
       <aside id="primary-navigation" className={menuOpen ? "sidebar open" : "sidebar"}>
         <div className="brand">
-          <img src="/datacell-mark.png" alt="" />
+          <img src="/media/brand-mark-v1.png" width="39" height="39" alt="" decoding="async" />
           <span>DATACELL</span>
         </div>
         <nav aria-label="Navegación principal">

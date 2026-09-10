@@ -58,11 +58,7 @@ export async function signIn(email: string, password: string): Promise<AppUser> 
 }
 
 export async function getCurrentSession(): Promise<AppUser | null> {
-  try {
-    return (await sendSessionAction("session")).user ?? null;
-  } catch {
-    return null;
-  }
+  return (await sendSessionAction("session")).user ?? null;
 }
 
 export async function signOut(): Promise<void> {

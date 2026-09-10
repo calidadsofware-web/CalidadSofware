@@ -140,25 +140,60 @@
   display: grid;
   place-content: center;
   justify-items: center;
-  gap: 0.6rem;
   padding: 2rem;
   background: linear-gradient(135deg, #eef5ff, #ffffff);
-  text-align: center;
 }
 
-.center-screen img {
-  width: 64px;
-  height: 64px;
+.status-card {
+  position: relative;
+  width: min(100%, 430px);
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 1rem;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 1.25rem;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.status-card img {
   object-fit: contain;
 }
 
-.center-screen h1,
-.center-screen p {
+.status-card h1,
+.status-card p {
   margin: 0;
 }
 
-.center-screen p {
+.status-card h1 {
+  color: var(--navy);
+  font-size: 1.15rem;
+}
+
+.status-card p {
+  margin-top: 0.2rem;
   color: var(--muted);
+  font-size: 0.875rem;
+}
+
+.status-progress {
+  position: absolute;
+  inset: auto 0 0;
+  height: 3px;
+  overflow: hidden;
+  background: var(--blue-light);
+}
+
+.status-progress::after {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 -35%;
+  width: 35%;
+  background: var(--blue);
+  animation: status-loading 1.15s ease-in-out infinite;
 }
 
 .login-page {
@@ -167,7 +202,7 @@
   display: grid;
   place-items: center end;
   padding: clamp(1rem, 6vw, 7rem);
-  background: url("/Fondo.png") center / cover no-repeat;
+  background: #0a315f url("/media/login-background-v1.jpg") center / cover no-repeat;
 }
 
 .login-overlay {
@@ -205,4 +240,44 @@
   display: grid;
   gap: 1rem;
   margin-top: 1.6rem;
+}
+
+.login-card .primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+}
+
+.button-spinner {
+  width: 1rem;
+  height: 1rem;
+  flex: 0 0 auto;
+  border: 2px solid rgb(255 255 255 / 45%);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: spin 0.75s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes status-loading {
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(385%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .button-spinner,
+  .status-progress::after {
+    animation-duration: 2.5s;
+  }
 }

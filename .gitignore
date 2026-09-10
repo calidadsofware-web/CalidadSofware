@@ -9,6 +9,7 @@ web/.env.netlify
 !web/.env.example
 
 tmp/
+docs/
 
 .DS_Store
 Thumbs.db

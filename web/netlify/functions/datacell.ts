@@ -57,8 +57,17 @@ export default async function handler(request: Request): Promise<Response> {
     }
 
     if (action === "session") {
-      const user = await requireAppUser(request);
-      return json({ ok: true, data: { user } });
+      try {
+        const user = await requireAppUser(request);
+        return json({ ok: true, data: { user } });
+      } catch (error) {
+        if (error instanceof HttpError && error.status === 401) {
+          return json({ ok: true, data: { user: null } }, 200, {
+            "Set-Cookie": expiredSessionCookie(),
+          });
+        }
+        throw error;
+      }
     }
 
     const user = await requireAppUser(request);

@@ -51,10 +51,10 @@ describe("DataCell API client", () => {
     );
   });
 
-  it("trata una sesión rechazada como usuario no autenticado", async () => {
+  it("trata la ausencia de sesión como usuario no autenticado", async () => {
     vi.stubGlobal(
       "fetch",
-      vi.fn(async () => Response.json({ ok: false, message: "Debes iniciar sesión." }, { status: 401 })),
+      vi.fn(async () => Response.json({ ok: true, data: { user: null } })),
     );
     await expect(getCurrentSession()).resolves.toBeNull();
   });
