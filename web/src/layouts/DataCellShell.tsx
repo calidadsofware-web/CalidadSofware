@@ -1,17 +1,32 @@
-import { useCallback, useEffect, useState, type ReactNode } from "react";
+import { lazy, Suspense, useCallback, useEffect, useState, type ReactNode } from "react";
 import { NavLink, Navigate, Route, Routes, useNavigate } from "react-router-dom";
 import { hasAccess } from "../access";
 import { loadAppData, runCommand } from "../api";
 import { FullScreenMessage } from "../components/FullScreenMessage";
-import { ClaimsPage } from "../features/claims/ClaimsPage";
-import { PurchaseRequestsPage } from "../features/procurement/PurchaseRequestsPage";
-import { QuotationsPage } from "../features/procurement/QuotationsPage";
-import { SalePage } from "../features/sales/SalePage";
-import { ReceiptPage } from "../features/warehouse/ReceiptPage";
 import { useAuth } from "../hooks/useAuth";
 import { DashboardPage } from "../pages/DashboardPage";
-import { SearchPage } from "../pages/SearchPage";
 import type { AppCommand, AppData } from "../types";
+
+const ClaimsPage = lazy(() =>
+  import("../features/claims/ClaimsPage").then((module) => ({ default: module.ClaimsPage })),
+);
+const PurchaseRequestsPage = lazy(() =>
+  import("../features/procurement/PurchaseRequestsPage").then((module) => ({
+    default: module.PurchaseRequestsPage,
+  })),
+);
+const QuotationsPage = lazy(() =>
+  import("../features/procurement/QuotationsPage").then((module) => ({ default: module.QuotationsPage })),
+);
+const SalePage = lazy(() =>
+  import("../features/sales/SalePage").then((module) => ({ default: module.SalePage })),
+);
+const ReceiptPage = lazy(() =>
+  import("../features/warehouse/ReceiptPage").then((module) => ({ default: module.ReceiptPage })),
+);
+const SearchPage = lazy(() =>
+  import("../pages/SearchPage").then((module) => ({ default: module.SearchPage })),
+);
 
 interface ShellState {
   data: AppData | null;
@@ -30,10 +45,14 @@ function ProtectedRoute({ allowed, children }: { allowed: boolean; children: Rea
   return allowed ? children : <Navigate to="/" replace />;
 }
 
-export function DataCellShell() {
+export function DataCellShell({ initialData }: { initialData: AppData | null }) {
   const { signOut } = useAuth();
   const navigate = useNavigate();
-  const [state, setState] = useState<ShellState>({ data: null, loading: true, error: "" });
+  const [state, setState] = useState<ShellState>({
+    data: initialData,
+    loading: initialData === null,
+    error: "",
+  });
   const [menuOpen, setMenuOpen] = useState(false);
   const [notice, setNotice] = useState("");
 
@@ -52,8 +71,8 @@ export function DataCellShell() {
   }, []);
 
   useEffect(() => {
-    void reload();
-  }, [reload]);
+    if (!initialData) void reload();
+  }, [initialData, reload]);
 
   useEffect(() => {
     if (!notice) return;
@@ -187,128 +206,137 @@ export function DataCellShell() {
           )}
         </div>
         <main id="main-content" className="content" tabIndex={-1}>
-          <Routes>
-            <Route path="/" element={<DashboardPage data={data} />} />
-            <Route
-              path="/productos"
-              element={
-                <SearchPage
-                  title="Productos"
-                  description="Consulta disponibilidad, precios y alertas de inventario."
-                  rows={data.products}
-                  columns={[
-                    ["code", "Código"],
-                    ["name", "Producto"],
-                    ["category", "Categoría"],
-                    ["brand", "Marca"],
-                    ["stock", "Stock"],
-                    ["price", "Precio"],
-                  ]}
-                  moneyKeys={["price"]}
-                />
-              }
-            />
-            <Route
-              path="/clientes"
-              element={
-                <SearchPage
-                  title="Clientes"
-                  description="Consulta el historial resumido y los datos de contacto de clientes activos."
-                  rows={data.clients}
-                  columns={[
-                    ["document", "Documento"],
-                    ["fullName", "Cliente"],
-                    ["phone", "Teléfono"],
-                    ["email", "Correo"],
-                    ["lastPurchase", "Última compra"],
-                    ["status", "Estado"],
-                  ]}
-                />
-              }
-            />
-            <Route
-              path="/proveedores"
-              element={
-                <ProtectedRoute allowed={hasAccess(data.user.role, "procurement")}>
+          <Suspense
+            fallback={
+              <section className="panel" aria-busy="true" aria-live="polite">
+                <h1>Cargando módulo</h1>
+                <p className="muted">Preparando la sección solicitada...</p>
+              </section>
+            }
+          >
+            <Routes>
+              <Route path="/" element={<DashboardPage data={data} />} />
+              <Route
+                path="/productos"
+                element={
                   <SearchPage
-                    title="Proveedores"
-                    description="Consulta los proveedores habilitados para las compras."
-                    rows={data.suppliers}
+                    title="Productos"
+                    description="Consulta disponibilidad, precios y alertas de inventario."
+                    rows={data.products}
                     columns={[
-                      ["ruc", "RUC"],
-                      ["businessName", "Razón social"],
-                      ["contact", "Contacto"],
+                      ["code", "Código"],
+                      ["name", "Producto"],
+                      ["category", "Categoría"],
+                      ["brand", "Marca"],
+                      ["stock", "Stock"],
+                      ["price", "Precio"],
+                    ]}
+                    moneyKeys={["price"]}
+                  />
+                }
+              />
+              <Route
+                path="/clientes"
+                element={
+                  <SearchPage
+                    title="Clientes"
+                    description="Consulta el historial resumido y los datos de contacto de clientes activos."
+                    rows={data.clients}
+                    columns={[
+                      ["document", "Documento"],
+                      ["fullName", "Cliente"],
                       ["phone", "Teléfono"],
                       ["email", "Correo"],
+                      ["lastPurchase", "Última compra"],
                       ["status", "Estado"],
                     ]}
                   />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/pagos"
-              element={
-                <ProtectedRoute allowed={hasAccess(data.user.role, "sales")}>
-                  <SearchPage
-                    title="Pagos"
-                    description="Consulta los comprobantes y pagos registrados en ventas."
-                    rows={data.payments}
-                    columns={[
-                      ["document", "Comprobante"],
-                      ["client", "Cliente"],
-                      ["date", "Fecha"],
-                      ["method", "Método"],
-                      ["status", "Estado"],
-                      ["total", "Total"],
-                    ]}
-                    moneyKeys={["total"]}
-                  />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/ventas/nueva"
-              element={
-                <ProtectedRoute allowed={hasAccess(data.user.role, "sales")}>
-                  <SalePage data={data} command={command} />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/recepciones/nueva"
-              element={
-                <ProtectedRoute allowed={hasAccess(data.user.role, "warehouse")}>
-                  <ReceiptPage data={data} command={command} />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/solicitudes"
-              element={
-                <ProtectedRoute allowed={hasAccess(data.user.role, "procurement")}>
-                  <PurchaseRequestsPage data={data} command={command} />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/cotizaciones"
-              element={
-                <ProtectedRoute allowed={hasAccess(data.user.role, "quotations")}>
-                  <QuotationsPage data={data} command={command} />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/reclamos"
-              element={
-                <ProtectedRoute allowed={hasAccess(data.user.role, "sales")}>
-                  <ClaimsPage data={data} command={command} />
-                </ProtectedRoute>
-              }
-            />
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
+                }
+              />
+              <Route
+                path="/proveedores"
+                element={
+                  <ProtectedRoute allowed={hasAccess(data.user.role, "procurement")}>
+                    <SearchPage
+                      title="Proveedores"
+                      description="Consulta los proveedores habilitados para las compras."
+                      rows={data.suppliers}
+                      columns={[
+                        ["ruc", "RUC"],
+                        ["businessName", "Razón social"],
+                        ["contact", "Contacto"],
+                        ["phone", "Teléfono"],
+                        ["email", "Correo"],
+                        ["status", "Estado"],
+                      ]}
+                    />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/pagos"
+                element={
+                  <ProtectedRoute allowed={hasAccess(data.user.role, "sales")}>
+                    <SearchPage
+                      title="Pagos"
+                      description="Consulta los comprobantes y pagos registrados en ventas."
+                      rows={data.payments}
+                      columns={[
+                        ["document", "Comprobante"],
+                        ["client", "Cliente"],
+                        ["date", "Fecha"],
+                        ["method", "Método"],
+                        ["status", "Estado"],
+                        ["total", "Total"],
+                      ]}
+                      moneyKeys={["total"]}
+                    />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/ventas/nueva"
+                element={
+                  <ProtectedRoute allowed={hasAccess(data.user.role, "sales")}>
+                    <SalePage data={data} command={command} />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/recepciones/nueva"
+                element={
+                  <ProtectedRoute allowed={hasAccess(data.user.role, "warehouse")}>
+                    <ReceiptPage data={data} command={command} />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/solicitudes"
+                element={
+                  <ProtectedRoute allowed={hasAccess(data.user.role, "procurement")}>
+                    <PurchaseRequestsPage data={data} command={command} />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/cotizaciones"
+                element={
+                  <ProtectedRoute allowed={hasAccess(data.user.role, "quotations")}>
+                    <QuotationsPage data={data} command={command} />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/reclamos"
+                element={
+                  <ProtectedRoute allowed={hasAccess(data.user.role, "sales")}>
+                    <ClaimsPage data={data} command={command} />
+                  </ProtectedRoute>
+                }
+              />
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+          </Suspense>
         </main>
       </div>
     </div>

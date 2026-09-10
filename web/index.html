@@ -6,7 +6,9 @@
     <meta name="theme-color" content="#062b5c" />
     <meta name="description" content="Intranet comercial DataCell" />
     <link rel="icon" type="image/png" href="/media/brand-mark-v1.png" />
-    <link rel="preload" as="image" href="/media/login-background-v1.jpg" fetchpriority="high" />
+    <script>
+      window.__DATACELL_BOOTSTRAP__ = fetch("/api/datacell?bootstrap=1", { credentials: "same-origin" });
+    </script>
     <title>DataCell · Gestión comercial</title>
   </head>
   <body>

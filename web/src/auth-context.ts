@@ -1,8 +1,9 @@
 import { createContext } from "react";
-import type { AppUser } from "./types";
+import type { AppData, AppUser } from "./types";
 
 export interface AuthValue {
   identityUser: AppUser | null;
+  initialData: AppData | null;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;

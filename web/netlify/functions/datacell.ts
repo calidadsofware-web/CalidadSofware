@@ -31,8 +31,17 @@ interface CommandBody {
 export default async function handler(request: Request): Promise<Response> {
   try {
     if (request.method === "GET") {
-      const user = await requireAppUser(request);
-      return json({ ok: true, data: await getAppData(user) });
+      try {
+        const user = await requireAppUser(request);
+        return json({ ok: true, data: { user, appData: await getAppData(user) } });
+      } catch (error) {
+        if (error instanceof HttpError && error.status === 401) {
+          return json({ ok: true, data: { user: null, appData: null } }, 200, {
+            "Set-Cookie": expiredSessionCookie(),
+          });
+        }
+        throw error;
+      }
     }
 
     if (request.method !== "POST") {
@@ -54,20 +63,6 @@ export default async function handler(request: Request): Promise<Response> {
 
     if (action === "sign-out") {
       return json({ ok: true, data: {} }, 200, { "Set-Cookie": expiredSessionCookie() });
-    }
-
-    if (action === "session") {
-      try {
-        const user = await requireAppUser(request);
-        return json({ ok: true, data: { user } });
-      } catch (error) {
-        if (error instanceof HttpError && error.status === 401) {
-          return json({ ok: true, data: { user: null } }, 200, {
-            "Set-Cookie": expiredSessionCookie(),
-          });
-        }
-        throw error;
-      }
     }
 
     const user = await requireAppUser(request);

@@ -68,10 +68,15 @@ describe("endpoint DataCell", () => {
   });
 
   it("carga los datos del usuario autenticado", async () => {
-    mocks.getAppData.mockResolvedValue({ user, products: [] });
+    const appData = { user, products: [] };
+    mocks.getAppData.mockResolvedValue(appData);
     const response = await handler(new Request("https://datacell.example/api/datacell"));
     expect(response.status).toBe(200);
     expect(mocks.getAppData).toHaveBeenCalledWith(user);
+    await expect(response.json()).resolves.toMatchObject({
+      ok: true,
+      data: { user, appData },
+    });
   });
 
   it("crea la sesión y devuelve una cookie segura", async () => {
@@ -83,11 +88,11 @@ describe("endpoint DataCell", () => {
 
   it("informa una sesión ausente sin generar un error HTTP en la carga inicial", async () => {
     mocks.requireAppUser.mockRejectedValueOnce(new HttpError(401, "Debes iniciar sesión."));
-    const response = await handler(post("session"));
+    const response = await handler(new Request("https://datacell.example/api/datacell?bootstrap=1"));
     expect(response.status).toBe(200);
     await expect(response.json()).resolves.toMatchObject({
       ok: true,
-      data: { user: null },
+      data: { user: null, appData: null },
     });
     expect(response.headers.get("set-cookie")).toContain("Max-Age=0");
   });

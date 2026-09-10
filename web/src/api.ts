@@ -6,6 +6,19 @@ interface ApiEnvelope<T = undefined> {
   data?: T;
 }
 
+interface SessionState {
+  user: AppUser | null;
+  appData: AppData | null;
+}
+
+declare global {
+  interface Window {
+    __DATACELL_BOOTSTRAP__?: Promise<Response>;
+  }
+}
+
+const APP_STATE_URL = "/api/datacell?bootstrap=1";
+
 async function parse<T>(response: Response): Promise<T> {
   const body = (await response.json().catch(() => ({}))) as ApiEnvelope<T>;
   if (!response.ok || !body.ok) {
@@ -15,13 +28,27 @@ async function parse<T>(response: Response): Promise<T> {
   return body.data;
 }
 
-export async function loadAppData(signal?: AbortSignal): Promise<AppData> {
-  return parse<AppData>(
-    await fetch("/api/datacell", {
-      signal,
-      credentials: "same-origin",
-    }),
+async function requestAppState(signal?: AbortSignal): Promise<SessionState> {
+  const earlyRequest = signal ? undefined : window.__DATACELL_BOOTSTRAP__;
+  if (earlyRequest) delete window.__DATACELL_BOOTSTRAP__;
+
+  return parse<SessionState>(
+    await (earlyRequest ??
+      fetch(APP_STATE_URL, {
+        signal,
+        credentials: "same-origin",
+      })),
   );
+}
+
+export async function loadAppData(signal?: AbortSignal): Promise<AppData> {
+  const state = await requestAppState(signal);
+  if (!state.appData) throw new Error("Debes iniciar sesión.");
+  return state.appData;
+}
+
+export async function getCurrentSession(): Promise<SessionState> {
+  return requestAppState();
 }
 
 export async function runCommand(action: string, payload: unknown): Promise<string> {
@@ -39,7 +66,7 @@ export async function runCommand(action: string, payload: unknown): Promise<stri
 }
 
 async function sendSessionAction(
-  action: "sign-in" | "sign-out" | "session",
+  action: "sign-in" | "sign-out",
   payload: object = {},
 ): Promise<{ user?: AppUser }> {
   const response = await fetch("/api/datacell", {
@@ -55,10 +82,6 @@ export async function signIn(email: string, password: string): Promise<AppUser> 
   const data = await sendSessionAction("sign-in", { email, password });
   if (!data.user) throw new Error("La respuesta de inicio de sesión está incompleta.");
   return data.user;
-}
-
-export async function getCurrentSession(): Promise<AppUser | null> {
-  return (await sendSessionAction("session")).user ?? null;
 }
 
 export async function signOut(): Promise<void> {

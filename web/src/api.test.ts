@@ -7,12 +7,14 @@ afterEach(() => vi.unstubAllGlobals());
 describe("DataCell API client", () => {
   it("incluye las cookies de sesión al consultar los datos", async () => {
     const data = { user: { id: 1 } };
-    const fetchMock = vi.fn(async () => Response.json({ ok: true, data }));
+    const fetchMock = vi.fn(async () =>
+      Response.json({ ok: true, data: { user: data.user, appData: data } }),
+    );
     vi.stubGlobal("fetch", fetchMock);
 
     await expect(loadAppData()).resolves.toEqual(data);
     expect(fetchMock).toHaveBeenCalledWith(
-      "/api/datacell",
+      "/api/datacell?bootstrap=1",
       expect.objectContaining({
         credentials: "same-origin",
       }),
@@ -54,9 +56,9 @@ describe("DataCell API client", () => {
   it("trata la ausencia de sesión como usuario no autenticado", async () => {
     vi.stubGlobal(
       "fetch",
-      vi.fn(async () => Response.json({ ok: true, data: { user: null } })),
+      vi.fn(async () => Response.json({ ok: true, data: { user: null, appData: null } })),
     );
-    await expect(getCurrentSession()).resolves.toBeNull();
+    await expect(getCurrentSession()).resolves.toEqual({ user: null, appData: null });
   });
 
   it("envía la acción de cierre de sesión", async () => {
