@@ -2,7 +2,10 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { getCurrentSession, loadAppData, runCommand, signIn, signOut } from "./api";
 
-afterEach(() => vi.unstubAllGlobals());
+afterEach(() => {
+  vi.unstubAllGlobals();
+  delete window.__DATACELL_BOOTSTRAP__;
+});
 
 describe("DataCell API client", () => {
   it("incluye las cookies de sesión al consultar los datos", async () => {
@@ -59,6 +62,16 @@ describe("DataCell API client", () => {
       vi.fn(async () => Response.json({ ok: true, data: { user: null, appData: null } })),
     );
     await expect(getCurrentSession()).resolves.toEqual({ user: null, appData: null });
+  });
+
+  it("reutiliza la solicitud iniciada por el HTML sin duplicar la consulta", async () => {
+    const state = { user: null, appData: null };
+    const fetchMock = vi.fn();
+    vi.stubGlobal("fetch", fetchMock);
+    window.__DATACELL_BOOTSTRAP__ = Promise.resolve(Response.json({ ok: true, data: state }));
+
+    await expect(getCurrentSession()).resolves.toEqual(state);
+    expect(fetchMock).not.toHaveBeenCalled();
   });
 
   it("envía la acción de cierre de sesión", async () => {
