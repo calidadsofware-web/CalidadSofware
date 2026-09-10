@@ -348,7 +348,8 @@ insert into public.proveedores(ruc, razon_social, direccion, contacto, telefono,
     ('20123456789', 'Tecnologia Peru S.A.C.', null, 'Rosa Medina', '014478899', 'ventas@tecnologiaperu.com'),
     ('20555111222', 'CompuSolutions S.A.C.', null, 'Carlos Paredes', '016632211', 'contacto@compusolutions.com'),
     ('20666777888', 'Importaciones Movil E.I.R.L.', null, 'Lucia Vargas', '017771122', 'logistica@importmovil.com'),
-    ('20999999991', 'Proveedor Demo SAC', 'Av. Tecnologia 123, Lima', 'Contacto Demo', '900000002', 'proveedor.demo@example.com');
+    ('20999999991', 'Proveedor Demo SAC', 'Av. Tecnologia 123, Lima', 'Contacto Demo', '900000002', 'proveedor.demo@example.com'),
+    ('20444555666', 'Accesorios Inclusivos del Peru S.A.C.', 'Jr. Comercio 456, Lima', 'Elena Chavez', '900000003', 'contacto@accesoriosinclusivos.example.com');
 
 insert into public.ventas(fecha, id_cliente, id_usuario, tipo_comprobante, serie, numero, subtotal, igv, total) values
     (now(), (select id_cliente from public.clientes where documento = '45678912'), (select id_usuario from public.usuarios where correo = 'marlonmariopiscoyajayme@gmail.com'), 'BOLETA', 'B001', '00000124', 76.19, 13.71, 89.90),

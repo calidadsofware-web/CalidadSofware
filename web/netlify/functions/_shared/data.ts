@@ -140,7 +140,11 @@ async function getMetrics(): Promise<MetricRow[]> {
   });
   return [
     { label: "Ventas del día", value: sales, hint: `${row?.receipts_today ?? 0} comprobantes` },
-    { label: "Solicitudes pendientes", value: String(row?.pending_purchases ?? 0), hint: "compras por aprobar" },
+    {
+      label: "Solicitudes pendientes",
+      value: String(row?.pending_purchases ?? 0),
+      hint: "compras por aprobar",
+    },
     { label: "Stock bajo", value: String(row?.low_stock ?? 0), hint: "productos bajo mínimo" },
     { label: "Reclamos abiertos", value: String(row?.open_claims ?? 0), hint: "en seguimiento" },
   ];
@@ -303,20 +307,40 @@ export async function getAppData(user: AppUser): Promise<AppData> {
   const quotations = can(user.role, POLICIES.quotations);
   const warehouse = can(user.role, POLICIES.warehouse);
 
-  const [metrics, products, clients, suppliers, purchaseRequests, quotationRequests, payments, claims, purchases] =
-    await Promise.all([
-      getMetrics(),
-      getProducts(),
-      getClients(),
-      procurement ? getSuppliers() : Promise.resolve([]),
-      procurement ? getPurchaseRequests() : Promise.resolve([]),
-      quotations ? getQuotations() : Promise.resolve([]),
-      sales ? getPayments() : Promise.resolve([]),
-      sales ? getClaims() : Promise.resolve([]),
-      warehouse ? getPurchases() : Promise.resolve([]),
-    ]);
+  const [
+    metrics,
+    products,
+    clients,
+    suppliers,
+    purchaseRequests,
+    quotationRequests,
+    payments,
+    claims,
+    purchases,
+  ] = await Promise.all([
+    getMetrics(),
+    getProducts(),
+    getClients(),
+    procurement ? getSuppliers() : Promise.resolve([]),
+    procurement ? getPurchaseRequests() : Promise.resolve([]),
+    quotations ? getQuotations() : Promise.resolve([]),
+    sales ? getPayments() : Promise.resolve([]),
+    sales ? getClaims() : Promise.resolve([]),
+    warehouse ? getPurchases() : Promise.resolve([]),
+  ]);
 
-  return { user, metrics, products, clients, suppliers, purchaseRequests, quotationRequests, payments, claims, purchases };
+  return {
+    user,
+    metrics,
+    products,
+    clients,
+    suppliers,
+    purchaseRequests,
+    quotationRequests,
+    payments,
+    claims,
+    purchases,
+  };
 }
 
 export function isAdministrator(user: AppUser): boolean {

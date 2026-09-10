@@ -111,3 +111,5 @@ export interface LineInput {
   code: string;
   quantity: number;
 }
+
+export type AppCommand = (action: string, payload: unknown) => Promise<void>;

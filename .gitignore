@@ -2,9 +2,12 @@
 supabase/.temp/
 web/node_modules/
 web/dist/
+web/coverage/
 web/.env*
 web/.env.netlify
 !web/.env.example
+
+tmp/
 
 .DS_Store
 Thumbs.db

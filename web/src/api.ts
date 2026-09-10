@@ -16,10 +16,12 @@ async function parse<T>(response: Response): Promise<T> {
 }
 
 export async function loadAppData(signal?: AbortSignal): Promise<AppData> {
-  return parse<AppData>(await fetch("/api/datacell", {
-    signal,
-    credentials: "same-origin",
-  }));
+  return parse<AppData>(
+    await fetch("/api/datacell", {
+      signal,
+      credentials: "same-origin",
+    }),
+  );
 }
 
 export async function runCommand(action: string, payload: unknown): Promise<string> {
@@ -36,7 +38,10 @@ export async function runCommand(action: string, payload: unknown): Promise<stri
   return body.message || "Operación completada.";
 }
 
-async function sendSessionAction(action: "sign-in" | "sign-out" | "session", payload: object = {}): Promise<{ user?: AppUser }> {
+async function sendSessionAction(
+  action: "sign-in" | "sign-out" | "session",
+  payload: object = {},
+): Promise<{ user?: AppUser }> {
   const response = await fetch("/api/datacell", {
     method: "POST",
     credentials: "same-origin",

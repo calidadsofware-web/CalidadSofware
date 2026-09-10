@@ -50,12 +50,18 @@ const ROLE_DISPLAY: Record<AppRole, string> = {
 
 function deriveKey(password: string, salt: Buffer): Promise<Buffer> {
   return new Promise((resolve, reject) => {
-    scrypt(password, salt, SCRYPT_KEY_LENGTH, {
-      N: SCRYPT_N,
-      r: SCRYPT_R,
-      p: SCRYPT_P,
-      maxmem: 64 * 1024 * 1024,
-    }, (error, derived) => error ? reject(error) : resolve(Buffer.from(derived)));
+    scrypt(
+      password,
+      salt,
+      SCRYPT_KEY_LENGTH,
+      {
+        N: SCRYPT_N,
+        r: SCRYPT_R,
+        p: SCRYPT_P,
+        maxmem: 64 * 1024 * 1024,
+      },
+      (error, derived) => (error ? reject(error) : resolve(Buffer.from(derived))),
+    );
   });
 }
 
@@ -104,11 +110,13 @@ function constantTimeEqual(left: string, right: string): boolean {
 }
 
 function encodeSession(user: AppUser): string {
-  const payload = Buffer.from(JSON.stringify({
-    sub: user.id,
-    email: user.email,
-    exp: Math.floor(Date.now() / 1000) + SESSION_TTL_SECONDS,
-  })).toString("base64url");
+  const payload = Buffer.from(
+    JSON.stringify({
+      sub: user.id,
+      email: user.email,
+      exp: Math.floor(Date.now() / 1000) + SESSION_TTL_SECONDS,
+    }),
+  ).toString("base64url");
   return `${payload}.${sign(payload)}`;
 }
 
@@ -119,7 +127,12 @@ function decodeSession(token: string): SessionPayload {
   }
   try {
     const value = JSON.parse(Buffer.from(payload, "base64url").toString("utf8")) as SessionPayload;
-    if (!Number.isInteger(value.sub) || typeof value.email !== "string" || !Number.isInteger(value.exp) || value.exp <= Math.floor(Date.now() / 1000)) {
+    if (
+      !Number.isInteger(value.sub) ||
+      typeof value.email !== "string" ||
+      !Number.isInteger(value.exp) ||
+      value.exp <= Math.floor(Date.now() / 1000)
+    ) {
       throw new Error("invalid session");
     }
     return value;
@@ -130,13 +143,17 @@ function decodeSession(token: string): SessionPayload {
 
 function sessionFromRequest(request: Request): string {
   const cookie = request.headers.get("cookie") ?? "";
-  const value = cookie.split(";").map((part) => part.trim()).find((part) => part.startsWith(`${SESSION_COOKIE}=`));
+  const value = cookie
+    .split(";")
+    .map((part) => part.trim())
+    .find((part) => part.startsWith(`${SESSION_COOKIE}=`));
   if (!value) throw new HttpError(401, "Debes iniciar sesión.");
   return decodeURIComponent(value.slice(SESSION_COOKIE.length + 1));
 }
 
 export async function verifyPassword(password: string, storedHash: string): Promise<boolean> {
-  const [algorithm, costText, blockSizeText, parallelismText, saltText, hashText, ...extra] = storedHash.split("$");
+  const [algorithm, costText, blockSizeText, parallelismText, saltText, hashText, ...extra] =
+    storedHash.split("$");
   if (algorithm !== "scrypt" || extra.length || !saltText || !hashText) return false;
   const cost = Number(costText);
   const blockSize = Number(blockSizeText);
@@ -153,7 +170,10 @@ export async function verifyPassword(password: string, storedHash: string): Prom
   }
 }
 
-export async function signIn(emailInput: unknown, passwordInput: unknown): Promise<{ user: AppUser; session: string }> {
+export async function signIn(
+  emailInput: unknown,
+  passwordInput: unknown,
+): Promise<{ user: AppUser; session: string }> {
   const email = typeof emailInput === "string" ? emailInput.trim().toLowerCase() : "";
   const password = typeof passwordInput === "string" ? passwordInput : "";
   if (!email || email.length > 120 || !password || password.length > 256) {

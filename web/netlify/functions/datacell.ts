@@ -1,5 +1,13 @@
-import type { Config, Context } from "@netlify/functions";
-import { APP_ROLES, expiredSessionCookie, POLICIES, requireAppUser, requireRole, sessionCookie, signIn } from "./_shared/auth.js";
+import type { Config } from "@netlify/functions";
+import {
+  APP_ROLES,
+  expiredSessionCookie,
+  POLICIES,
+  requireAppUser,
+  requireRole,
+  sessionCookie,
+  signIn,
+} from "./_shared/auth.js";
 import {
   registerClaim,
   registerPurchaseRequest,
@@ -11,7 +19,7 @@ import {
   type QuotationInput,
   type ReceiptInput,
   type SaleInput,
-} from "./_shared/commands.js";
+} from "./_shared/commands/index.js";
 import { getAppData } from "./_shared/data.js";
 import { assertSameOrigin, errorResponse, HttpError, json, readJson } from "./_shared/http.js";
 
@@ -20,7 +28,7 @@ interface CommandBody {
   payload?: unknown;
 }
 
-export default async function handler(request: Request, _context: Context): Promise<Response> {
+export default async function handler(request: Request): Promise<Response> {
   try {
     if (request.method === "GET") {
       const user = await requireAppUser(request);
@@ -39,7 +47,9 @@ export default async function handler(request: Request, _context: Context): Prom
     if (action === "sign-in") {
       const credentials = payload as { email?: unknown; password?: unknown };
       const result = await signIn(credentials.email, credentials.password);
-      return json({ ok: true, data: { user: result.user } }, 200, { "Set-Cookie": sessionCookie(result.session) });
+      return json({ ok: true, data: { user: result.user } }, 200, {
+        "Set-Cookie": sessionCookie(result.session),
+      });
     }
 
     if (action === "sign-out") {

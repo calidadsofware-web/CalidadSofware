@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { loadAppData, runCommand } from "./api";
+import { getCurrentSession, loadAppData, runCommand, signIn, signOut } from "./api";
 
 afterEach(() => vi.unstubAllGlobals());
 
@@ -11,17 +11,61 @@ describe("DataCell API client", () => {
     vi.stubGlobal("fetch", fetchMock);
 
     await expect(loadAppData()).resolves.toEqual(data);
-    expect(fetchMock).toHaveBeenCalledWith("/api/datacell", expect.objectContaining({
-      credentials: "same-origin",
-    }));
+    expect(fetchMock).toHaveBeenCalledWith(
+      "/api/datacell",
+      expect.objectContaining({
+        credentials: "same-origin",
+      }),
+    );
   });
 
   it("propaga el mensaje seguro de un comando rechazado", async () => {
-    vi.stubGlobal("fetch", vi.fn(async () => Response.json(
-      { ok: false, message: "No tienes permisos para esta operación." },
-      { status: 403 },
-    )));
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () =>
+        Response.json({ ok: false, message: "No tienes permisos para esta operación." }, { status: 403 }),
+      ),
+    );
 
     await expect(runCommand("register-sale", {})).rejects.toThrow("No tienes permisos");
+  });
+
+  it("devuelve el usuario autenticado al iniciar sesión", async () => {
+    const user = { id: 1, email: "qa@datacell.local", role: "ADMINISTRADOR" };
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => Response.json({ ok: true, data: { user } })),
+    );
+
+    await expect(signIn("qa@datacell.local", "clave-segura")).resolves.toEqual(user);
+    expect(fetch).toHaveBeenCalledWith(
+      "/api/datacell",
+      expect.objectContaining({
+        method: "POST",
+        credentials: "same-origin",
+        body: JSON.stringify({
+          action: "sign-in",
+          payload: { email: "qa@datacell.local", password: "clave-segura" },
+        }),
+      }),
+    );
+  });
+
+  it("trata una sesión rechazada como usuario no autenticado", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => Response.json({ ok: false, message: "Debes iniciar sesión." }, { status: 401 })),
+    );
+    await expect(getCurrentSession()).resolves.toBeNull();
+  });
+
+  it("envía la acción de cierre de sesión", async () => {
+    const fetchMock = vi.fn(async () => Response.json({ ok: true, data: {} }));
+    vi.stubGlobal("fetch", fetchMock);
+    await expect(signOut()).resolves.toBeUndefined();
+    expect(fetchMock).toHaveBeenCalledWith(
+      "/api/datacell",
+      expect.objectContaining({ body: JSON.stringify({ action: "sign-out", payload: {} }) }),
+    );
   });
 });
