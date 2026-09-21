@@ -27,7 +27,7 @@ export async function loadProducts(
 
 export async function nextNumber(
   client: PoolClient,
-  table: "ventas" | "recepciones" | "solicitudes_compra" | "solicitudes_cotizacion",
+  table: "ventas" | "recepciones" | "solicitudes_compra" | "solicitudes_cotizacion" | "compras",
   prefix: string,
   width: number,
 ): Promise<string> {
@@ -49,8 +49,8 @@ export async function resolveClient(
   const existing = await client.query<{ id_cliente: number }>(
     `
     select id_cliente from public.clientes
-     where ($1::varchar is not null and documento = $1)
-        or lower(trim(concat(nombres, ' ', apellidos))) = lower($2)
+     where estado = 'ACTIVO' and (($1::varchar is not null and documento = $1)
+        or ($1::varchar is null and lower(trim(concat(nombres, ' ', apellidos))) = lower($2)))
      limit 1`,
     [document, name],
   );

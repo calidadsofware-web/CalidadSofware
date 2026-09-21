@@ -21,6 +21,10 @@ import {
   type SaleInput,
 } from "./_shared/commands/index.js";
 import { getAppData } from "./_shared/data.js";
+import { saveClient, saveProduct, saveSupplier, adjustStock } from "./_shared/commands/catalog.js";
+import { saveUser } from "./_shared/commands/users.js";
+import { reviewPurchase, updateClaim, cancelQuotation } from "./_shared/commands/workflow.js";
+import type { Fields } from "./_shared/commands/fields.js";
 import { assertSameOrigin, errorResponse, HttpError, json, readJson } from "./_shared/http.js";
 
 interface CommandBody {
@@ -69,6 +73,30 @@ export default async function handler(request: Request): Promise<Response> {
     let message: string;
 
     switch (action) {
+      case "save-client":
+        message = await saveClient(payload as Fields, user);
+        break;
+      case "save-product":
+        message = await saveProduct(payload as Fields, user);
+        break;
+      case "save-supplier":
+        message = await saveSupplier(payload as Fields, user);
+        break;
+      case "adjust-stock":
+        message = await adjustStock(payload as Fields, user);
+        break;
+      case "save-user":
+        message = await saveUser(payload as Fields, user);
+        break;
+      case "review-purchase":
+        message = await reviewPurchase(payload as Fields, user);
+        break;
+      case "update-claim":
+        message = await updateClaim(payload as Fields, user);
+        break;
+      case "cancel-quotation":
+        message = await cancelQuotation(payload as Fields, user);
+        break;
       case "register-sale":
         requireRole(user, POLICIES.sales);
         message = await registerSale(payload as SaleInput, user);

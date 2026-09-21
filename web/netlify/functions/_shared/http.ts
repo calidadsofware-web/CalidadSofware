@@ -32,7 +32,9 @@ export async function readJson<T>(request: Request): Promise<T> {
     throw new HttpError(415, "El contenido debe enviarse como JSON.");
   }
   try {
-    return (await request.json()) as T;
+    const body: unknown = await request.json();
+    if (body === null || typeof body !== "object" || Array.isArray(body)) throw new Error("Expected object");
+    return body as T;
   } catch {
     throw new HttpError(400, "El cuerpo JSON no es válido.");
   }
@@ -42,6 +44,24 @@ export function errorResponse(error: unknown): Response {
   if (error instanceof HttpError) {
     return json({ ok: false, message: error.message }, error.status);
   }
+  const code = typeof error === "object" && error !== null && "code" in error ? error.code : "";
+  if (code === "23505")
+    return json(
+      {
+        ok: false,
+        message:
+          "Ya existe un registro con ese documento, correo, SKU o código de barras. Revisa los datos antes de guardar.",
+      },
+      409,
+    );
+  if (code === "40001" || code === "40P01")
+    return json(
+      {
+        ok: false,
+        message: "Otra operación modificó estos datos. Actualiza la información e inténtalo nuevamente.",
+      },
+      409,
+    );
   console.error("Unhandled DataCell function error", error);
   return json({ ok: false, message: "No se pudo completar la operación." }, 500);
 }

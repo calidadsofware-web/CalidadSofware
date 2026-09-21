@@ -15,12 +15,17 @@ function databaseUrl(): string {
 }
 
 export function getPool(): Pool {
+  const local = Netlify.env.get("DATACELL_LOCAL") === "true";
+  const connectionString = databaseUrl();
+  if (local && new URL(connectionString).hostname !== "127.0.0.1") {
+    throw new Error("El entorno local solo admite una base de datos en este equipo.");
+  }
   pool ??= new Pool({
-    connectionString: databaseUrl(),
+    connectionString,
     // Supabase transaction poolers use a provider chain that Node cannot validate
     // in this runtime. Traffic remains encrypted; the database URL stays server-only.
-    ssl: { rejectUnauthorized: false },
-    max: 2,
+    ssl: local ? false : { rejectUnauthorized: false },
+    max: local ? 1 : 2,
     idleTimeoutMillis: 10_000,
     connectionTimeoutMillis: 10_000,
     allowExitOnIdle: true,

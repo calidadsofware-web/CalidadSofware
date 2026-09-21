@@ -1,4 +1,4 @@
-import { createHmac, scrypt, timingSafeEqual } from "node:crypto";
+import { createHmac, randomBytes, scrypt, timingSafeEqual } from "node:crypto";
 import type { PoolClient } from "pg";
 import { query } from "./db.js";
 import { HttpError } from "./http.js";
@@ -148,7 +148,11 @@ function sessionFromRequest(request: Request): string {
     .map((part) => part.trim())
     .find((part) => part.startsWith(`${SESSION_COOKIE}=`));
   if (!value) throw new HttpError(401, "Debes iniciar sesión.");
-  return decodeURIComponent(value.slice(SESSION_COOKIE.length + 1));
+  try {
+    return decodeURIComponent(value.slice(SESSION_COOKIE.length + 1));
+  } catch {
+    throw new HttpError(401, "La sesión no es válida. Inicia sesión nuevamente.");
+  }
 }
 
 export async function verifyPassword(password: string, storedHash: string): Promise<boolean> {
@@ -168,6 +172,12 @@ export async function verifyPassword(password: string, storedHash: string): Prom
   } catch {
     return false;
   }
+}
+
+export async function hashPassword(password: string): Promise<string> {
+  const salt = randomBytes(16);
+  const key = await deriveKey(password, salt);
+  return `scrypt$${SCRYPT_N}$${SCRYPT_R}$${SCRYPT_P}$${salt.toString("base64url")}$${key.toString("base64url")}`;
 }
 
 export async function signIn(
@@ -201,11 +211,13 @@ export async function requireAppUser(request: Request, client?: PoolClient): Pro
 }
 
 export function sessionCookie(session: string): string {
-  return `${SESSION_COOKIE}=${encodeURIComponent(session)}; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=${SESSION_TTL_SECONDS}`;
+  const secure = Netlify.env.get("DATACELL_LOCAL") === "true" ? "" : "; Secure";
+  return `${SESSION_COOKIE}=${encodeURIComponent(session)}; Path=/; HttpOnly${secure}; SameSite=Strict; Max-Age=${SESSION_TTL_SECONDS}`;
 }
 
 export function expiredSessionCookie(): string {
-  return `${SESSION_COOKIE}=; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=0`;
+  const secure = Netlify.env.get("DATACELL_LOCAL") === "true" ? "" : "; Secure";
+  return `${SESSION_COOKIE}=; Path=/; HttpOnly${secure}; SameSite=Strict; Max-Age=0`;
 }
 
 export function requireRole(user: AppUser, roles: readonly AppRole[]): void {

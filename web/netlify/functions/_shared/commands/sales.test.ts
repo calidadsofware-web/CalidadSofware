@@ -67,6 +67,7 @@ describe("registro de ventas", () => {
           clientName: "Cliente de Prueba",
           receiptType: "BOLETA",
           paymentMethod: "YAPE",
+          reference: "QA-001",
           items: [{ code: "P-001", quantity: 2 }],
         },
         user,
@@ -77,6 +78,7 @@ describe("registro de ventas", () => {
       12,
       "YAPE",
       47.2,
+      "QA-001",
     ]);
     expect(mocks.query).toHaveBeenCalledWith(expect.stringContaining("update public.productos"), [1, 10]);
   });

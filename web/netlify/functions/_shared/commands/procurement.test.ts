@@ -62,7 +62,7 @@ describe("operaciones de abastecimiento", () => {
         {
           supplierName: "Proveedor Norte",
           priority: "ALTA",
-          requiredDate: "2026-09-20",
+          requiredDate: new Date(Date.now() + 86_400_000).toISOString().slice(0, 10),
           items: [{ code: "P-001", quantity: 12 }],
         },
         user,

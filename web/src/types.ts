@@ -9,6 +9,9 @@ export interface AppUser {
 }
 
 export interface Product {
+  barcode?: string;
+  cost?: number | null;
+  status?: string;
   code: string;
   name: string;
   description: string;
@@ -20,6 +23,10 @@ export interface Product {
 }
 
 export interface Client {
+  id?: number;
+  firstName?: string;
+  lastName?: string;
+  address?: string;
   document: string;
   fullName: string;
   phone: string;
@@ -29,6 +36,8 @@ export interface Client {
 }
 
 export interface Supplier {
+  id?: number;
+  address?: string;
   ruc: string;
   businessName: string;
   contact: string;
@@ -38,6 +47,12 @@ export interface Supplier {
 }
 
 export interface PurchaseRequest {
+  id?: number;
+  supplierId?: number | null;
+  priority?: string;
+  requiredDate?: string;
+  notes?: string;
+  items?: LineInput[];
   number: string;
   supplier: string;
   createdAt: string;
@@ -47,6 +62,13 @@ export interface PurchaseRequest {
 }
 
 export interface Payment {
+  subtotal?: number;
+  tax?: number;
+  notes?: string;
+  items?: { name: string; quantity: number; price: number }[];
+  id?: number;
+  clientId?: number;
+  reference?: string;
   document: string;
   client: string;
   date: string;
@@ -56,6 +78,11 @@ export interface Payment {
 }
 
 export interface Quotation {
+  id?: number;
+  deadline?: string;
+  notes?: string;
+  status?: string;
+  items?: LineInput[];
   number: string;
   supplier: string;
   createdAt: string;
@@ -64,6 +91,11 @@ export interface Quotation {
 }
 
 export interface Claim {
+  clientId?: number;
+  receiptNumber?: string;
+  description?: string;
+  channel?: string;
+  resolution?: string;
   id: number;
   client: string;
   date: string;
@@ -95,6 +127,12 @@ export interface Metric {
 }
 
 export interface AppData {
+  users?: ManagedUser[];
+  categories?: string[];
+  brands?: string[];
+  movements?: InventoryMovement[];
+  receipts?: ReceiptRecord[];
+  local?: boolean;
   user: AppUser;
   metrics: Metric[];
   products: Product[];
@@ -113,3 +151,32 @@ export interface LineInput {
 }
 
 export type AppCommand = (action: string, payload: unknown) => Promise<void>;
+
+export interface ManagedUser extends AppUser {
+  firstName: string;
+  lastName: string;
+  status: string;
+  createdAt: string;
+}
+
+export interface InventoryMovement {
+  id: number;
+  code: string;
+  product: string;
+  date: string;
+  type: string;
+  quantity: number;
+  before: number;
+  after: number;
+  notes: string;
+  responsible: string;
+}
+
+export interface ReceiptRecord {
+  number: string;
+  purchase: string;
+  supplier: string;
+  date: string;
+  guide: string;
+  notes: string;
+}

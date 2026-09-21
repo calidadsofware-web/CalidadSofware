@@ -31,17 +31,17 @@ function Harness({ limits }: { limits?: ReadonlyMap<string, number> }) {
 describe("ProductLines", () => {
   it("permite solicitar una cantidad superior al stock cuando no existe un límite", () => {
     render(<Harness />);
-    fireEvent.click(screen.getByRole("checkbox", { name: /Cable USB/i }));
-    const quantity = screen.getByRole("spinbutton", { name: "Cantidad" });
+    fireEvent.click(screen.getByRole("button", { name: "Agregar Cable USB" }));
+    const quantity = screen.getByRole("spinbutton", { name: "Cantidad de Cable USB" });
     fireEvent.change(quantity, { target: { value: "25" } });
     expect(quantity).toHaveValue(25);
-    expect(quantity).not.toHaveAttribute("max");
+    expect(quantity).toHaveAttribute("max", "10000");
   });
 
   it("respeta el saldo máximo en una recepción", () => {
     render(<Harness limits={new Map([[product.code, 3]])} />);
-    fireEvent.click(screen.getByRole("checkbox", { name: /Cable USB/i }));
-    const quantity = screen.getByRole("spinbutton", { name: "Cantidad" });
+    fireEvent.click(screen.getByRole("button", { name: "Agregar Cable USB" }));
+    const quantity = screen.getByRole("spinbutton", { name: "Cantidad de Cable USB" });
     fireEvent.change(quantity, { target: { value: "10" } });
     expect(quantity).toHaveValue(3);
     expect(quantity).toHaveAttribute("max", "3");

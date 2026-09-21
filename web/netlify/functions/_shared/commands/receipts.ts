@@ -1,9 +1,10 @@
+import { dateField } from "./fields.js";
 import type { AppUser } from "../auth.js";
 import { withTransaction } from "../db.js";
 import { HttpError } from "../http.js";
 import { loadProducts, nextNumber } from "./shared.js";
 import type { ReceiptInput } from "./types.js";
-import { commandItems, isoDate, normalizeText, optionalText } from "./validation.js";
+import { commandItems, normalizeText, optionalText } from "./validation.js";
 
 export async function registerReceipt(input: ReceiptInput, user: AppUser): Promise<string> {
   const requested = commandItems(input.items);
@@ -12,8 +13,8 @@ export async function registerReceipt(input: ReceiptInput, user: AppUser): Promi
   if (!purchaseNumber) throw new HttpError(400, "Selecciona una orden de compra.");
 
   return withTransaction(async (client) => {
-    const purchase = await client.query<{ id_compra: number }>(
-      "select id_compra from public.compras where numero = $1 and estado <> 'ANULADA' for update",
+    const purchase = await client.query<{ id_compra: number; date: string }>(
+      "select id_compra,to_char(fecha at time zone 'America/Lima','YYYY-MM-DD') as date from public.compras where numero = $1 and estado <> 'ANULADA' for update",
       [purchaseNumber],
     );
     if (!purchase.rows[0]) throw new HttpError(404, "La orden de compra indicada no existe.");
@@ -38,7 +39,9 @@ export async function registerReceipt(input: ReceiptInput, user: AppUser): Promi
       return { product, quantity: item.quantity };
     });
 
-    const entryDate = isoDate(input.entryDate);
+    const entryDate = dateField(input.entryDate, "Fecha de recepción", "past");
+    if (entryDate && entryDate < purchase.rows[0].date)
+      throw new HttpError(400, "La recepción no puede ser anterior a la orden de compra.");
     const year = (entryDate ?? new Date().toISOString().slice(0, 10)).slice(0, 4);
     const number = await nextNumber(client, "recepciones", `REC-${year}-`, 4);
     const receipt = await client.query<{ id_recepcion: number }>(
@@ -72,24 +75,16 @@ export async function registerReceipt(input: ReceiptInput, user: AppUser): Promi
         insert into public.movimientos_inventario
           (fecha, id_producto, tipo_movimiento, cantidad, stock_anterior, stock_nuevo, id_recepcion, id_usuario)
         values (
-          coalesce($1::date::timestamp at time zone 'America/Lima', now()),
-          $2,
+          now(),
+          $1,
           'COMPRA',
+          $2,
           $3,
           $4,
           $5,
-          $6,
-          $7
+          $6
         )`,
-        [
-          entryDate,
-          line.product.id_producto,
-          line.quantity,
-          line.product.stock,
-          newStock,
-          receiptId,
-          user.id,
-        ],
+        [line.product.id_producto, line.quantity, line.product.stock, newStock, receiptId, user.id],
       );
     }
 
@@ -112,6 +107,11 @@ export async function registerReceipt(input: ReceiptInput, user: AppUser): Promi
       status?.completed ? "RECIBIDA" : "PARCIAL",
       purchaseId,
     ]);
+    if (status?.completed)
+      await client.query(
+        "update public.solicitudes_compra set estado='ATENDIDA' where id_solicitud_compra=(select id_solicitud_compra from public.compras where id_compra=$1)",
+        [purchaseId],
+      );
     return `Recepción ${number} registrada. El stock y la trazabilidad fueron actualizados.`;
   });
 }

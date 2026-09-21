@@ -22,7 +22,9 @@ describe("carga de datos según el rol", () => {
 
   it("no consulta compras ni proveedores para un cajero", async () => {
     const data = await getAppData(user("CAJERO"));
-    expect(mocks.query).toHaveBeenCalledTimes(5);
+    expect(mocks.query).not.toHaveBeenCalledWith(expect.stringContaining("from public.usuarios u join"));
+    expect(data.users).toEqual([]);
+    expect(data.metrics).toEqual([]);
     expect(data.suppliers).toEqual([]);
     expect(data.purchaseRequests).toEqual([]);
     expect(data.purchases).toEqual([]);

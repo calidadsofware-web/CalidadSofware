@@ -7,7 +7,7 @@ import tseslint from "typescript-eslint";
 
 export default tseslint.config(
   {
-    ignores: ["coverage", "dist", "node_modules"],
+    ignores: ["coverage", "dist", "node_modules", ".local-data"],
   },
   js.configs.recommended,
   ...tseslint.configs.recommended,
@@ -31,17 +31,18 @@ export default tseslint.config(
     },
     rules: {
       ...jsxA11y.flatConfigs.recommended.rules,
+      "jsx-a11y/no-noninteractive-tabindex": ["error", { roles: ["tabpanel", "region"] }],
       ...reactHooks.configs.flat.recommended.rules,
       ...reactRefresh.configs.vite.rules,
     },
   },
   {
-    files: ["netlify/functions/**/*.ts", "vite.config.ts"],
+    files: ["netlify/functions/**/*.ts", "vite.config.ts", "scripts/**/*.mjs"],
     languageOptions: {
       globals: globals.node,
     },
     rules: {
-      "no-console": ["warn", { allow: ["error", "warn"] }],
+      "no-console": ["warn", { allow: ["error", "warn", "info"] }],
     },
   },
 );

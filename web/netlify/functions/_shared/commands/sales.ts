@@ -4,6 +4,7 @@ import { HttpError } from "../http.js";
 import { loadProducts, nextNumber, resolveClient } from "./shared.js";
 import type { ProductRecord, SaleInput } from "./types.js";
 import { allowedOption, commandItems, normalizeText, optionalText, roundMoney } from "./validation.js";
+import { numberField, textField } from "./fields.js";
 
 const IGV_RATE = 0.18;
 
@@ -22,10 +23,30 @@ export async function registerSale(input: SaleInput, user: AppUser): Promise<str
   ]);
   const clientName = normalizeText(input.clientName, "Cliente venta rápida", 160);
   const clientDocument = optionalText(input.clientDocument, 20);
+  const reference = textField(input.reference, "Referencia del pago", 80, paymentMethod !== "EFECTIVO");
+  const notes = textField(input.notes, "Observaciones", 250);
 
   return withTransaction(async (client) => {
     const products = await loadProducts(client, requested);
-    const clientId = await resolveClient(client, clientName, clientDocument);
+    const customer = input.clientId
+      ? (
+          await client.query<{ id_cliente: number; documento: string; direccion: string }>(
+            "select id_cliente,documento,direccion from public.clientes where id_cliente=$1 and estado='ACTIVO' for share",
+            [numberField(input.clientId, "Cliente", 1, true)],
+          )
+        ).rows[0]
+      : null;
+    if (input.clientId && !customer)
+      throw new HttpError(404, "El cliente seleccionado no está activo. Actualiza la selección.");
+    if (
+      receiptType === "FACTURA" &&
+      (!/^\d{11}$/.test(customer?.documento ?? clientDocument ?? "") || (customer && !customer.direccion))
+    )
+      throw new HttpError(
+        400,
+        "Para una factura, selecciona un cliente con RUC de 11 dígitos y dirección fiscal.",
+      );
+    const clientId = customer?.id_cliente ?? (await resolveClient(client, clientName, clientDocument));
     const series = receiptType === "FACTURA" ? "F001" : "B001";
     const number = await nextNumber(client, "ventas", "", 8);
     const lines: Array<{
@@ -54,11 +75,18 @@ export async function registerSale(input: SaleInput, user: AppUser): Promise<str
     const subtotal = roundMoney(lines.reduce((sum, line) => sum + line.price * line.quantity, 0));
     const igv = roundMoney(subtotal * IGV_RATE);
     const total = roundMoney(subtotal + igv);
+    if (total <= 0) throw new HttpError(400, "El total de la venta debe ser mayor que cero.");
+    if (
+      paymentMethod === "EFECTIVO" &&
+      input.cashReceived !== undefined &&
+      numberField(input.cashReceived, "Efectivo recibido") < total
+    )
+      throw new HttpError(400, "El efectivo recibido no cubre el total de la venta.");
     const sale = await client.query<{ id_venta: number }>(
       `
-      insert into public.ventas(fecha, id_cliente, id_usuario, tipo_comprobante, serie, numero, subtotal, igv, total)
-      values (now(), $1, $2, $3, $4, $5, $6, $7, $8) returning id_venta`,
-      [clientId, user.id, receiptType, series, number, subtotal, igv, total],
+      insert into public.ventas(fecha, id_cliente, id_usuario, tipo_comprobante, serie, numero, subtotal, igv, total, observacion)
+      values (now(), $1, $2, $3, $4, $5, $6, $7, $8, $9) returning id_venta`,
+      [clientId, user.id, receiptType, series, number, subtotal, igv, total, notes || null],
     );
     const saleId = sale.rows[0].id_venta;
 
@@ -82,8 +110,8 @@ export async function registerSale(input: SaleInput, user: AppUser): Promise<str
     }
 
     await client.query(
-      "insert into public.pagos(id_venta, fecha, metodo, estado, monto) values ($1, now(), $2, 'PAGADO', $3)",
-      [saleId, paymentMethod, total],
+      "insert into public.pagos(id_venta, fecha, metodo, estado, monto, referencia) values ($1, now(), $2, 'PAGADO', $3, $4)",
+      [saleId, paymentMethod, total, reference || null],
     );
     return `Comprobante ${series}-${number} generado. La venta, el pago y el inventario fueron actualizados.`;
   });

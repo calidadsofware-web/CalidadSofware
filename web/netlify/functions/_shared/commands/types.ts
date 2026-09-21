@@ -18,6 +18,10 @@ export interface ProductRecord {
 }
 
 export interface SaleInput {
+  clientId?: unknown;
+  reference?: unknown;
+  cashReceived?: unknown;
+  notes?: unknown;
   receiptType?: unknown;
   clientName?: unknown;
   clientDocument?: unknown;
@@ -34,6 +38,7 @@ export interface ReceiptInput {
 }
 
 export interface PurchaseRequestInput {
+  supplierId?: unknown;
   supplierName?: unknown;
   priority?: unknown;
   requiredDate?: unknown;
@@ -42,6 +47,7 @@ export interface PurchaseRequestInput {
 }
 
 export interface QuotationInput {
+  supplierIds?: unknown;
   deadline?: unknown;
   notes?: unknown;
   supplierNames?: unknown;
@@ -49,6 +55,7 @@ export interface QuotationInput {
 }
 
 export interface ClaimInput {
+  clientId?: unknown;
   clientName?: unknown;
   receiptNumber?: unknown;
   reason?: unknown;

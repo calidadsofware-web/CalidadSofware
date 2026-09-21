@@ -1,112 +1,167 @@
-import { useMemo, useState, type FormEvent } from "react";
-import { FormActions } from "../../components/FormActions";
+import { useState, type FormEvent } from "react";
+import { CollectionTable } from "../../components/CollectionTable";
 import { PageHeader } from "../../components/PageHeader";
 import { ProductLines } from "../../components/ProductLines";
+import { SearchSelect } from "../../components/SearchSelect";
+import { dateKey, today } from "../../utils/format";
 import type { AppCommand, AppData, LineInput } from "../../types";
 
-interface ReceiptPageProps {
-  data: AppData;
-  command: AppCommand;
-}
-
-export function ReceiptPage({ data, command }: ReceiptPageProps) {
-  const [purchaseNumber, setPurchaseNumber] = useState("");
-  const [lines, setLines] = useState<LineInput[]>([]);
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState("");
-  const purchase = data.purchases.find((item) => item.number === purchaseNumber);
-  const pendingQuantities = useMemo(
-    () => new Map(purchase?.items.map((item) => [item.code, item.pending]) ?? []),
-    [purchase],
-  );
-
+export function ReceiptPage({ data, command }: { data: AppData; command: AppCommand }) {
+  const [tab, setTab] = useState("new");
+  const [purchaseNumber, setPurchaseNumber] = useState(""),
+    [lines, setLines] = useState<LineInput[]>([]);
+  const [busy, setBusy] = useState(false),
+    [error, setError] = useState(""),
+    [saved, setSaved] = useState(false);
+  const pending = data.purchases.filter((item) => item.items.some((line) => line.pending > 0));
+  const purchase = pending.find((item) => item.number === purchaseNumber);
+  const limits = new Map(purchase?.items.map((item) => [item.code, item.pending]) ?? []);
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (busy || !purchase) return;
     setBusy(true);
     setError("");
-    const form = new FormData(event.currentTarget);
-
+    setSaved(false);
+    const form = event.currentTarget;
     try {
       await command("register-receipt", {
+        ...Object.fromEntries(new FormData(form)),
         purchaseNumber,
-        guide: form.get("guide"),
-        entryDate: form.get("entryDate"),
-        notes: form.get("notes"),
         items: lines,
       });
       setLines([]);
+      setPurchaseNumber("");
+      form.reset();
+      setSaved(true);
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : "No se pudo registrar la recepción.");
     } finally {
       setBusy(false);
     }
   }
-
   return (
     <>
       <PageHeader
-        title="Recepción de compra"
-        description="Confirma los productos recibidos y actualiza el inventario con trazabilidad."
+        title="Recepciones"
+        description="Contrasta la entrega con la orden y registra solo lo recibido."
       />
-      <form
-        className="panel form-layout"
-        onSubmit={submit}
-        aria-describedby={error ? "receipt-error" : undefined}
-      >
-        <fieldset>
-          <legend>Orden y recepción</legend>
-          <div className="form-grid">
-            <label>
-              Orden de compra
-              <select
+      <div className="segmented" aria-label="Vista de recepciones">
+        <button type="button" aria-pressed={tab === "new"} onClick={() => setTab("new")}>
+          Recibir mercadería
+        </button>
+        <button type="button" aria-pressed={tab === "history"} onClick={() => setTab("history")}>
+          Historial de recepciones
+        </button>
+      </div>
+      {tab === "history" ? (
+        <CollectionTable
+          title="Recepciones registradas"
+          rows={data.receipts ?? []}
+          dateField="date"
+          placeholder="Recepción, orden, proveedor o guía"
+          columns={[
+            ["number", "Recepción"],
+            ["purchase", "Orden"],
+            ["supplier", "Proveedor"],
+            ["date", "Fecha"],
+            ["guide", "Guía"],
+            ["notes", "Observación"],
+          ]}
+        />
+      ) : (
+        <>
+          {saved && (
+            <p className="success-notice" role="status">
+              Recepción registrada. El inventario y el saldo de la orden están actualizados.
+            </p>
+          )}
+          <form className="panel form-layout" onSubmit={submit}>
+            <fieldset disabled={busy}>
+              <legend>Orden y documento de entrega</legend>
+              <SearchSelect
+                label="Orden de compra pendiente"
                 required
+                options={pending.map((item) => ({
+                  value: item.number,
+                  label: item.number,
+                  detail: item.supplier,
+                }))}
                 value={purchaseNumber}
-                onChange={(event) => {
-                  setPurchaseNumber(event.target.value);
+                onChange={(value) => {
+                  setPurchaseNumber(value);
                   setLines([]);
                 }}
-              >
-                <option value="">Selecciona una orden</option>
-                {data.purchases.map((item) => (
-                  <option key={item.number} value={item.number}>
-                    {item.number} · {item.supplier}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <label>
-              Fecha de recepción
-              <input type="date" name="entryDate" />
-            </label>
-            <label>
-              Número de guía <span className="optional-text">Opcional</span>
-              <input name="guide" maxLength={50} />
-            </label>
-            <label>
-              Observación <span className="optional-text">Opcional</span>
-              <input name="notes" maxLength={500} />
-            </label>
-          </div>
-        </fieldset>
-        {purchase && (
-          <fieldset>
-            <legend>Productos pendientes de recepción</legend>
-            <ProductLines
-              products={data.products}
-              value={lines}
-              onChange={setLines}
-              limits={pendingQuantities}
-              label="Productos pendientes de la orden de compra"
-            />
-          </fieldset>
-        )}
-        {error && (
-          <p id="receipt-error" className="form-error" role="alert">
-            {error}
-          </p>
-        )}
-        <FormActions busy={busy} disabled={!purchaseNumber || !lines.length} label="Registrar recepción" />
-      </form>
+                placeholder="Número de orden o proveedor"
+              />
+              {!pending.length && (
+                <p className="field-hint">
+                  No hay órdenes pendientes. Una solicitud aprobada por el administrador genera una orden de
+                  compra.
+                </p>
+              )}
+              {purchase && (
+                <div className="permission-note">
+                  <strong>{purchase.supplier}</strong>
+                  <p>
+                    Estado: {purchase.status}. Puedes registrar entregas parciales; el saldo restante seguirá
+                    pendiente.
+                  </p>
+                </div>
+              )}
+              <div className="form-grid">
+                <label>
+                  Fecha de recepción
+                  <input
+                    type="date"
+                    name="entryDate"
+                    required
+                    min={purchase ? dateKey(purchase.date).slice(0, 10) : undefined}
+                    max={today()}
+                    defaultValue={today()}
+                  />
+                </label>
+                <label>
+                  Guía / Documento de entrega
+                  <input name="guide" required maxLength={50} placeholder="Ej. T001-00001234" />
+                </label>
+                <label className="span-2">
+                  Observación de la recepción (opcional)
+                  <textarea
+                    name="notes"
+                    maxLength={500}
+                    placeholder="Estado del empaque, diferencias, entregas parciales o incidencias detectadas."
+                  />
+                </label>
+              </div>
+            </fieldset>
+            {purchase && (
+              <fieldset disabled={busy}>
+                <legend>Cantidades recibidas</legend>
+                <ProductLines
+                  products={data.products}
+                  value={lines}
+                  onChange={setLines}
+                  limits={limits}
+                  label="Productos pendientes de la orden"
+                />
+                <small className="field-hint">
+                  El máximo de cada producto corresponde al saldo pendiente, no al stock del almacén.
+                </small>
+              </fieldset>
+            )}
+            {error && (
+              <p className="form-error" role="alert">
+                {error}
+              </p>
+            )}
+            <div className="form-actions">
+              <button type="submit" className="primary" disabled={busy || !purchase || !lines.length}>
+                {busy ? "Registrando..." : "Registrar recepción"}
+              </button>
+            </div>
+          </form>
+        </>
+      )}
     </>
   );
 }

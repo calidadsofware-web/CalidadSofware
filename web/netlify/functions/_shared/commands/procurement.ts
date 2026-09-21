@@ -1,16 +1,10 @@
+import { dateField, numberField } from "./fields.js";
 import type { AppUser } from "../auth.js";
 import { withTransaction } from "../db.js";
 import { HttpError } from "../http.js";
 import { currentYearInLima, loadProducts, nextNumber } from "./shared.js";
 import type { PurchaseRequestInput, QuotationInput } from "./types.js";
-import {
-  allowedOption,
-  commandItems,
-  isoDate,
-  normalizeText,
-  optionalText,
-  roundMoney,
-} from "./validation.js";
+import { allowedOption, commandItems, normalizeText, optionalText, roundMoney } from "./validation.js";
 
 export async function registerPurchaseRequest(input: PurchaseRequestInput, user: AppUser): Promise<string> {
   const requested = commandItems(input.items);
@@ -21,14 +15,19 @@ export async function registerPurchaseRequest(input: PurchaseRequestInput, user:
   return withTransaction(async (client) => {
     const products = await loadProducts(client, requested);
     const supplierName = optionalText(input.supplierName, 150);
-    const supplier = supplierName
+    const supplier = input.supplierId
       ? await client.query<{ id_proveedor: number }>(
-          "select id_proveedor from public.proveedores where razon_social = $1 and estado = 'ACTIVO' limit 1",
-          [supplierName],
+          "select id_proveedor from public.proveedores where id_proveedor=$1 and estado='ACTIVO'",
+          [numberField(input.supplierId, "Proveedor", 1, true)],
         )
-      : null;
+      : supplierName
+        ? await client.query<{ id_proveedor: number }>(
+            "select id_proveedor from public.proveedores where razon_social = $1 and estado = 'ACTIVO' limit 1",
+            [supplierName],
+          )
+        : null;
 
-    if (supplierName && !supplier?.rows[0]) {
+    if ((input.supplierId || supplierName) && !supplier?.rows[0]) {
       throw new HttpError(404, "El proveedor seleccionado no está disponible.");
     }
 
@@ -45,7 +44,7 @@ export async function registerPurchaseRequest(input: PurchaseRequestInput, user:
       values ($1, now(), $2, $3, $4, $5, $6, $7) returning id_solicitud_compra`,
       [
         number,
-        isoDate(input.requiredDate),
+        dateField(input.requiredDate, "Fecha requerida", "future"),
         supplier?.rows[0]?.id_proveedor ?? null,
         user.id,
         allowedOption(input.priority, "MEDIA", ["BAJA", "MEDIA", "ALTA"]),
@@ -66,20 +65,28 @@ export async function registerPurchaseRequest(input: PurchaseRequestInput, user:
 
 export async function registerQuotation(input: QuotationInput, user: AppUser): Promise<string> {
   const requested = commandItems(input.items);
+  const supplierIds = Array.isArray(input.supplierIds)
+    ? [...new Set(input.supplierIds.map((value) => numberField(value, "Proveedor", 1, true)))]
+    : [];
   const supplierNames = Array.isArray(input.supplierNames)
     ? [...new Set(input.supplierNames.map((value) => normalizeText(value, "", 150)).filter(Boolean))]
     : [];
-  if (!requested.length || !supplierNames.length) {
+  if (!requested.length || (!supplierIds.length && !supplierNames.length)) {
     throw new HttpError(400, "Selecciona al menos un producto y un proveedor.");
   }
 
   return withTransaction(async (client) => {
     const products = await loadProducts(client, requested);
-    const suppliers = await client.query<{ id_proveedor: number }>(
-      "select id_proveedor from public.proveedores where estado = 'ACTIVO' and razon_social = any($1::varchar[])",
-      [supplierNames],
-    );
-    if (suppliers.rowCount !== supplierNames.length) {
+    const suppliers = supplierIds.length
+      ? await client.query<{ id_proveedor: number }>(
+          "select id_proveedor from public.proveedores where estado='ACTIVO' and id_proveedor=any($1::int[])",
+          [supplierIds],
+        )
+      : await client.query<{ id_proveedor: number }>(
+          "select id_proveedor from public.proveedores where estado = 'ACTIVO' and razon_social = any($1::varchar[])",
+          [supplierNames],
+        );
+    if (suppliers.rowCount !== (supplierIds.length || supplierNames.length)) {
       throw new HttpError(400, "Uno o más proveedores ya no están disponibles.");
     }
 
@@ -90,7 +97,7 @@ export async function registerQuotation(input: QuotationInput, user: AppUser): P
       `
       insert into public.solicitudes_cotizacion(numero, fecha, fecha_limite, id_usuario, observacion)
       values ($1, now(), $2, $3, $4) returning id_solicitud_cotizacion`,
-      [number, isoDate(input.deadline), user.id, optionalText(input.notes)],
+      [number, dateField(input.deadline, "Fecha límite", "future"), user.id, optionalText(input.notes)],
     );
     const quotationId = quotation.rows[0].id_solicitud_cotizacion;
 
@@ -106,6 +113,6 @@ export async function registerQuotation(input: QuotationInput, user: AppUser): P
         [quotationId, line.product.id_producto, line.quantity],
       );
     }
-    return `Solicitud ${number} enviada a ${suppliers.rowCount} proveedor(es).`;
+    return `Solicitud ${number} registrada para ${suppliers.rowCount} proveedor(es). No se envían correos automáticamente.`;
   });
 }

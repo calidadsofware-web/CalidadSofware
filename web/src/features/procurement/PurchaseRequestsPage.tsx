@@ -1,132 +1,170 @@
 import { useState, type FormEvent } from "react";
-import { DataTable, type DataRow } from "../../components/DataTable";
-import { FormActions } from "../../components/FormActions";
+import { CollectionTable } from "../../components/CollectionTable";
 import { PageHeader } from "../../components/PageHeader";
 import { ProductLines } from "../../components/ProductLines";
-import type { AppCommand, AppData, LineInput } from "../../types";
+import { Modal } from "../../components/Modal";
+import { SearchSelect } from "../../components/SearchSelect";
+import { RequestDetail } from "./RequestDetail";
+import { isActive, money, today } from "../../utils/format";
+import type { AppCommand, AppData, LineInput, PurchaseRequest } from "../../types";
 
-interface PurchaseRequestsPageProps {
-  data: AppData;
-  command: AppCommand;
-}
-
-export function PurchaseRequestsPage({ data, command }: PurchaseRequestsPageProps) {
-  const [formOpen, setFormOpen] = useState(false);
-  const [lines, setLines] = useState<LineInput[]>([]);
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState("");
-
+export function PurchaseRequestsPage({ data, command }: { data: AppData; command: AppCommand }) {
+  const [open, setOpen] = useState(false),
+    [selected, setSelected] = useState<PurchaseRequest | null>(null);
+  const [lines, setLines] = useState<LineInput[]>([]),
+    [supplierId, setSupplierId] = useState("");
+  const [busy, setBusy] = useState(false),
+    [error, setError] = useState("");
+  const estimate = lines.reduce(
+    (sum, item) =>
+      sum + (data.products.find((product) => product.code === item.code)?.cost ?? 0) * item.quantity,
+    0,
+  );
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (busy) return;
     setBusy(true);
     setError("");
-    const form = new FormData(event.currentTarget);
-
     try {
       await command("register-purchase-request", {
-        supplierName: form.get("supplierName"),
-        priority: form.get("priority"),
-        requiredDate: form.get("requiredDate"),
-        justification: form.get("justification"),
+        ...Object.fromEntries(new FormData(event.currentTarget)),
+        supplierId,
         items: lines,
       });
-      setFormOpen(false);
+      setOpen(false);
       setLines([]);
+      setSupplierId("");
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : "No se pudo crear la solicitud.");
     } finally {
       setBusy(false);
     }
   }
-
   return (
     <>
       <PageHeader
         title="Solicitudes de compra"
-        description="Planifica el abastecimiento y consulta el estado de cada solicitud."
+        description="Planifica la reposición y sigue su aprobación hasta la recepción."
         action={
           <button
             className="primary"
             type="button"
-            aria-expanded={formOpen}
-            aria-controls="purchase-request-form"
-            onClick={() => setFormOpen((current) => !current)}
+            onClick={() => {
+              setOpen(true);
+              setError("");
+            }}
           >
-            {formOpen ? "Cerrar formulario" : "Nueva solicitud"}
+            Nueva solicitud
           </button>
         }
       />
-      {formOpen && (
-        <form
-          id="purchase-request-form"
-          className="panel form-layout"
-          onSubmit={submit}
-          aria-describedby={error ? "purchase-request-error" : undefined}
+      <CollectionTable
+        title="Seguimiento de solicitudes"
+        rows={data.purchaseRequests}
+        dateField="createdAt"
+        filters={[
+          ["status", "Estado"],
+          ["priority", "Prioridad"],
+        ]}
+        placeholder="Solicitud o proveedor"
+        columns={[
+          ["number", "Solicitud"],
+          ["supplier", "Proveedor"],
+          ["createdAt", "Creación"],
+          ["requiredDate", "Fecha requerida"],
+          ["priority", "Prioridad"],
+          ["status", "Estado"],
+          ["estimatedTotal", "Estimado sin IGV"],
+        ]}
+        moneyKeys={["estimatedTotal"]}
+        actions={(row) => (
+          <button
+            className="quiet"
+            type="button"
+            onClick={() => setSelected(row as unknown as PurchaseRequest)}
+            aria-label={`Revisar ${row.number}`}
+          >
+            Ver / revisar
+          </button>
+        )}
+      />
+      {open && (
+        <Modal
+          title="Nueva solicitud de compra"
+          onClose={() => {
+            setOpen(false);
+            setLines([]);
+            setSupplierId("");
+          }}
+          busy={busy}
+          warnOnClose
+          hasChanges={lines.length > 0 || Boolean(supplierId)}
         >
-          <fieldset>
-            <legend>Nueva solicitud</legend>
-            <div className="form-grid">
+          <form className="form-layout" onSubmit={submit}>
+            <fieldset disabled={busy}>
+              <legend>Necesidad de abastecimiento</legend>
+              <div className="form-grid">
+                <label>
+                  Prioridad
+                  <select name="priority">
+                    <option value="MEDIA">Media · reposición habitual</option>
+                    <option value="ALTA">Alta · operación comprometida</option>
+                    <option value="BAJA">Baja · compra planificada</option>
+                  </select>
+                </label>
+                <label>
+                  Fecha requerida
+                  <input type="date" name="requiredDate" min={today()} required />
+                </label>
+              </div>
+              <SearchSelect
+                label="Proveedor sugerido (opcional)"
+                options={data.suppliers
+                  .filter((item) => isActive(item.status))
+                  .map((item) => ({ value: String(item.id), label: item.businessName, detail: item.ruc }))}
+                value={supplierId}
+                onChange={setSupplierId}
+              />
               <label>
-                Proveedor <span className="optional-text">Opcional</span>
-                <select name="supplierName">
-                  <option value="">Por definir</option>
-                  {data.suppliers.map((supplier) => (
-                    <option key={supplier.ruc} value={supplier.businessName}>
-                      {supplier.businessName}
-                    </option>
-                  ))}
-                </select>
+                Justificación
+                <textarea
+                  name="justification"
+                  required
+                  minLength={10}
+                  maxLength={500}
+                  placeholder="Explica la necesidad: reposición por stock mínimo, pedido de un cliente o demanda prevista."
+                />
               </label>
-              <label>
-                Prioridad
-                <select name="priority">
-                  <option value="MEDIA">Media</option>
-                  <option value="ALTA">Alta</option>
-                  <option value="BAJA">Baja</option>
-                </select>
-              </label>
-              <label>
-                Fecha requerida <span className="optional-text">Opcional</span>
-                <input type="date" name="requiredDate" />
-              </label>
-              <label>
-                Justificación <span className="optional-text">Opcional</span>
-                <input name="justification" maxLength={500} />
-              </label>
+            </fieldset>
+            <fieldset disabled={busy}>
+              <legend>Productos y cantidades</legend>
+              <ProductLines
+                products={data.products}
+                value={lines}
+                onChange={setLines}
+                label="Productos para solicitar"
+                priceMode="cost"
+              />
+              <p className="estimate-note">
+                Estimado de compra sin IGV: <strong>{money(estimate)}</strong>
+              </p>
+            </fieldset>
+            {error && (
+              <p className="form-error" role="alert">
+                {error}
+              </p>
+            )}
+            <div className="form-actions">
+              <button type="submit" className="primary" disabled={busy || !lines.length}>
+                {busy ? "Guardando..." : "Enviar a aprobación"}
+              </button>
             </div>
-          </fieldset>
-          <fieldset>
-            <legend>Productos solicitados</legend>
-            <ProductLines
-              products={data.products}
-              value={lines}
-              onChange={setLines}
-              label="Productos para solicitar"
-            />
-          </fieldset>
-          {error && (
-            <p id="purchase-request-error" className="form-error" role="alert">
-              {error}
-            </p>
-          )}
-          <FormActions busy={busy} disabled={!lines.length} label="Guardar solicitud" />
-        </form>
+          </form>
+        </Modal>
       )}
-      <section className="panel" aria-label="Solicitudes registradas">
-        <DataTable
-          caption="Solicitudes de compra registradas"
-          rows={data.purchaseRequests as unknown as DataRow[]}
-          columns={[
-            ["number", "Solicitud"],
-            ["supplier", "Proveedor"],
-            ["createdAt", "Fecha"],
-            ["status", "Estado"],
-            ["requestedBy", "Solicitado por"],
-            ["estimatedTotal", "Total estimado"],
-          ]}
-          moneyKeys={["estimatedTotal"]}
-        />
-      </section>
+      {selected && (
+        <RequestDetail request={selected} data={data} command={command} onClose={() => setSelected(null)} />
+      )}
     </>
   );
 }

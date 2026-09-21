@@ -2,104 +2,22 @@ import type { AppUser } from "./auth.js";
 import { APP_ROLES, POLICIES } from "./auth.js";
 import { query } from "./db.js";
 
-export interface ProductRow {
-  code: string;
-  name: string;
-  description: string;
-  category: string;
-  brand: string;
-  stock: number;
-  minStock: number;
-  price: number;
-}
-
-export interface ClientRow {
-  document: string;
-  fullName: string;
-  phone: string;
-  email: string;
-  lastPurchase: string;
-  status: string;
-}
-
-export interface SupplierRow {
-  ruc: string;
-  businessName: string;
-  contact: string;
-  phone: string;
-  email: string;
-  status: string;
-}
-
-export interface PurchaseRequestRow {
-  number: string;
-  supplier: string;
-  createdAt: string;
-  status: string;
-  requestedBy: string;
-  estimatedTotal: number;
-}
-
-export interface PaymentRow {
-  document: string;
-  client: string;
-  date: string;
-  method: string;
-  status: string;
-  total: number;
-}
-
-export interface QuotationRow {
-  number: string;
-  supplier: string;
-  createdAt: string;
-  requestedBy: string;
-  productCount: number;
-}
-
-export interface ClaimRow {
-  id: number;
-  client: string;
-  date: string;
-  reason: string;
-  priority: string;
-  status: string;
-}
-
-export interface PurchaseItemRow {
-  code: string;
-  name: string;
-  ordered: number;
-  received: number;
-  pending: number;
-}
-
-export interface PurchaseRow {
-  number: string;
-  supplier: string;
-  date: string;
-  status: string;
-  items: PurchaseItemRow[];
-}
-
-export interface MetricRow {
-  label: string;
-  value: string;
-  hint: string;
-}
-
-export interface AppData {
-  user: AppUser;
-  metrics: MetricRow[];
-  products: ProductRow[];
-  clients: ClientRow[];
-  suppliers: SupplierRow[];
-  purchaseRequests: PurchaseRequestRow[];
-  quotationRequests: QuotationRow[];
-  payments: PaymentRow[];
-  claims: ClaimRow[];
-  purchases: PurchaseRow[];
-}
+import type {
+  AppData,
+  Product as ProductRow,
+  Client as ClientRow,
+  Supplier as SupplierRow,
+  PurchaseRequest as PurchaseRequestRow,
+  Payment as PaymentRow,
+  Quotation as QuotationRow,
+  Claim as ClaimRow,
+  PurchaseItem as PurchaseItemRow,
+  Purchase as PurchaseRow,
+  ManagedUser,
+  InventoryMovement,
+  ReceiptRecord,
+} from "../../../src/types.js";
+export type { AppData } from "../../../src/types.js";
 
 function titleCase(value: string): string {
   return value
@@ -112,47 +30,10 @@ function can(role: AppUser["role"], roles: readonly AppUser["role"][]): boolean 
   return roles.includes(role);
 }
 
-async function getMetrics(): Promise<MetricRow[]> {
-  const [row] = await query<{
-    sales_today: string;
-    receipts_today: number;
-    pending_purchases: number;
-    low_stock: number;
-    open_claims: number;
-  }>(`
-    with limits as (
-      select
-        date_trunc('day', now() at time zone 'America/Lima') at time zone 'America/Lima' as starts_at,
-        (date_trunc('day', now() at time zone 'America/Lima') + interval '1 day') at time zone 'America/Lima' as ends_at
-    )
-    select
-      coalesce((select sum(p.monto) from public.pagos p, limits l
-                where p.fecha >= l.starts_at and p.fecha < l.ends_at and p.estado = 'PAGADO'), 0)::text as sales_today,
-      (select count(*)::int from public.ventas v, limits l
-       where v.fecha >= l.starts_at and v.fecha < l.ends_at and v.estado = 'REGISTRADA') as receipts_today,
-      (select count(*)::int from public.solicitudes_compra where estado = 'PENDIENTE') as pending_purchases,
-      (select count(*)::int from public.productos where estado = 'ACTIVO' and stock <= stock_minimo) as low_stock,
-      (select count(*)::int from public.reclamos_cliente where estado <> 'CERRADO') as open_claims`);
-
-  const sales = Number(row?.sales_today ?? 0).toLocaleString("es-PE", {
-    style: "currency",
-    currency: "PEN",
-  });
-  return [
-    { label: "Ventas del día", value: sales, hint: `${row?.receipts_today ?? 0} comprobantes` },
-    {
-      label: "Solicitudes pendientes",
-      value: String(row?.pending_purchases ?? 0),
-      hint: "compras por aprobar",
-    },
-    { label: "Stock bajo", value: String(row?.low_stock ?? 0), hint: "productos bajo mínimo" },
-    { label: "Reclamos abiertos", value: String(row?.open_claims ?? 0), hint: "en seguimiento" },
-  ];
-}
-
-async function getProducts(): Promise<ProductRow[]> {
+async function getProducts(user: AppUser): Promise<ProductRow[]> {
   return query<ProductRow>(`
-    select p.codigo as code,
+    select p.codigo as code, coalesce(p.codigo_barras, '') as barcode, initcap(lower(p.estado)) as status,
+           ${can(user.role, POLICIES.procurement) ? "p.precio_compra::float8" : "null::float8"} as cost,
            p.nombre as name,
            coalesce(p.descripcion, '') as description,
            c.nombre as category,
@@ -163,13 +44,12 @@ async function getProducts(): Promise<ProductRow[]> {
       from public.productos p
       join public.categorias c on c.id_categoria = p.id_categoria
       join public.marcas m on m.id_marca = p.id_marca
-     where p.estado = 'ACTIVO'
      order by p.nombre`);
 }
 
 async function getClients(): Promise<ClientRow[]> {
   return query<ClientRow>(`
-    select coalesce(c.documento, '-') as document,
+    select c.id_cliente as id, c.nombres as "firstName", coalesce(c.apellidos, '') as "lastName", coalesce(c.direccion, '') as address, coalesce(c.documento, '') as document,
            trim(concat(c.nombres, ' ', c.apellidos)) as "fullName",
            coalesce(c.telefono, '-') as phone,
            coalesce(c.correo, '-') as email,
@@ -185,26 +65,26 @@ async function getClients(): Promise<ClientRow[]> {
          order by v.fecha desc
          limit 1
       ) last_sale on true
-     where c.estado = 'ACTIVO'
      order by c.nombres, c.apellidos`);
 }
 
 async function getSuppliers(): Promise<SupplierRow[]> {
   return query<SupplierRow>(`
-    select ruc,
+    select id_proveedor as id, coalesce(direccion, '') as address, ruc,
            razon_social as "businessName",
            coalesce(contacto, '-') as contact,
            coalesce(telefono, '-') as phone,
            coalesce(correo, '-') as email,
            initcap(lower(estado)) as status
       from public.proveedores
-     where estado = 'ACTIVO'
      order by razon_social`);
 }
 
 async function getPurchaseRequests(): Promise<PurchaseRequestRow[]> {
   const rows = await query<PurchaseRequestRow & { status: string }>(`
-    select coalesce(sc.numero, concat('SC-', sc.id_solicitud_compra)) as number,
+    select sc.id_solicitud_compra as id, sc.id_proveedor as "supplierId", initcap(lower(sc.prioridad)) as priority, coalesce(to_char(sc.fecha_requerida,'DD/MM/YYYY'),'') as "requiredDate", coalesce(sc.observacion,'') as notes,
+           (select coalesce(jsonb_agg(jsonb_build_object('code',pr.codigo,'quantity',d.cantidad)),'[]') from public.detalles_solicitud_compra d join public.productos pr on pr.id_producto=d.id_producto where d.id_solicitud_compra=sc.id_solicitud_compra) as items,
+           coalesce(sc.numero, concat('SC-', sc.id_solicitud_compra)) as number,
            coalesce(p.razon_social, 'Por definir') as supplier,
            to_char(sc.fecha at time zone 'America/Lima', 'DD/MM/YYYY') as "createdAt",
            sc.estado as status,
@@ -219,7 +99,10 @@ async function getPurchaseRequests(): Promise<PurchaseRequestRow[]> {
 
 async function getPayments(): Promise<PaymentRow[]> {
   const rows = await query<PaymentRow & { method: string; status: string }>(`
-    select concat(v.serie, '-', v.numero) as document,
+    select p.id_pago as id, c.id_cliente as "clientId", coalesce(p.referencia,'') as reference,
+           v.subtotal::float8 as subtotal,v.igv::float8 as tax,coalesce(v.observacion,'') as notes,
+           (select coalesce(jsonb_agg(jsonb_build_object('name',pr.nombre,'quantity',d.cantidad,'price',d.precio_unitario::float8)),'[]') from public.detalles_venta d join public.productos pr on pr.id_producto=d.id_producto where d.id_venta=v.id_venta) as items,
+           concat(v.serie, '-', v.numero) as document,
            trim(concat(c.nombres, ' ', c.apellidos)) as client,
            to_char(p.fecha at time zone 'America/Lima', 'DD/MM/YYYY') as date,
            p.metodo as method,
@@ -234,7 +117,9 @@ async function getPayments(): Promise<PaymentRow[]> {
 
 async function getQuotations(): Promise<QuotationRow[]> {
   return query<QuotationRow>(`
-    select coalesce(sc.numero, concat('COT-', sc.id_solicitud_cotizacion)) as number,
+    select sc.id_solicitud_cotizacion as id, initcap(lower(sc.estado)) as status, coalesce(to_char(sc.fecha_limite,'DD/MM/YYYY'),'') as deadline, coalesce(sc.observacion,'') as notes,
+           (select coalesce(jsonb_agg(jsonb_build_object('code',pr.codigo,'quantity',di.cantidad)),'[]') from public.detalles_solicitud_cotizacion di join public.productos pr on pr.id_producto=di.id_producto where di.id_solicitud_cotizacion=sc.id_solicitud_cotizacion) as items,
+           coalesce(sc.numero, concat('COT-', sc.id_solicitud_cotizacion)) as number,
            coalesce(string_agg(distinct p.razon_social, ', '), 'Sin proveedor') as supplier,
            to_char(sc.fecha at time zone 'America/Lima', 'DD/MM/YYYY') as "createdAt",
            trim(concat(u.nombres, ' ', u.apellidos)) as "requestedBy",
@@ -252,7 +137,8 @@ async function getQuotations(): Promise<QuotationRow[]> {
 
 async function getClaims(): Promise<ClaimRow[]> {
   const rows = await query<ClaimRow & { priority: string; status: string }>(`
-    select r.id_reclamo as id,
+    select r.id_reclamo as id, c.id_cliente as "clientId", r.descripcion as description,r.canal as channel,coalesce(r.observacion,'') as resolution,
+           coalesce((select concat(v.serie,'-',v.numero) from public.ventas v where v.id_venta=r.id_venta),'') as "receiptNumber",
            trim(concat(c.nombres, ' ', c.apellidos)) as client,
            to_char(r.fecha at time zone 'America/Lima', 'DD/MM/YYYY') as date,
            r.motivo as reason,
@@ -260,8 +146,7 @@ async function getClaims(): Promise<ClaimRow[]> {
            r.estado as status
       from public.reclamos_cliente r
       join public.clientes c on c.id_cliente = r.id_cliente
-     order by r.fecha desc
-     limit 30`);
+     order by r.fecha desc`);
   return rows.map((row) => ({ ...row, priority: titleCase(row.priority), status: titleCase(row.status) }));
 }
 
@@ -307,31 +192,22 @@ export async function getAppData(user: AppUser): Promise<AppData> {
   const quotations = can(user.role, POLICIES.quotations);
   const warehouse = can(user.role, POLICIES.warehouse);
 
-  const [
-    metrics,
-    products,
-    clients,
-    suppliers,
-    purchaseRequests,
-    quotationRequests,
-    payments,
-    claims,
-    purchases,
-  ] = await Promise.all([
-    getMetrics(),
-    getProducts(),
-    getClients(),
-    procurement ? getSuppliers() : Promise.resolve([]),
-    procurement ? getPurchaseRequests() : Promise.resolve([]),
-    quotations ? getQuotations() : Promise.resolve([]),
-    sales ? getPayments() : Promise.resolve([]),
-    sales ? getClaims() : Promise.resolve([]),
-    warehouse ? getPurchases() : Promise.resolve([]),
-  ]);
+  const [products, clients, suppliers, purchaseRequests, quotationRequests, payments, claims, purchases] =
+    await Promise.all([
+      getProducts(user),
+      getClients(),
+      procurement ? getSuppliers() : Promise.resolve([]),
+      procurement ? getPurchaseRequests() : Promise.resolve([]),
+      quotations ? getQuotations() : Promise.resolve([]),
+      sales ? getPayments() : Promise.resolve([]),
+      sales ? getClaims() : Promise.resolve([]),
+      procurement ? getPurchases() : Promise.resolve([]),
+    ]);
 
   return {
     user,
-    metrics,
+    metrics: [],
+    ...(await getManagementData(user, warehouse)),
     products,
     clients,
     suppliers,
@@ -345,4 +221,40 @@ export async function getAppData(user: AppUser): Promise<AppData> {
 
 export function isAdministrator(user: AppUser): boolean {
   return user.role === APP_ROLES.administrator;
+}
+
+async function getManagementData(user: AppUser, warehouse: boolean) {
+  const [users, categories, brands, movements, receipts] = await Promise.all([
+    isAdministrator(user)
+      ? query<ManagedUser>(`select u.id_usuario as id,u.nombres as "firstName",u.apellidos as "lastName",
+      trim(concat(u.nombres,' ',u.apellidos)) as "fullName",u.correo as email,r.nombre as role,
+      case r.nombre when 'ADMINISTRADOR' then 'Administrador' when 'CAJERO' then 'Cajero' when 'ALMACEN' then 'Almacén' else 'Asistente de compras' end as "roleDisplay",
+      initcap(lower(u.estado)) as status,to_char(u.fecha_registro at time zone 'America/Lima','DD/MM/YYYY') as "createdAt"
+      from public.usuarios u join public.roles r on r.id_rol=u.id_rol order by u.nombres,u.apellidos`)
+      : [],
+    warehouse ? query<{ name: string }>("select nombre as name from public.categorias order by nombre") : [],
+    warehouse ? query<{ name: string }>("select nombre as name from public.marcas order by nombre") : [],
+    warehouse
+      ? query<InventoryMovement>(`select m.id_movimiento as id,p.codigo as code,p.nombre as product,
+      to_char(m.fecha at time zone 'America/Lima','DD/MM/YYYY HH24:MI') as date,
+      initcap(lower(m.tipo_movimiento)) as type,m.cantidad as quantity,m.stock_anterior as before,m.stock_nuevo as after,
+      coalesce(m.observacion,'') as notes,trim(concat(u.nombres,' ',u.apellidos)) as responsible
+      from public.movimientos_inventario m join public.productos p on p.id_producto=m.id_producto
+      join public.usuarios u on u.id_usuario=m.id_usuario order by m.id_movimiento desc`)
+      : [],
+    warehouse
+      ? query<ReceiptRecord>(`select r.numero as number,c.numero as purchase,p.razon_social as supplier,
+      to_char(r.fecha at time zone 'America/Lima','DD/MM/YYYY') as date,coalesce(r.guia,'') as guide,coalesce(r.observacion,'') as notes
+      from public.recepciones r join public.compras c on c.id_compra=r.id_compra
+      join public.proveedores p on p.id_proveedor=c.id_proveedor order by r.fecha desc`)
+      : [],
+  ]);
+  return {
+    users,
+    categories: categories.map((row) => row.name),
+    brands: brands.map((row) => row.name),
+    movements,
+    receipts,
+    local: typeof Netlify !== "undefined" && Netlify.env.get("DATACELL_LOCAL") === "true",
+  };
 }

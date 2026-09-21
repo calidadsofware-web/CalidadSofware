@@ -50,4 +50,16 @@ describe("utilidades HTTP", () => {
       message: "No se pudo completar la operación.",
     });
   });
+
+  it.each([null, [], "texto", 42])("rechaza JSON que no representa un objeto: %s", async (body) => {
+    await expect(
+      readJson(
+        new Request("https://local.test/api", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify(body),
+        }),
+      ),
+    ).rejects.toMatchObject({ status: 400 });
+  });
 });

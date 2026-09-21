@@ -1,5 +1,6 @@
-coverage
-dist
-.netlify
-node_modules
+.local-data/
+coverage/
+dist/
+node_modules/
+.netlify/
 package-lock.json
