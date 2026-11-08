@@ -1,0 +1,13 @@
+{
+ "pantalla": "Modal Confirmar venta y cobro",
+ "rol": "Cajero",
+ "url": "http://127.0.0.1:5173/ventas/nueva",
+ "fecha": "2026-11-08T06:38:55.825Z",
+ "motor": {
+  "name": "axe-core",
+  "version": "4.10.3"
+ },
+ "violaciones": [],
+ "aprobadas": 20,
+ "incompletas": []
+}

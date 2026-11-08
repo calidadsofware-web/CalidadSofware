@@ -1,0 +1,47 @@
+{
+ "pantalla": "Iniciar sesión con error",
+ "rol": "Público",
+ "url": "http://127.0.0.1:5173/",
+ "fecha": "2026-11-08T06:38:27.072Z",
+ "motor": {
+  "name": "axe-core",
+  "version": "4.10.3"
+ },
+ "violaciones": [],
+ "aprobadas": 36,
+ "incompletas": [
+  {
+   "id": "color-contrast",
+   "impacto": "serious",
+   "ayuda": "Elements must meet minimum color contrast ratio thresholds",
+   "nodos": 5,
+   "ejemplos": [
+    {
+     "selector": ".eyebrow",
+     "html": "<p class=\"eyebrow\">Intranet comercial</p>",
+     "resumen": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient"
+    },
+    {
+     "selector": "#login-title",
+     "html": "<h1 id=\"login-title\">Iniciar sesión</h1>",
+     "resumen": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient"
+    },
+    {
+     "selector": ".muted",
+     "html": "<p class=\"muted\">Ingresa con las credenciales asignadas por el administrador.</p>",
+     "resumen": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient"
+    },
+    {
+     "selector": "label[for=\"login-email\"]",
+     "html": "<label for=\"login-email\">Correo electrónico<input id=\"login-email\" autocomplete=\"username\" required=\"\" type=\"email\" value=\"caja@local.test\" style=\"\"></label>",
+     "resumen": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient"
+    },
+    {
+     "selector": "label[for=\"login-password\"]",
+     "html": "<label for=\"login-password\">Contraseña<input id=\"login-password\" autocomplete=\"current-password\" required=\"\" type=\"password\" value=\"ClaveIncorrecta-123\" style=\"",
+     "resumen": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient"
+    }
+   ]
+  }
+ ]
+}

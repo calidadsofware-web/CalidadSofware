@@ -1,0 +1,13 @@
+{
+ "pantalla": "Solicitudes de compra",
+ "rol": "Administrador",
+ "url": "http://127.0.0.1:5173/solicitudes",
+ "fecha": "2026-11-08T06:38:44.153Z",
+ "motor": {
+  "name": "axe-core",
+  "version": "4.10.3"
+ },
+ "violaciones": [],
+ "aprobadas": 47,
+ "incompletas": []
+}

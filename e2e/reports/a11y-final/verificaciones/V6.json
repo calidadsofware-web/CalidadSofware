@@ -1,0 +1,7 @@
+{
+ "id": "V6",
+ "criterio": "3.3.1 Identificación de errores",
+ "pantalla": "Nueva venta (efectivo insuficiente)",
+ "resultado": "Con S/ 10 para un total de S/ 53.10 se muestra en la página «El efectivo recibido no cubre el total.» (role=\"alert\"), vinculado al campo con aria-describedby (sale-form-error) y aria-invalid=true.",
+ "cumple": true
+}

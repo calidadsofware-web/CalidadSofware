@@ -1,0 +1,7 @@
+{
+ "id": "V2",
+ "criterio": "1.4.3 Contraste mínimo (texto de ayuda)",
+ "pantalla": "Nueva venta",
+ "resultado": "4 campos con placeholder; el de menor contraste es «Nombre, DNI, RUC o teléfono» con 4.61:1 (rgb(117, 117, 117) sobre rgb(255, 255, 255)).",
+ "cumple": true
+}

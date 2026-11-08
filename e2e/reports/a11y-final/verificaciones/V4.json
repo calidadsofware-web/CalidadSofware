@@ -1,0 +1,7 @@
+{
+ "id": "V4",
+ "criterio": "2.4.7 Foco visible",
+ "pantalla": "Iniciar sesión → Inicio",
+ "resultado": "Indicador de foco visible en 3 de 3 elementos recorridos (regla :focus-visible de base.css).",
+ "cumple": true
+}

@@ -1,0 +1,10 @@
+
+Running 5 tests using 1 worker
+
+  ✓  1 [chromium] › tests/flujo-venta.spec.ts:22:7 › Flujo crítico: Login y registro de venta › CP01 - Login con contraseña incorrecta es rechazado (2.1s)
+  ✓  2 [chromium] › tests/flujo-venta.spec.ts:45:7 › Flujo crítico: Login y registro de venta › CP02 - Login exitoso del cajero muestra solo sus módulos (1.2s)
+  ✓  3 [chromium] › tests/flujo-venta.spec.ts:68:7 › Flujo crítico: Login y registro de venta › CP03 - Registro de venta exitosa con pago en efectivo (3.8s)
+  ✓  4 [chromium] › tests/flujo-venta.spec.ts:159:7 › Flujo crítico: Login y registro de venta › CP04 - Efectivo insuficiente impide registrar la venta (1.4s)
+  ✓  5 [chromium] › tests/flujo-venta.spec.ts:188:7 › Flujo crítico: Login y registro de venta › CP05 - La cantidad no puede superar el stock disponible (1.6s)
+
+  5 passed (13.7s)

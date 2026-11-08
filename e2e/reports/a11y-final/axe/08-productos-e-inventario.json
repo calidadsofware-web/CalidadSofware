@@ -1,0 +1,13 @@
+{
+ "pantalla": "Productos e inventario",
+ "rol": "Administrador",
+ "url": "http://127.0.0.1:5173/productos",
+ "fecha": "2026-11-08T06:38:40.465Z",
+ "motor": {
+  "name": "axe-core",
+  "version": "4.10.3"
+ },
+ "violaciones": [],
+ "aprobadas": 47,
+ "incompletas": []
+}
