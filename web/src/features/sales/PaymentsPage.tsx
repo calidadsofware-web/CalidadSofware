@@ -10,6 +10,7 @@ import type { AppData, Payment } from "../../types";
 
 /** Resumen del periodo filtrado: productos vendidos, cantidades e importes (HU08-CA01). */
 function PeriodSummary({ rows, from, to }: { rows: Payment[]; from: string; to: string }) {
+  if (!rows.length) return null; // sin ventas basta el mensaje vacío de la tabla
   const products = new Map<string, { quantity: number; amount: number }>();
   for (const row of rows)
     for (const item of row.items ?? []) {
