@@ -8,8 +8,9 @@ export class PaymentsPage {
 
   constructor(private readonly page: Page) {
     this.titulo = page.getByRole("heading", { name: "Ventas y pagos", level: 1 });
-    this.buscar = page.getByRole("region", { name: "Historial de ventas y pagos" }).getByRole("searchbox");
-    this.tabla = page.getByRole("region", { name: "Historial de ventas y pagos" }).getByRole("table");
+    const seccion = page.locator('section[aria-label="Historial de ventas y pagos"]');
+    this.buscar = seccion.getByRole("searchbox");
+    this.tabla = seccion.getByRole("table").first();
   }
 
   async abrir() {

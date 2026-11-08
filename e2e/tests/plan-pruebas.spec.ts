@@ -186,7 +186,12 @@ test("CP06 - Inventario actualizado sin recarga manual", async ({ page, browser 
   await venderEfectivoExacto(page, ["45678912", "Maria Torres"], ["PROD-004", "Mica templada 9H"], 3);
   await irA(admin, "Inicio");
   await irA(admin, "Productos e inventario");
-  const visto = await stockCatalogo(admin, "PROD-004");
+  // Sin pulsar «Actualizar»: se da hasta 10 s para que el sistema refleje el cambio por sí mismo.
+  let visto = await stockCatalogo(admin, "PROD-004");
+  for (let i = 0; i < 20 && visto !== antes - 3; i++) {
+    await admin.waitForTimeout(500);
+    visto = await stockCatalogo(admin, "PROD-004");
+  }
   await evidencia(admin, info, "CP06", "01-inventario-admin");
   obtenido(info, `El cajero vendió 3 unidades. Sin pulsar «Actualizar», el administrador ve ${visto} unidades de PROD-004 (antes ${antes}, esperado ${antes - 3}).`);
   await ctx.close();
