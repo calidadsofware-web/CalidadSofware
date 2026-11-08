@@ -51,7 +51,7 @@ export function DataTable({ caption, rows, columns, moneyKeys = [], actions, ren
 
   return (
     <div>
-      <div className="table-wrap" role="region" aria-label={caption} tabIndex={0}>
+      <div className="table-wrap" role="region" aria-label={`Tabla: ${caption}`} tabIndex={0}>
         <table>
           <caption className="sr-only">{caption}</caption>
           <thead>

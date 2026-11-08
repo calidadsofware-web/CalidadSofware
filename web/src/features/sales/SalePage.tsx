@@ -48,6 +48,9 @@ export function SalePage({ data, command }: { data: AppData; command: AppCommand
       label: client.fullName,
       detail: `${client.document || "Sin documento"} · ${client.phone === "-" ? "Sin teléfono" : client.phone}`,
     }));
+  const CASH_ERROR = "El efectivo recibido no cubre el total.";
+  const errorId = "sale-form-error";
+  const cashError = error === CASH_ERROR;
   function prepare(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError("");
@@ -67,7 +70,7 @@ export function SalePage({ data, command }: { data: AppData; command: AppCommand
       return;
     }
     if (paymentMethod === "EFECTIVO" && Number(cash) < total.total) {
-      setError("El efectivo recibido no cubre el total.");
+      setError(CASH_ERROR);
       return;
     }
     setConfirmation({
@@ -202,8 +205,10 @@ export function SalePage({ data, command }: { data: AppData; command: AppCommand
                       type="number"
                       value={cash}
                       required
-                      min={total.total || 0.01}
+                      min="0"
                       max="9999999"
+                      aria-invalid={cashError || undefined}
+                      aria-describedby={cashError ? errorId : undefined}
                       step="0.01"
                       onChange={(event) => setCash(event.target.value)}
                       placeholder="0.00"
@@ -241,7 +246,7 @@ export function SalePage({ data, command }: { data: AppData; command: AppCommand
                 />
               </label>
               {error && (
-                <p className="form-error" role="alert">
+                <p className="form-error" role="alert" id={errorId}>
                   {error}
                 </p>
               )}

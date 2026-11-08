@@ -5,7 +5,55 @@ import { DataTable } from "../../components/DataTable";
 import { PageHeader } from "../../components/PageHeader";
 import { Modal } from "../../components/Modal";
 import { SaleSummary } from "./SaleSummary";
+import { money } from "../../utils/format";
 import type { AppData, Payment } from "../../types";
+
+/** Resumen del periodo filtrado: productos vendidos, cantidades e importes (HU08-CA01). */
+function PeriodSummary({ rows, from, to }: { rows: Payment[]; from: string; to: string }) {
+  const products = new Map<string, { quantity: number; amount: number }>();
+  for (const row of rows)
+    for (const item of row.items ?? []) {
+      const current = products.get(item.name) ?? { quantity: 0, amount: 0 };
+      products.set(item.name, {
+        quantity: current.quantity + item.quantity,
+        amount: current.amount + item.quantity * item.price,
+      });
+    }
+  const total = rows.reduce((sum, row) => sum + row.total, 0);
+  const units = [...products.values()].reduce((sum, item) => sum + item.quantity, 0);
+  const period = from || to ? `${from || "inicio"} a ${to || "hoy"}` : "todas las fechas";
+  return (
+    <section className="period-summary" aria-label="Resumen del periodo">
+      <h2>Resumen del periodo ({period})</h2>
+      <dl className="sale-totals">
+        <div>
+          <dt>Comprobantes</dt>
+          <dd>{rows.length}</dd>
+        </div>
+        <div>
+          <dt>Unidades vendidas</dt>
+          <dd>{units}</dd>
+        </div>
+        <div>
+          <dt>Monto total cobrado</dt>
+          <dd>{money(total)}</dd>
+        </div>
+      </dl>
+      <DataTable
+        caption="Productos vendidos en el periodo"
+        rows={[...products.entries()]
+          .map(([name, item]) => ({ name, ...item }))
+          .sort((a, b) => b.quantity - a.quantity)}
+        columns={[
+          ["name", "Producto"],
+          ["quantity", "Cantidad"],
+          ["amount", "Importe sin IGV"],
+        ]}
+        moneyKeys={["amount"]}
+      />
+    </section>
+  );
+}
 
 export function PaymentsPage({ data }: { data: AppData }) {
   const [selected, setSelected] = useState<Payment | null>(null);
@@ -39,12 +87,13 @@ export function PaymentsPage({ data }: { data: AppData }) {
           ["total", "Total"],
         ]}
         moneyKeys={["total"]}
+        summary={(rows, range) => <PeriodSummary rows={rows as unknown as Payment[]} {...range} />}
         actions={(row) => (
           <button
             type="button"
             className="quiet"
             onClick={() => setSelected(row as unknown as Payment)}
-            aria-label={`Ver ${row.document}`}
+            aria-label={`Ver detalle de ${row.document}`}
           >
             Ver detalle
           </button>

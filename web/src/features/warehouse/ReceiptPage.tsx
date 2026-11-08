@@ -45,7 +45,7 @@ export function ReceiptPage({ data, command }: { data: AppData; command: AppComm
         title="Recepciones"
         description="Contrasta la entrega con la orden y registra solo lo recibido."
       />
-      <div className="segmented" aria-label="Vista de recepciones">
+      <div className="segmented" role="group" aria-label="Vista de recepciones">
         <button type="button" aria-pressed={tab === "new"} onClick={() => setTab("new")}>
           Recibir mercadería
         </button>

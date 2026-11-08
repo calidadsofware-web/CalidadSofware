@@ -104,7 +104,7 @@ async function getPayments(): Promise<PaymentRow[]> {
            (select coalesce(jsonb_agg(jsonb_build_object('name',pr.nombre,'quantity',d.cantidad,'price',d.precio_unitario::float8)),'[]') from public.detalles_venta d join public.productos pr on pr.id_producto=d.id_producto where d.id_venta=v.id_venta) as items,
            concat(v.serie, '-', v.numero) as document,
            trim(concat(c.nombres, ' ', c.apellidos)) as client,
-           to_char(p.fecha at time zone 'America/Lima', 'DD/MM/YYYY') as date,
+           to_char(p.fecha at time zone 'America/Lima', 'DD/MM/YYYY HH24:MI') as date,
            p.metodo as method,
            p.estado as status,
            p.monto::float8 as total

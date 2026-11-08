@@ -46,4 +46,19 @@ describe("ProductLines", () => {
     expect(quantity).toHaveValue(3);
     expect(quantity).toHaveAttribute("max", "3");
   });
+
+  it("INC-04: avisa el stock insuficiente cuando se pide más de lo disponible", () => {
+    render(<Harness limits={new Map([[product.code, 3]])} />);
+    fireEvent.click(screen.getByRole("button", { name: "Agregar Cable USB" }));
+    fireEvent.change(screen.getByRole("spinbutton", { name: "Cantidad de Cable USB" }), {
+      target: { value: "4" },
+    });
+    expect(screen.getByRole("status")).toHaveTextContent(
+      "Stock insuficiente: solo hay 3 unidades de Cable USB.",
+    );
+    fireEvent.change(screen.getByRole("spinbutton", { name: "Cantidad de Cable USB" }), {
+      target: { value: "2" },
+    });
+    expect(screen.getByRole("status")).toBeEmptyDOMElement();
+  });
 });

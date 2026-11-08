@@ -98,4 +98,27 @@ describe("SalePage", () => {
     );
     expect(await screen.findByText(/Venta registrada/)).toBeInTheDocument();
   });
+
+  it("INC-01: explica en la página que el efectivo no cubre el total y marca el campo", () => {
+    const command = vi.fn();
+    render(
+      <MemoryRouter>
+        <SalePage data={data} command={command} />
+      </MemoryRouter>,
+    );
+    fireEvent.change(screen.getByRole("combobox", { name: /Buscar cliente/ }), {
+      target: { value: "Cliente de Prueba" },
+    });
+    fireEvent.click(screen.getByRole("option", { name: /Cliente de Prueba/ }));
+    fireEvent.click(screen.getByRole("button", { name: "Agregar Cable USB" }));
+    const efectivo = screen.getByLabelText("Efectivo recibido (S/)");
+    expect(efectivo).toHaveAttribute("min", "0"); // sin bloqueo nativo: decide la regla de negocio
+    fireEvent.change(efectivo, { target: { value: "10" } });
+    fireEvent.click(screen.getByRole("button", { name: "Revisar y cobrar" }));
+    expect(screen.getByRole("alert")).toHaveTextContent("El efectivo recibido no cubre el total.");
+    expect(efectivo).toHaveAttribute("aria-invalid", "true");
+    expect(efectivo).toHaveAttribute("aria-describedby", "sale-form-error");
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    expect(command).not.toHaveBeenCalled();
+  });
 });
