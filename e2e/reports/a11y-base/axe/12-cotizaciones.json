@@ -1,0 +1,27 @@
+{
+ "pantalla": "Cotizaciones",
+ "rol": "Administrador",
+ "url": "http://127.0.0.1:5173/cotizaciones",
+ "fecha": "2026-11-08T06:31:09.280Z",
+ "motor": {
+  "name": "axe-core",
+  "version": "4.10.3"
+ },
+ "violaciones": [],
+ "aprobadas": 43,
+ "incompletas": [
+  {
+   "id": "color-contrast",
+   "impacto": "serious",
+   "ayuda": "Elements must meet minimum color contrast ratio thresholds",
+   "nodos": 1,
+   "ejemplos": [
+    {
+     "selector": "span[aria-hidden=\"true\"]",
+     "html": "<span aria-hidden=\"true\">○</span>",
+     "resumen": "Fix any of the following:\n  Element content contains only non-text characters"
+    }
+   ]
+  }
+ ]
+}

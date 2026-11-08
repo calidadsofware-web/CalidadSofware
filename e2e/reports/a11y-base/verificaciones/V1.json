@@ -1,0 +1,7 @@
+{
+ "id": "V1",
+ "criterio": "1.4.3 Contraste mínimo",
+ "pantalla": "Iniciar sesión",
+ "resultado": "Contraste mínimo de los textos marcados por axe como «incompletos»: 6.04:1 (.eyebrow 6.06:1; #login-title 13.93:1; .muted 6.04:1; label[for=\"login-email\"] 12.47:1).",
+ "cumple": true
+}

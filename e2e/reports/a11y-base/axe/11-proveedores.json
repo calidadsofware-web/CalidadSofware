@@ -1,0 +1,32 @@
+{
+ "pantalla": "Proveedores",
+ "rol": "Administrador",
+ "url": "http://127.0.0.1:5173/proveedores",
+ "fecha": "2026-11-08T06:31:07.647Z",
+ "motor": {
+  "name": "axe-core",
+  "version": "4.10.3"
+ },
+ "violaciones": [
+  {
+   "id": "landmark-unique",
+   "impacto": "moderate",
+   "ayuda": "Landmarks should have a unique role or role/label/title (i.e. accessible name) combination",
+   "url": "https://dequeuniversity.com/rules/axe/4.10/landmark-unique?application=playwright",
+   "etiquetas": [
+    "cat.semantics",
+    "best-practice"
+   ],
+   "nodos": 1,
+   "ejemplos": [
+    {
+     "selector": "section",
+     "html": "<section class=\"panel collection-panel\" aria-label=\"Directorio de proveedores\">",
+     "resumen": "Fix any of the following:\n  The landmark must have a unique aria-label, aria-labelledby, or title to make landmarks distinguishable"
+    }
+   ]
+  }
+ ],
+ "aprobadas": 47,
+ "incompletas": []
+}

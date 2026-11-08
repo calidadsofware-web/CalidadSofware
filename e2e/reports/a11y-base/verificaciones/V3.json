@@ -1,0 +1,7 @@
+{
+ "id": "V3",
+ "criterio": "2.1.1 Teclado · 2.4.1 Evitar bloques · 2.4.3 Orden del foco",
+ "pantalla": "Iniciar sesión → Inicio",
+ "resultado": "Ingreso completo solo con teclado. Orden del foco: login-email → login-password → Saltar al contenido principal. Enlace «Saltar al contenido principal» visible al recibir el foco y lleva el foco al contenido principal.",
+ "cumple": true
+}

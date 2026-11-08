@@ -1,0 +1,1539 @@
+{
+  "config": {
+    "argv": [
+      "/opt/node22/bin/node",
+      "/home/claude/repo/e2e/node_modules/.bin/playwright",
+      "test",
+      "-c",
+      "playwright.plan.config.ts"
+    ],
+    "configFile": "/home/claude/repo/e2e/playwright.plan.config.ts",
+    "rootDir": "/home/claude/repo/e2e/tests",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "/home/claude/repo/e2e/reports/intento/artifacts",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "/home/claude/repo/e2e/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "/plan-pruebas\\.spec\\.ts/"
+        ],
+        "timeout": 60000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "html",
+        {
+          "outputFolder": "reports/intento/html",
+          "open": "never"
+        }
+      ],
+      [
+        "json",
+        {
+          "outputFile": "reports/intento/resultados.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.63.0",
+    "workers": 1,
+    "webServer": {
+      "command": "npm run dev:local",
+      "cwd": "../web",
+      "url": "http://127.0.0.1:5173",
+      "reuseExistingServer": true,
+      "timeout": 120000
+    }
+  },
+  "suites": [
+    {
+      "title": "plan-pruebas.spec.ts",
+      "file": "plan-pruebas.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "CP21 - Login válido según rol",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [
+                {
+                  "type": "Resultado obtenido",
+                  "description": "El cajero ingresa a su interfaz; el menú muestra «Nueva venta» y no muestra Solicitudes de compra, Cotizaciones ni Equipo y permisos."
+                }
+              ],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1039,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-08T06:27:48.446Z",
+                  "annotations": [
+                    {
+                      "type": "Resultado obtenido",
+                      "description": "El cajero ingresa a su interfaz; el menú muestra «Nueva venta» y no muestra Solicitudes de compra, Cotizaciones ni Equipo y permisos."
+                    }
+                  ],
+                  "attachments": [
+                    {
+                      "name": "CP21 · 01-inicio-cajero",
+                      "contentType": "image/png",
+                      "path": "/home/claude/repo/e2e/reports/intento/artifacts/plan-pruebas-CP21---Login-válido-según-rol-chromium/attachments/CP21-·-01-inicio-cajero-effa8067fd9eddf7652cddeb0f0fbfe5cc7f363f.png"
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "daa13dff3ea0cf876cd1-fb75b8b6e579f668d1f2",
+          "file": "plan-pruebas.spec.ts",
+          "line": 71,
+          "column": 5
+        },
+        {
+          "title": "CP22 - Login con credenciales inválidas",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [
+                {
+                  "type": "Resultado obtenido",
+                  "description": "Acceso denegado con el mensaje genérico «Correo o contraseña incorrectos.»."
+                }
+              ],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1355,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-08T06:27:49.582Z",
+                  "annotations": [
+                    {
+                      "type": "Resultado obtenido",
+                      "description": "Acceso denegado con el mensaje genérico «Correo o contraseña incorrectos.»."
+                    }
+                  ],
+                  "attachments": [
+                    {
+                      "name": "CP22 · 01-mensaje-generico",
+                      "contentType": "image/png",
+                      "path": "/home/claude/repo/e2e/reports/intento/artifacts/plan-pruebas-CP22---Login-con-credenciales-inválidas-chromium/attachments/CP22-·-01-mensaje-generico-6f3a2b1dc72a25429b9befc404b1f0406bc333d5.png"
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "daa13dff3ea0cf876cd1-331710f0e44d2f283a4f",
+          "file": "plan-pruebas.spec.ts",
+          "line": 82,
+          "column": 5
+        },
+        {
+          "title": "CP01 - Búsqueda de producto con resultados",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [
+                {
+                  "type": "Resultado obtenido",
+                  "description": "Se lista «Funda iPhone 14» (PROD-001) con 120 disponibles."
+                }
+              ],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1745,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-08T06:27:50.943Z",
+                  "annotations": [
+                    {
+                      "type": "Resultado obtenido",
+                      "description": "Se lista «Funda iPhone 14» (PROD-001) con 120 disponibles."
+                    }
+                  ],
+                  "attachments": [
+                    {
+                      "name": "CP01 · 01-resultado-iphone14",
+                      "contentType": "image/png",
+                      "path": "/home/claude/repo/e2e/reports/intento/artifacts/plan-pruebas-CP01---Búsqueda-de-producto-con-resultados-chromium/attachments/CP01-·-01-resultado-iphone14-091828aa3de8516331f63f4f62d21b4616ee4959.png"
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "daa13dff3ea0cf876cd1-ded5844010f14187357f",
+          "file": "plan-pruebas.spec.ts",
+          "line": 94,
+          "column": 5
+        },
+        {
+          "title": "CP02 - Búsqueda de producto sin resultados",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [
+                {
+                  "type": "Resultado obtenido",
+                  "description": "Lista vacía y mensaje «No hay productos que coincidan con la búsqueda o el saldo disponible.»."
+                }
+              ],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1825,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-08T06:27:52.695Z",
+                  "annotations": [
+                    {
+                      "type": "Resultado obtenido",
+                      "description": "Lista vacía y mensaje «No hay productos que coincidan con la búsqueda o el saldo disponible.»."
+                    }
+                  ],
+                  "attachments": [
+                    {
+                      "name": "CP02 · 01-sin-resultados",
+                      "contentType": "image/png",
+                      "path": "/home/claude/repo/e2e/reports/intento/artifacts/plan-pruebas-CP02---Búsqueda-de-producto-sin-resultados-chromium/attachments/CP02-·-01-sin-resultados-49294a34e91ecf73f55fc2bee0e58af0ea03c146.png"
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "daa13dff3ea0cf876cd1-5bea4675917d8bbea867",
+          "file": "plan-pruebas.spec.ts",
+          "line": 106,
+          "column": 5
+        },
+        {
+          "title": "CP13 - Registrar producto nuevo",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [
+                {
+                  "type": "Resultado obtenido",
+                  "description": "PROD-009 «Funda Galaxy A55» se guardó y aparece en la búsqueda de ventas con 30 disponibles."
+                }
+              ],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 3156,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-08T06:27:54.525Z",
+                  "annotations": [
+                    {
+                      "type": "Resultado obtenido",
+                      "description": "PROD-009 «Funda Galaxy A55» se guardó y aparece en la búsqueda de ventas con 30 disponibles."
+                    }
+                  ],
+                  "attachments": [
+                    {
+                      "name": "CP13 · 01-formulario",
+                      "contentType": "image/png",
+                      "path": "/home/claude/repo/e2e/reports/intento/artifacts/plan-pruebas-CP13---Registrar-producto-nuevo-chromium/attachments/CP13-·-01-formulario-10787621921cfff507f18d0390c4ff0267df75c9.png"
+                    },
+                    {
+                      "name": "CP13 · 02-disponible-en-venta",
+                      "contentType": "image/png",
+                      "path": "/home/claude/repo/e2e/reports/intento/artifacts/plan-pruebas-CP13---Registrar-producto-nuevo-chromium/attachments/CP13-·-02-disponible-en-venta-01592274fccf660ab24dc084e6b389320f5c4d97.png"
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "daa13dff3ea0cf876cd1-c48ed3284e9e7e533c08",
+          "file": "plan-pruebas.spec.ts",
+          "line": 119,
+          "column": 5
+        },
+        {
+          "title": "CP14 - Editar precio de producto",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [
+                {
+                  "type": "Resultado obtenido",
+                  "description": "El catálogo muestra el nuevo precio de PROD-001: S/ 27.00 sin IGV."
+                }
+              ],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2109,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-08T06:27:57.687Z",
+                  "annotations": [
+                    {
+                      "type": "Resultado obtenido",
+                      "description": "El catálogo muestra el nuevo precio de PROD-001: S/ 27.00 sin IGV."
+                    }
+                  ],
+                  "attachments": [
+                    {
+                      "name": "CP14 · 01-precio-actualizado",
+                      "contentType": "image/png",
+                      "path": "/home/claude/repo/e2e/reports/intento/artifacts/plan-pruebas-CP14---Editar-precio-de-producto-chromium/attachments/CP14-·-01-precio-actualizado-82d2b065edff1619a1058b8130c8c676a44a0a95.png"
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "daa13dff3ea0cf876cd1-39e0ee9476dd9dd18931",
+          "file": "plan-pruebas.spec.ts",
+          "line": 144,
+          "column": 5
+        },
+        {
+          "title": "CP05 - Descuento automático de stock al vender",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [
+                {
+                  "type": "Resultado obtenido",
+                  "description": "Stock de PROD-004: 150 → 147; se registró el movimiento de inventario tipo Venta."
+                }
+              ],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 3618,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-08T06:27:59.803Z",
+                  "annotations": [
+                    {
+                      "type": "Resultado obtenido",
+                      "description": "Stock de PROD-004: 150 → 147; se registró el movimiento de inventario tipo Venta."
+                    }
+                  ],
+                  "attachments": [
+                    {
+                      "name": "CP05 · 01-stock-en-venta",
+                      "contentType": "image/png",
+                      "path": "/home/claude/repo/e2e/reports/intento/artifacts/plan-pruebas-CP05---Descuento-automático-de-stock-al-vender-chromium/attachments/CP05-·-01-stock-en-venta-78989a652aa4ac93a80d79869df1a3438bb2140d.png"
+                    },
+                    {
+                      "name": "CP05 · 02-movimiento-venta",
+                      "contentType": "image/png",
+                      "path": "/home/claude/repo/e2e/reports/intento/artifacts/plan-pruebas-CP05---Descuento-automático-de-stock-al-vender-chromium/attachments/CP05-·-02-movimiento-venta-a3d469a561d71624a9cb761b0719597d046c8eaa.png"
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "daa13dff3ea0cf876cd1-08ff044333b91a800b1e",
+          "file": "plan-pruebas.spec.ts",
+          "line": 161,
+          "column": 5
+        },
+        {
+          "title": "CP06 - Inventario actualizado sin recarga manual",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [
+                {
+                  "type": "Resultado obtenido",
+                  "description": "El cajero vendió 3 unidades. Sin pulsar «Actualizar», el administrador ve 147 unidades de PROD-004 (antes 147, esperado 144)."
+                }
+              ],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 3171,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m144\u001b[39m\nReceived: \u001b[31m147\u001b[39m",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m144\u001b[39m\nReceived: \u001b[31m147\u001b[39m\n    at /home/claude/repo/e2e/tests/plan-pruebas.spec.ts:193:17",
+                    "location": {
+                      "file": "/home/claude/repo/e2e/tests/plan-pruebas.spec.ts",
+                      "column": 17,
+                      "line": 193
+                    },
+                    "snippet": "  191 |   obtenido(info, `El cajero vendió 3 unidades. Sin pulsar «Actualizar», el administrador ve ${visto} unidades de PROD-004 (antes ${antes}, esperado ${antes - 3}).`);\n  192 |   await ctx.close();\n> 193 |   expect(visto).toBe(antes - 3);\n      |                 ^\n  194 | });\n  195 |\n  196 | /* ----------------------------------------------------------------------------- HU02 – Venta */"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/home/claude/repo/e2e/tests/plan-pruebas.spec.ts",
+                        "column": 17,
+                        "line": 193
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m144\u001b[39m\nReceived: \u001b[31m147\u001b[39m\n\n  191 |   obtenido(info, `El cajero vendió 3 unidades. Sin pulsar «Actualizar», el administrador ve ${visto} unidades de PROD-004 (antes ${antes}, esperado ${antes - 3}).`);\n  192 |   await ctx.close();\n> 193 |   expect(visto).toBe(antes - 3);\n      |                 ^\n  194 | });\n  195 |\n  196 | /* ----------------------------------------------------------------------------- HU02 – Venta */\n    at /home/claude/repo/e2e/tests/plan-pruebas.spec.ts:193:17"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-08T06:28:03.428Z",
+                  "annotations": [
+                    {
+                      "type": "Resultado obtenido",
+                      "description": "El cajero vendió 3 unidades. Sin pulsar «Actualizar», el administrador ve 147 unidades de PROD-004 (antes 147, esperado 144)."
+                    }
+                  ],
+                  "attachments": [
+                    {
+                      "name": "CP06 · 01-inventario-admin",
+                      "contentType": "image/png",
+                      "path": "/home/claude/repo/e2e/reports/intento/artifacts/plan-pruebas-CP06---Invent-cf081-ualizado-sin-recarga-manual-chromium/attachments/CP06-·-01-inventario-admin-d685788d86de01ebf5f384fc72a8a9515e147aa0.png"
+                    },
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/home/claude/repo/e2e/reports/intento/artifacts/plan-pruebas-CP06---Invent-cf081-ualizado-sin-recarga-manual-chromium/test-failed-1.png"
+                    },
+                    {
+                      "name": "video",
+                      "contentType": "video/webm",
+                      "path": "/home/claude/repo/e2e/reports/intento/artifacts/plan-pruebas-CP06---Invent-cf081-ualizado-sin-recarga-manual-chromium/video.webm"
+                    },
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/home/claude/repo/e2e/reports/intento/artifacts/plan-pruebas-CP06---Invent-cf081-ualizado-sin-recarga-manual-chromium/test-failed-2.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/home/claude/repo/e2e/reports/intento/artifacts/plan-pruebas-CP06---Invent-cf081-ualizado-sin-recarga-manual-chromium/error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/home/claude/repo/e2e/reports/intento/artifacts/plan-pruebas-CP06---Invent-cf081-ualizado-sin-recarga-manual-chromium/trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/home/claude/repo/e2e/tests/plan-pruebas.spec.ts",
+                    "column": 17,
+                    "line": 193
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "daa13dff3ea0cf876cd1-56d0ebc7317b58a35810",
+          "file": "plan-pruebas.spec.ts",
+          "line": 181,
+          "column": 5
+        },
+        {
+          "title": "CP03 - Cálculo de subtotal, IGV y total de la venta",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [
+                {
+                  "type": "Resultado obtenido",
+                  "description": "Subtotal S/ 72.00, IGV S/ 12.96, total S/ 84.96; la venta se registró."
+                }
+              ],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2442,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-08T06:28:07.186Z",
+                  "annotations": [
+                    {
+                      "type": "Resultado obtenido",
+                      "description": "Subtotal S/ 72.00, IGV S/ 12.96, total S/ 84.96; la venta se registró."
+                    }
+                  ],
+                  "attachments": [
+                    {
+                      "name": "CP03 · 01-modal-totales",
+                      "contentType": "image/png",
+                      "path": "/home/claude/repo/e2e/reports/intento/artifacts/plan-pruebas-CP03---Cálcul-12d0e-tal-IGV-y-total-de-la-venta-chromium/attachments/CP03-·-01-modal-totales-f5c542a30455bf252bfbf95ba15465d38fbf0bfb.png"
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "daa13dff3ea0cf876cd1-0203cd67618324b0fe91",
+          "file": "plan-pruebas.spec.ts",
+          "line": 197,
+          "column": 5
+        },
+        {
+          "title": "CP04 - Venta con cantidad mayor al stock",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [
+                {
+                  "type": "Resultado obtenido",
+                  "description": "Se solicitaron 8 unidades (stock 7): la cantidad se ajustó a 7 sin mostrar un mensaje de stock insuficiente."
+                }
+              ],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 1941,
+                  "error": {
+                    "message": "Error: Debe mostrarse un mensaje de stock insuficiente\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m",
+                    "stack": "Error: Debe mostrarse un mensaje de stock insuficiente\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n    at /home/claude/repo/e2e/tests/plan-pruebas.spec.ts:240:71",
+                    "location": {
+                      "file": "/home/claude/repo/e2e/tests/plan-pruebas.spec.ts",
+                      "column": 71,
+                      "line": 240
+                    },
+                    "snippet": "  238 |   );\n  239 |   expect(Number(valor)).toBeLessThanOrEqual(7);\n> 240 |   expect(hayAviso, \"Debe mostrarse un mensaje de stock insuficiente\").toBe(true);\n      |                                                                       ^\n  241 | });\n  242 |\n  243 | test(\"CP23 - Venta con efectivo insuficiente\", async ({ page }, info) => {"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/home/claude/repo/e2e/tests/plan-pruebas.spec.ts",
+                        "column": 71,
+                        "line": 240
+                      },
+                      "message": "Error: Debe mostrarse un mensaje de stock insuficiente\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n\n  238 |   );\n  239 |   expect(Number(valor)).toBeLessThanOrEqual(7);\n> 240 |   expect(hayAviso, \"Debe mostrarse un mensaje de stock insuficiente\").toBe(true);\n      |                                                                       ^\n  241 | });\n  242 |\n  243 | test(\"CP23 - Venta con efectivo insuficiente\", async ({ page }, info) => {\n    at /home/claude/repo/e2e/tests/plan-pruebas.spec.ts:240:71"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-08T06:28:09.720Z",
+                  "annotations": [
+                    {
+                      "type": "Resultado obtenido",
+                      "description": "Se solicitaron 8 unidades (stock 7): la cantidad se ajustó a 7 sin mostrar un mensaje de stock insuficiente."
+                    }
+                  ],
+                  "attachments": [
+                    {
+                      "name": "CP04 · 01-cantidad-solicitada-8",
+                      "contentType": "image/png",
+                      "path": "/home/claude/repo/e2e/reports/intento/artifacts/plan-pruebas-CP04---Venta-con-cantidad-mayor-al-stock-chromium/attachments/CP04-·-01-cantidad-solicitada-8-881db87c0cec32fa1e626dec201de9fbe4d89346.png"
+                    },
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/home/claude/repo/e2e/reports/intento/artifacts/plan-pruebas-CP04---Venta-con-cantidad-mayor-al-stock-chromium/test-failed-1.png"
+                    },
+                    {
+                      "name": "video",
+                      "contentType": "video/webm",
+                      "path": "/home/claude/repo/e2e/reports/intento/artifacts/plan-pruebas-CP04---Venta-con-cantidad-mayor-al-stock-chromium/video.webm"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/home/claude/repo/e2e/reports/intento/artifacts/plan-pruebas-CP04---Venta-con-cantidad-mayor-al-stock-chromium/error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/home/claude/repo/e2e/reports/intento/artifacts/plan-pruebas-CP04---Venta-con-cantidad-mayor-al-stock-chromium/trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/home/claude/repo/e2e/tests/plan-pruebas.spec.ts",
+                    "column": 71,
+                    "line": 240
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "daa13dff3ea0cf876cd1-d1ce4d0216ce2041d7ab",
+          "file": "plan-pruebas.spec.ts",
+          "line": 220,
+          "column": 5
+        },
+        {
+          "title": "CP23 - Venta con efectivo insuficiente",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [
+                {
+                  "type": "Resultado obtenido",
+                  "description": "La venta se bloquea, pero solo con el aviso nativo del navegador: «Value must be greater than or equal to 53.1.»."
+                }
+              ],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 2297,
+                  "error": {
+                    "message": "Error: Debe mostrarse el mensaje de negocio en la página\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m",
+                    "stack": "Error: Debe mostrarse el mensaje de negocio en la página\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n    at /home/claude/repo/e2e/tests/plan-pruebas.spec.ts:264:72",
+                    "location": {
+                      "file": "/home/claude/repo/e2e/tests/plan-pruebas.spec.ts",
+                      "column": 72,
+                      "line": 264
+                    },
+                    "snippet": "  262 |       : `La venta se bloquea, pero solo con el aviso nativo del navegador: «${nativo}».`,\n  263 |   );\n> 264 |   expect(visible, \"Debe mostrarse el mensaje de negocio en la página\").toBe(true);\n      |                                                                        ^\n  265 | });\n  266 |\n  267 | /* ----------------------------------------------------------------------------- HU04 – Historial */"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/home/claude/repo/e2e/tests/plan-pruebas.spec.ts",
+                        "column": 72,
+                        "line": 264
+                      },
+                      "message": "Error: Debe mostrarse el mensaje de negocio en la página\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n\n  262 |       : `La venta se bloquea, pero solo con el aviso nativo del navegador: «${nativo}».`,\n  263 |   );\n> 264 |   expect(visible, \"Debe mostrarse el mensaje de negocio en la página\").toBe(true);\n      |                                                                        ^\n  265 | });\n  266 |\n  267 | /* ----------------------------------------------------------------------------- HU04 – Historial */\n    at /home/claude/repo/e2e/tests/plan-pruebas.spec.ts:264:72"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-08T06:28:12.092Z",
+                  "annotations": [
+                    {
+                      "type": "Resultado obtenido",
+                      "description": "La venta se bloquea, pero solo con el aviso nativo del navegador: «Value must be greater than or equal to 53.1.»."
+                    }
+                  ],
+                  "attachments": [
+                    {
+                      "name": "CP23 · 01-venta-bloqueada",
+                      "contentType": "image/png",
+                      "path": "/home/claude/repo/e2e/reports/intento/artifacts/plan-pruebas-CP23---Venta-con-efectivo-insuficiente-chromium/attachments/CP23-·-01-venta-bloqueada-5189b981c35f6b66ff0802e4212d297b1c8cd2b1.png"
+                    },
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/home/claude/repo/e2e/reports/intento/artifacts/plan-pruebas-CP23---Venta-con-efectivo-insuficiente-chromium/test-failed-1.png"
+                    },
+                    {
+                      "name": "video",
+                      "contentType": "video/webm",
+                      "path": "/home/claude/repo/e2e/reports/intento/artifacts/plan-pruebas-CP23---Venta-con-efectivo-insuficiente-chromium/video.webm"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/home/claude/repo/e2e/reports/intento/artifacts/plan-pruebas-CP23---Venta-con-efectivo-insuficiente-chromium/error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/home/claude/repo/e2e/reports/intento/artifacts/plan-pruebas-CP23---Venta-con-efectivo-insuficiente-chromium/trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/home/claude/repo/e2e/tests/plan-pruebas.spec.ts",
+                    "column": 72,
+                    "line": 264
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "daa13dff3ea0cf876cd1-fc0748f8e462a04d2ff8",
+          "file": "plan-pruebas.spec.ts",
+          "line": 243,
+          "column": 5
+        },
+        {
+          "title": "CP07 - Historial de ventas del día",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [
+                {
+                  "type": "Resultado obtenido",
+                  "description": "Se listan 5 ventas del día; la columna Fecha muestra «08/11/2026» (sin hora)."
+                }
+              ],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 3,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 2118,
+                  "error": {
+                    "message": "Error: Cada venta debe mostrar fecha y hora\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m",
+                    "stack": "Error: Cada venta debe mostrar fecha y hora\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n    at /home/claude/repo/e2e/tests/plan-pruebas.spec.ts:282:59",
+                    "location": {
+                      "file": "/home/claude/repo/e2e/tests/plan-pruebas.spec.ts",
+                      "column": 59,
+                      "line": 282
+                    },
+                    "snippet": "  280 |   const conHora = fechas.every((f) => /\\d{2}:\\d{2}/.test(f));\n  281 |   obtenido(info, `Se listan ${n} ventas del día; la columna Fecha muestra «${fechas[0].trim()}»${conHora ? \" (con hora)\" : \" (sin hora)\"}.`);\n> 282 |   expect(conHora, \"Cada venta debe mostrar fecha y hora\").toBe(true);\n      |                                                           ^\n  283 | });\n  284 |\n  285 | test(\"CP08 - Historial sin ventas en la fecha\", async ({ page }, info) => {"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/home/claude/repo/e2e/tests/plan-pruebas.spec.ts",
+                        "column": 59,
+                        "line": 282
+                      },
+                      "message": "Error: Cada venta debe mostrar fecha y hora\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n\n  280 |   const conHora = fechas.every((f) => /\\d{2}:\\d{2}/.test(f));\n  281 |   obtenido(info, `Se listan ${n} ventas del día; la columna Fecha muestra «${fechas[0].trim()}»${conHora ? \" (con hora)\" : \" (sin hora)\"}.`);\n> 282 |   expect(conHora, \"Cada venta debe mostrar fecha y hora\").toBe(true);\n      |                                                           ^\n  283 | });\n  284 |\n  285 | test(\"CP08 - Historial sin ventas en la fecha\", async ({ page }, info) => {\n    at /home/claude/repo/e2e/tests/plan-pruebas.spec.ts:282:59"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-08T06:28:14.962Z",
+                  "annotations": [
+                    {
+                      "type": "Resultado obtenido",
+                      "description": "Se listan 5 ventas del día; la columna Fecha muestra «08/11/2026» (sin hora)."
+                    }
+                  ],
+                  "attachments": [
+                    {
+                      "name": "CP07 · 01-historial-hoy",
+                      "contentType": "image/png",
+                      "path": "/home/claude/repo/e2e/reports/intento/artifacts/plan-pruebas-CP07---Historial-de-ventas-del-día-chromium/attachments/CP07-·-01-historial-hoy-916fc5e10e1c05e79f248d9cfc0788d43f430701.png"
+                    },
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/home/claude/repo/e2e/reports/intento/artifacts/plan-pruebas-CP07---Historial-de-ventas-del-día-chromium/test-failed-1.png"
+                    },
+                    {
+                      "name": "video",
+                      "contentType": "video/webm",
+                      "path": "/home/claude/repo/e2e/reports/intento/artifacts/plan-pruebas-CP07---Historial-de-ventas-del-día-chromium/video.webm"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/home/claude/repo/e2e/reports/intento/artifacts/plan-pruebas-CP07---Historial-de-ventas-del-día-chromium/error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/home/claude/repo/e2e/reports/intento/artifacts/plan-pruebas-CP07---Historial-de-ventas-del-día-chromium/trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/home/claude/repo/e2e/tests/plan-pruebas.spec.ts",
+                    "column": 59,
+                    "line": 282
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "daa13dff3ea0cf876cd1-05a236c173e15aae186d",
+          "file": "plan-pruebas.spec.ts",
+          "line": 268,
+          "column": 5
+        },
+        {
+          "title": "CP08 - Historial sin ventas en la fecha",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [
+                {
+                  "type": "Resultado obtenido",
+                  "description": "Para el 2026-10-29 se muestra «No hay información para mostrar.»."
+                }
+              ],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 4,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1342,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-08T06:28:17.613Z",
+                  "annotations": [
+                    {
+                      "type": "Resultado obtenido",
+                      "description": "Para el 2026-10-29 se muestra «No hay información para mostrar.»."
+                    }
+                  ],
+                  "attachments": [
+                    {
+                      "name": "CP08 · 01-sin-ventas",
+                      "contentType": "image/png",
+                      "path": "/home/claude/repo/e2e/reports/intento/artifacts/plan-pruebas-CP08---Historial-sin-ventas-en-la-fecha-chromium/attachments/CP08-·-01-sin-ventas-5e22a33a42bceadd486d3a2a3cd8e61786cfa829.png"
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "daa13dff3ea0cf876cd1-fcfd16603b96bf969d52",
+          "file": "plan-pruebas.spec.ts",
+          "line": 285,
+          "column": 5
+        },
+        {
+          "title": "CP15 - Reporte de ventas por rango de fechas",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [
+                {
+                  "type": "Resultado obtenido",
+                  "description": "El historial filtra 7 comprobantes del rango, pero no muestra un resumen con productos vendidos, cantidades y monto total."
+                }
+              ],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 4,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 1999,
+                  "error": {
+                    "message": "Error: Debe mostrarse el resumen del periodo\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m",
+                    "stack": "Error: Debe mostrarse el resumen del periodo\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n    at /home/claude/repo/e2e/tests/plan-pruebas.spec.ts:313:56",
+                    "location": {
+                      "file": "/home/claude/repo/e2e/tests/plan-pruebas.spec.ts",
+                      "column": 56,
+                      "line": 313
+                    },
+                    "snippet": "  311 |     obtenido(info, `El historial filtra ${n} comprobantes del rango, pero no muestra un resumen con productos vendidos, cantidades y monto total.`);\n  312 |   }\n> 313 |   expect(hay, \"Debe mostrarse el resumen del periodo\").toBe(true);\n      |                                                        ^\n  314 | });\n  315 |\n  316 | test(\"CP16 - Reporte de inventario\", async ({ page }, info) => {"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/home/claude/repo/e2e/tests/plan-pruebas.spec.ts",
+                        "column": 56,
+                        "line": 313
+                      },
+                      "message": "Error: Debe mostrarse el resumen del periodo\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n\n  311 |     obtenido(info, `El historial filtra ${n} comprobantes del rango, pero no muestra un resumen con productos vendidos, cantidades y monto total.`);\n  312 |   }\n> 313 |   expect(hay, \"Debe mostrarse el resumen del periodo\").toBe(true);\n      |                                                        ^\n  314 | });\n  315 |\n  316 | test(\"CP16 - Reporte de inventario\", async ({ page }, info) => {\n    at /home/claude/repo/e2e/tests/plan-pruebas.spec.ts:313:56"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-08T06:28:19.037Z",
+                  "annotations": [
+                    {
+                      "type": "Resultado obtenido",
+                      "description": "El historial filtra 7 comprobantes del rango, pero no muestra un resumen con productos vendidos, cantidades y monto total."
+                    }
+                  ],
+                  "attachments": [
+                    {
+                      "name": "CP15 · 01-ventas-rango",
+                      "contentType": "image/png",
+                      "path": "/home/claude/repo/e2e/reports/intento/artifacts/plan-pruebas-CP15---Reporte-de-ventas-por-rango-de-fechas-chromium/attachments/CP15-·-01-ventas-rango-61a1ba146d7402cf1b5c4b79d082eeab9f1df914.png"
+                    },
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/home/claude/repo/e2e/reports/intento/artifacts/plan-pruebas-CP15---Reporte-de-ventas-por-rango-de-fechas-chromium/test-failed-1.png"
+                    },
+                    {
+                      "name": "video",
+                      "contentType": "video/webm",
+                      "path": "/home/claude/repo/e2e/reports/intento/artifacts/plan-pruebas-CP15---Reporte-de-ventas-por-rango-de-fechas-chromium/video.webm"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/home/claude/repo/e2e/reports/intento/artifacts/plan-pruebas-CP15---Reporte-de-ventas-por-rango-de-fechas-chromium/error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/home/claude/repo/e2e/reports/intento/artifacts/plan-pruebas-CP15---Reporte-de-ventas-por-rango-de-fechas-chromium/trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/home/claude/repo/e2e/tests/plan-pruebas.spec.ts",
+                    "column": 56,
+                    "line": 313
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "daa13dff3ea0cf876cd1-cc2c8a435c60ff82f538",
+          "file": "plan-pruebas.spec.ts",
+          "line": 297,
+          "column": 5
+        },
+        {
+          "title": "CP16 - Reporte de inventario",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [
+                {
+                  "type": "Resultado obtenido",
+                  "description": "El catálogo lista los 9 productos registrados con stock, precio y disponibilidad."
+                }
+              ],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 5,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1797,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-08T06:28:21.485Z",
+                  "annotations": [
+                    {
+                      "type": "Resultado obtenido",
+                      "description": "El catálogo lista los 9 productos registrados con stock, precio y disponibilidad."
+                    }
+                  ],
+                  "attachments": [
+                    {
+                      "name": "CP16 · 01-catalogo",
+                      "contentType": "image/png",
+                      "path": "/home/claude/repo/e2e/reports/intento/artifacts/plan-pruebas-CP16---Reporte-de-inventario-chromium/attachments/CP16-·-01-catalogo-4649bdc5db70aa5432dd567390ce8285779d0749.png"
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "daa13dff3ea0cf876cd1-176eeae35d98239529c4",
+          "file": "plan-pruebas.spec.ts",
+          "line": 316,
+          "column": 5
+        },
+        {
+          "title": "CP09 - Alerta de stock mínimo",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [
+                {
+                  "type": "Resultado obtenido",
+                  "description": "El panel «Revisar existencias» muestra: Mica templada Galaxy A55 PROD-008 · 8 unidades · Mínimo 10 · Power Bank 10000mAh PROD-005 · 7 unidades · Mínimo 10."
+                }
+              ],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 5,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 888,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-08T06:28:23.366Z",
+                  "annotations": [
+                    {
+                      "type": "Resultado obtenido",
+                      "description": "El panel «Revisar existencias» muestra: Mica templada Galaxy A55 PROD-008 · 8 unidades · Mínimo 10 · Power Bank 10000mAh PROD-005 · 7 unidades · Mínimo 10."
+                    }
+                  ],
+                  "attachments": [
+                    {
+                      "name": "CP09 · 01-panel-alertas",
+                      "contentType": "image/png",
+                      "path": "/home/claude/repo/e2e/reports/intento/artifacts/plan-pruebas-CP09---Alerta-de-stock-mínimo-chromium/attachments/CP09-·-01-panel-alertas-de6f451e564d259abc49d965444dd8a35a5e6c49.png"
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "daa13dff3ea0cf876cd1-dede7af14283facc8376",
+          "file": "plan-pruebas.spec.ts",
+          "line": 334,
+          "column": 5
+        },
+        {
+          "title": "CP10 - Orden de las alertas por urgencia",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [
+                {
+                  "type": "Resultado obtenido",
+                  "description": "Orden mostrado: PROD-008 → PROD-005."
+                }
+              ],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 5,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 882,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoContain\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // indexOf\u001b[22m\n\nExpected substring: \u001b[32m\"PROD-005\"\u001b[39m\nReceived string:    \u001b[31m\"Mica templada Galaxy A55 PROD-008 · 8 unidades · Mínimo 10\"\u001b[39m",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoContain\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // indexOf\u001b[22m\n\nExpected substring: \u001b[32m\"PROD-005\"\u001b[39m\nReceived string:    \u001b[31m\"Mica templada Galaxy A55 PROD-008 · 8 unidades · Mínimo 10\"\u001b[39m\n    at /home/claude/repo/e2e/tests/plan-pruebas.spec.ts:348:20",
+                    "location": {
+                      "file": "/home/claude/repo/e2e/tests/plan-pruebas.spec.ts",
+                      "column": 20,
+                      "line": 348
+                    },
+                    "snippet": "  346 |   await evidencia(page, info, \"CP10\", \"01-orden-alertas\");\n  347 |   obtenido(info, `Orden mostrado: ${lista.map((t) => /PROD-\\d+/.exec(t)?.[0]).join(\" → \")}.`);\n> 348 |   expect(lista[0]).toContain(\"PROD-005\");\n      |                    ^\n  349 | });\n  350 |\n  351 | /* ----------------------------------------------------------------------------- HU06 / HU10 – Compras */"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/home/claude/repo/e2e/tests/plan-pruebas.spec.ts",
+                        "column": 20,
+                        "line": 348
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoContain\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // indexOf\u001b[22m\n\nExpected substring: \u001b[32m\"PROD-005\"\u001b[39m\nReceived string:    \u001b[31m\"Mica templada Galaxy A55 PROD-008 · 8 unidades · Mínimo 10\"\u001b[39m\n\n  346 |   await evidencia(page, info, \"CP10\", \"01-orden-alertas\");\n  347 |   obtenido(info, `Orden mostrado: ${lista.map((t) => /PROD-\\d+/.exec(t)?.[0]).join(\" → \")}.`);\n> 348 |   expect(lista[0]).toContain(\"PROD-005\");\n      |                    ^\n  349 | });\n  350 |\n  351 | /* ----------------------------------------------------------------------------- HU06 / HU10 – Compras */\n    at /home/claude/repo/e2e/tests/plan-pruebas.spec.ts:348:20"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-08T06:28:24.260Z",
+                  "annotations": [
+                    {
+                      "type": "Resultado obtenido",
+                      "description": "Orden mostrado: PROD-008 → PROD-005."
+                    }
+                  ],
+                  "attachments": [
+                    {
+                      "name": "CP10 · 01-orden-alertas",
+                      "contentType": "image/png",
+                      "path": "/home/claude/repo/e2e/reports/intento/artifacts/plan-pruebas-CP10---Orden-de-las-alertas-por-urgencia-chromium/attachments/CP10-·-01-orden-alertas-09077d00627035cfc9ad9123531785aa67d68470.png"
+                    },
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/home/claude/repo/e2e/reports/intento/artifacts/plan-pruebas-CP10---Orden-de-las-alertas-por-urgencia-chromium/test-failed-1.png"
+                    },
+                    {
+                      "name": "video",
+                      "contentType": "video/webm",
+                      "path": "/home/claude/repo/e2e/reports/intento/artifacts/plan-pruebas-CP10---Orden-de-las-alertas-por-urgencia-chromium/video.webm"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/home/claude/repo/e2e/reports/intento/artifacts/plan-pruebas-CP10---Orden-de-las-alertas-por-urgencia-chromium/error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/home/claude/repo/e2e/reports/intento/artifacts/plan-pruebas-CP10---Orden-de-las-alertas-por-urgencia-chromium/trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/home/claude/repo/e2e/tests/plan-pruebas.spec.ts",
+                    "column": 20,
+                    "line": 348
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "daa13dff3ea0cf876cd1-a50e268e9cdd7e613c60",
+          "file": "plan-pruebas.spec.ts",
+          "line": 343,
+          "column": 5
+        },
+        {
+          "title": "CP11 - Crear solicitud de compra",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [
+                {
+                  "type": "Resultado obtenido",
+                  "description": "Se registró SC-2026-0008 con PROD-005 × 20 y proveedor Tecnologia Peru S.A.C."
+                }
+              ],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 6,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2226,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-08T06:28:25.584Z",
+                  "annotations": [
+                    {
+                      "type": "Resultado obtenido",
+                      "description": "Se registró SC-2026-0008 con PROD-005 × 20 y proveedor Tecnologia Peru S.A.C."
+                    }
+                  ],
+                  "attachments": [
+                    {
+                      "name": "CP11 · 01-formulario",
+                      "contentType": "image/png",
+                      "path": "/home/claude/repo/e2e/reports/intento/artifacts/plan-pruebas-CP11---Crear-solicitud-de-compra-chromium/attachments/CP11-·-01-formulario-ed3bc8d09713a4b97de148b5317cf988ff888bc2.png"
+                    },
+                    {
+                      "name": "CP11 · 02-detalle",
+                      "contentType": "image/png",
+                      "path": "/home/claude/repo/e2e/reports/intento/artifacts/plan-pruebas-CP11---Crear-solicitud-de-compra-chromium/attachments/CP11-·-02-detalle-c836ca5dc38340a7206478dc9379770bdca8b102.png"
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "daa13dff3ea0cf876cd1-5d946f68fb1be9187594",
+          "file": "plan-pruebas.spec.ts",
+          "line": 359,
+          "column": 5
+        },
+        {
+          "title": "CP12 - Estado de la solicitud de compra",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [
+                {
+                  "type": "Resultado obtenido",
+                  "description": "SC-2026-0008 figura con estado «Pendiente»."
+                }
+              ],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 6,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1251,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-08T06:28:27.898Z",
+                  "annotations": [
+                    {
+                      "type": "Resultado obtenido",
+                      "description": "SC-2026-0008 figura con estado «Pendiente»."
+                    }
+                  ],
+                  "attachments": [
+                    {
+                      "name": "CP12 · 01-estado-pendiente",
+                      "contentType": "image/png",
+                      "path": "/home/claude/repo/e2e/reports/intento/artifacts/plan-pruebas-CP12---Estado-de-la-solicitud-de-compra-chromium/attachments/CP12-·-01-estado-pendiente-e82d914a5256803df3f184d8ac8a84a93fd2bda5.png"
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "daa13dff3ea0cf876cd1-a1096eb1b06046f92211",
+          "file": "plan-pruebas.spec.ts",
+          "line": 388,
+          "column": 5
+        },
+        {
+          "title": "CP19 - Encargado de almacén visualiza solicitudes",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [
+                {
+                  "type": "Resultado obtenido",
+                  "description": "El encargado de almacén ve la solicitud con producto, cantidad y fecha requerida, sin opción de aprobar."
+                }
+              ],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 6,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1854,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-08T06:28:29.157Z",
+                  "annotations": [
+                    {
+                      "type": "Resultado obtenido",
+                      "description": "El encargado de almacén ve la solicitud con producto, cantidad y fecha requerida, sin opción de aprobar."
+                    }
+                  ],
+                  "attachments": [
+                    {
+                      "name": "CP19 · 01-detalle-almacen",
+                      "contentType": "image/png",
+                      "path": "/home/claude/repo/e2e/reports/intento/artifacts/plan-pruebas-CP19---Encarg-5ba17-macén-visualiza-solicitudes-chromium/attachments/CP19-·-01-detalle-almacen-66d950f31d98d306e30c4fe2a8d9067ca092c4a1.png"
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "daa13dff3ea0cf876cd1-6ec0b91848cfb23baa7d",
+          "file": "plan-pruebas.spec.ts",
+          "line": 398,
+          "column": 5
+        },
+        {
+          "title": "CP17 - Recepción de mercadería suma stock",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [
+                {
+                  "type": "Resultado obtenido",
+                  "description": "Recepción registrada para OC-2026-0007 con guía T001-00009001: stock de PROD-005 7 → 27; la alerta de stock mínimo desaparece."
+                }
+              ],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 6,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 4849,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-08T06:28:31.017Z",
+                  "annotations": [
+                    {
+                      "type": "Resultado obtenido",
+                      "description": "Recepción registrada para OC-2026-0007 con guía T001-00009001: stock de PROD-005 7 → 27; la alerta de stock mínimo desaparece."
+                    }
+                  ],
+                  "attachments": [
+                    {
+                      "name": "CP17 · 01-recepcion",
+                      "contentType": "image/png",
+                      "path": "/home/claude/repo/e2e/reports/intento/artifacts/plan-pruebas-CP17---Recepción-de-mercadería-suma-stock-chromium/attachments/CP17-·-01-recepcion-b6909fe515e79bd6ab61ac27825db7df65b4a50a.png"
+                    },
+                    {
+                      "name": "CP17 · 02-stock-actualizado",
+                      "contentType": "image/png",
+                      "path": "/home/claude/repo/e2e/reports/intento/artifacts/plan-pruebas-CP17---Recepción-de-mercadería-suma-stock-chromium/attachments/CP17-·-02-stock-actualizado-7138b70bc3ec57e91a2a22285c6d4d5c2589af46.png"
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "daa13dff3ea0cf876cd1-7c7f492a7f5869ceaaf1",
+          "file": "plan-pruebas.spec.ts",
+          "line": 413,
+          "column": 5
+        },
+        {
+          "title": "CP18 - Recepción con datos incompletos",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [
+                {
+                  "type": "Resultado obtenido",
+                  "description": "Sin productos el botón está deshabilitado; sin guía se impide el registro y se solicita completarla («Please fill out this field.»)."
+                }
+              ],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 6,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1896,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-08T06:28:35.873Z",
+                  "annotations": [
+                    {
+                      "type": "Resultado obtenido",
+                      "description": "Sin productos el botón está deshabilitado; sin guía se impide el registro y se solicita completarla («Please fill out this field.»)."
+                    }
+                  ],
+                  "attachments": [
+                    {
+                      "name": "CP18 · 01-guia-obligatoria",
+                      "contentType": "image/png",
+                      "path": "/home/claude/repo/e2e/reports/intento/artifacts/plan-pruebas-CP18---Recepción-con-datos-incompletos-chromium/attachments/CP18-·-01-guia-obligatoria-dbe7df445fea029fc54623b139ee1f10d2b1c18f.png"
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "daa13dff3ea0cf876cd1-9d55c26c2ff1f10fd6f9",
+          "file": "plan-pruebas.spec.ts",
+          "line": 457,
+          "column": 5
+        },
+        {
+          "title": "CP20 - Solicitud atendida al completar la recepción",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [
+                {
+                  "type": "Resultado obtenido",
+                  "description": "Al recibir las 20 unidades, SC-2026-0008 cambió a «Atendida»."
+                }
+              ],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 6,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1732,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-08T06:28:37.778Z",
+                  "annotations": [
+                    {
+                      "type": "Resultado obtenido",
+                      "description": "Al recibir las 20 unidades, SC-2026-0008 cambió a «Atendida»."
+                    }
+                  ],
+                  "attachments": [
+                    {
+                      "name": "CP20 · 01-estado-atendida",
+                      "contentType": "image/png",
+                      "path": "/home/claude/repo/e2e/reports/intento/artifacts/plan-pruebas-CP20---Solici-bdda9-a-al-completar-la-recepción-chromium/attachments/CP20-·-01-estado-atendida-e32379d2b79677f1cb8e83c7d04dd5b60daf3c64.png"
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "daa13dff3ea0cf876cd1-a375ee78e30cdd490e61",
+          "file": "plan-pruebas.spec.ts",
+          "line": 477,
+          "column": 5
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-11-08T06:27:44.937Z",
+    "duration": 54708.929,
+    "expected": 17,
+    "skipped": 0,
+    "unexpected": 6,
+    "flaky": 0
+  }
+}

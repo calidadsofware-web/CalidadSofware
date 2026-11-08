@@ -1,0 +1,14 @@
+{
+  "name": "datacell-e2e",
+  "private": true,
+  "description": "Pruebas automatizadas end-to-end del flujo de venta de DataCell (Playwright)",
+  "scripts": {
+    "test:e2e": "playwright test",
+    "test:e2e:headed": "playwright test --headed",
+    "report": "playwright show-report reports/html"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "4.10.2",
+    "@playwright/test": "1.63.0"
+  }
+}

@@ -1,0 +1,489 @@
+{
+  "config": {
+    "argv": [
+      "/opt/node22/bin/node",
+      "/home/claude/repo/e2e/node_modules/.bin/playwright",
+      "test",
+      "-c",
+      "playwright.accesibilidad.config.ts"
+    ],
+    "configFile": "/home/claude/repo/e2e/playwright.accesibilidad.config.ts",
+    "rootDir": "/home/claude/repo/e2e/tests",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "/home/claude/repo/e2e/reports/a11y-base/artifacts",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "/home/claude/repo/e2e/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "/accesibilidad\\.spec\\.ts/"
+        ],
+        "timeout": 60000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "html",
+        {
+          "outputFolder": "reports/a11y-base/html",
+          "open": "never"
+        }
+      ],
+      [
+        "json",
+        {
+          "outputFile": "reports/a11y-base/resultados.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.63.0",
+    "workers": 1,
+    "webServer": {
+      "command": "npm run dev:local",
+      "cwd": "../web",
+      "url": "http://127.0.0.1:5173",
+      "reuseExistingServer": true,
+      "timeout": 120000
+    }
+  },
+  "suites": [
+    {
+      "title": "accesibilidad.spec.ts",
+      "file": "accesibilidad.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Accesibilidad WCAG 2.2 AA con axe-core",
+          "file": "accesibilidad.spec.ts",
+          "line": 89,
+          "column": 6,
+          "specs": [
+            {
+              "title": "Pantalla de acceso: formulario y mensaje de error",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [
+                    {
+                      "type": "Iniciar sesión",
+                      "description": "0 reglas incumplidas (0 elementos); 31 reglas aprobadas"
+                    },
+                    {
+                      "type": "Iniciar sesión con error",
+                      "description": "0 reglas incumplidas (0 elementos); 36 reglas aprobadas"
+                    }
+                  ],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 5124,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-11-08T06:30:42.590Z",
+                      "annotations": [
+                        {
+                          "type": "Iniciar sesión",
+                          "description": "0 reglas incumplidas (0 elementos); 31 reglas aprobadas"
+                        },
+                        {
+                          "type": "Iniciar sesión con error",
+                          "description": "0 reglas incumplidas (0 elementos); 36 reglas aprobadas"
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "40fa4071676a3a15be2d-920ed8f7546d04136d27",
+              "file": "accesibilidad.spec.ts",
+              "line": 90,
+              "column": 7
+            },
+            {
+              "title": "Todas las pantallas del menú del administrador",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [
+                    {
+                      "type": "Inicio",
+                      "description": "0 reglas incumplidas (0 elementos); 36 reglas aprobadas"
+                    },
+                    {
+                      "type": "Nueva venta",
+                      "description": "0 reglas incumplidas (0 elementos); 46 reglas aprobadas"
+                    },
+                    {
+                      "type": "Ventas y pagos",
+                      "description": "1 reglas incumplidas (1 elementos); 47 reglas aprobadas"
+                    },
+                    {
+                      "type": "Clientes",
+                      "description": "1 reglas incumplidas (1 elementos); 47 reglas aprobadas"
+                    },
+                    {
+                      "type": "Reclamos",
+                      "description": "1 reglas incumplidas (1 elementos); 47 reglas aprobadas"
+                    },
+                    {
+                      "type": "Productos e inventario",
+                      "description": "1 reglas incumplidas (1 elementos); 47 reglas aprobadas"
+                    },
+                    {
+                      "type": "Recepciones",
+                      "description": "0 reglas incumplidas (0 elementos); 43 reglas aprobadas"
+                    },
+                    {
+                      "type": "Solicitudes de compra",
+                      "description": "1 reglas incumplidas (1 elementos); 47 reglas aprobadas"
+                    },
+                    {
+                      "type": "Proveedores",
+                      "description": "1 reglas incumplidas (1 elementos); 47 reglas aprobadas"
+                    },
+                    {
+                      "type": "Cotizaciones",
+                      "description": "0 reglas incumplidas (0 elementos); 43 reglas aprobadas"
+                    },
+                    {
+                      "type": "Equipo y permisos",
+                      "description": "1 reglas incumplidas (1 elementos); 47 reglas aprobadas"
+                    }
+                  ],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 23696,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-11-08T06:30:47.815Z",
+                      "annotations": [
+                        {
+                          "type": "Inicio",
+                          "description": "0 reglas incumplidas (0 elementos); 36 reglas aprobadas"
+                        },
+                        {
+                          "type": "Nueva venta",
+                          "description": "0 reglas incumplidas (0 elementos); 46 reglas aprobadas"
+                        },
+                        {
+                          "type": "Ventas y pagos",
+                          "description": "1 reglas incumplidas (1 elementos); 47 reglas aprobadas"
+                        },
+                        {
+                          "type": "Clientes",
+                          "description": "1 reglas incumplidas (1 elementos); 47 reglas aprobadas"
+                        },
+                        {
+                          "type": "Reclamos",
+                          "description": "1 reglas incumplidas (1 elementos); 47 reglas aprobadas"
+                        },
+                        {
+                          "type": "Productos e inventario",
+                          "description": "1 reglas incumplidas (1 elementos); 47 reglas aprobadas"
+                        },
+                        {
+                          "type": "Recepciones",
+                          "description": "0 reglas incumplidas (0 elementos); 43 reglas aprobadas"
+                        },
+                        {
+                          "type": "Solicitudes de compra",
+                          "description": "1 reglas incumplidas (1 elementos); 47 reglas aprobadas"
+                        },
+                        {
+                          "type": "Proveedores",
+                          "description": "1 reglas incumplidas (1 elementos); 47 reglas aprobadas"
+                        },
+                        {
+                          "type": "Cotizaciones",
+                          "description": "0 reglas incumplidas (0 elementos); 43 reglas aprobadas"
+                        },
+                        {
+                          "type": "Equipo y permisos",
+                          "description": "1 reglas incumplidas (1 elementos); 47 reglas aprobadas"
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "40fa4071676a3a15be2d-cd0da98bfbcb57d554cd",
+              "file": "accesibilidad.spec.ts",
+              "line": 100,
+              "column": 7
+            },
+            {
+              "title": "Estados de la venta: carrito, efectivo insuficiente y modal de confirmación",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [
+                    {
+                      "type": "Nueva venta con carrito",
+                      "description": "0 reglas incumplidas (0 elementos); 46 reglas aprobadas"
+                    },
+                    {
+                      "type": "Nueva venta con efectivo insuficiente",
+                      "description": "0 reglas incumplidas (0 elementos); 46 reglas aprobadas"
+                    },
+                    {
+                      "type": "Modal Confirmar venta y cobro",
+                      "description": "0 reglas incumplidas (0 elementos); 20 reglas aprobadas"
+                    }
+                  ],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 6795,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-11-08T06:31:11.520Z",
+                      "annotations": [
+                        {
+                          "type": "Nueva venta con carrito",
+                          "description": "0 reglas incumplidas (0 elementos); 46 reglas aprobadas"
+                        },
+                        {
+                          "type": "Nueva venta con efectivo insuficiente",
+                          "description": "0 reglas incumplidas (0 elementos); 46 reglas aprobadas"
+                        },
+                        {
+                          "type": "Modal Confirmar venta y cobro",
+                          "description": "0 reglas incumplidas (0 elementos); 20 reglas aprobadas"
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "40fa4071676a3a15be2d-82163a92fdec08e08962",
+              "file": "accesibilidad.spec.ts",
+              "line": 114,
+              "column": 7
+            }
+          ]
+        },
+        {
+          "title": "Verificaciones complementarias de accesibilidad",
+          "file": "accesibilidad.spec.ts",
+          "line": 153,
+          "column": 6,
+          "specs": [
+            {
+              "title": "V1-V2: contraste del texto sobre el degradado del acceso y de los textos de ayuda (placeholder)",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2045,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-11-08T06:31:18.329Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "40fa4071676a3a15be2d-88af18355a4d2cee35ca",
+              "file": "accesibilidad.spec.ts",
+              "line": 154,
+              "column": 7
+            },
+            {
+              "title": "V3-V4: operación completa con teclado y foco visible",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1026,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-11-08T06:31:20.379Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "40fa4071676a3a15be2d-0a6a11e8bd60b5c178aa",
+              "file": "accesibilidad.spec.ts",
+              "line": 200,
+              "column": 7
+            },
+            {
+              "title": "V5: adaptación a pantallas de 320 px sin desplazamiento horizontal",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2703,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-11-08T06:31:21.419Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "40fa4071676a3a15be2d-d7dc2e39c6c7297beb91",
+              "file": "accesibilidad.spec.ts",
+              "line": 250,
+              "column": 7
+            },
+            {
+              "title": "V6-V7: identificación de errores y mensajes de estado en la venta",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 3265,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-11-08T06:31:24.132Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "40fa4071676a3a15be2d-f1bb877965239be0b699",
+              "file": "accesibilidad.spec.ts",
+              "line": 276,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-11-08T06:30:39.100Z",
+    "duration": 48514.7,
+    "expected": 7,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}
