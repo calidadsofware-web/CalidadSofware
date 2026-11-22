@@ -2,7 +2,7 @@ name: Quality
 
 # Pipeline de integración continua de DataCell (Grupo 08 – Calidad y Pruebas de Software).
 # Etapa 1: compilación y pruebas unitarias con cobertura.
-# Etapa 2: pruebas funcionales automatizadas (Playwright, plan PP-DC-01) y auditoría de accesibilidad (axe-core).
+# Etapa 2: pruebas funcionales (Playwright, plan PP-DC-01), de aceptación (AC-01 a AC-06) y de accesibilidad (axe-core).
 # Las pruebas E2E usan el entorno local con PGlite: nunca se conectan a producción.
 
 on:
@@ -105,6 +105,13 @@ jobs:
         env:
           REPORTE: ci-plan
 
+      - name: Run user acceptance tests (6 BDD scenarios)
+        if: always()
+        working-directory: e2e
+        run: npx playwright test -c playwright.aceptacion.config.ts
+        env:
+          REPORTE: ci-aceptacion
+
       - name: Run accessibility audit (axe-core)
         if: always()
         working-directory: e2e
@@ -119,7 +126,7 @@ jobs:
           node -e '
             const fs = require("fs");
             const lines = ["### Resultados de las pruebas automatizadas", "| Suite | Total | Aprobadas | Fallidas | Tasa de aprobación |", "|---|---|---|---|---|"];
-            for (const [name, dir] of [["Plan funcional PP-DC-01", "ci-plan"], ["Accesibilidad (axe-core)", "ci-accesibilidad"]]) {
+            for (const [name, dir] of [["Plan funcional PP-DC-01", "ci-plan"], ["Aceptación de usuario", "ci-aceptacion"], ["Accesibilidad (axe-core)", "ci-accesibilidad"]]) {
               const f = `reports/${dir}/resultados.json`;
               if (!fs.existsSync(f)) { lines.push(`| ${name} | – | – | – | no ejecutada |`); continue; }
               const s = JSON.parse(fs.readFileSync(f)).stats;
@@ -136,6 +143,7 @@ jobs:
           name: reportes-playwright
           path: |
             e2e/reports/ci-plan
+            e2e/reports/ci-aceptacion
             e2e/reports/ci-accesibilidad
             e2e/evidencias
           if-no-files-found: warn
