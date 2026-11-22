@@ -39,6 +39,13 @@ export function textField(value: unknown, label: string, max: number, required =
   return text;
 }
 
+/** Texto obligatorio con longitud mínima: replica en el servidor las reglas minLength de la interfaz (INC-09). */
+export function minTextField(value: unknown, label: string, min: number, max: number): string {
+  const text = textField(value, label, max, true);
+  if (text.length < min) throw new HttpError(400, `${label}: ingresa al menos ${min} caracteres.`);
+  return text;
+}
+
 export function numberField(value: unknown, label: string, minimum = 0, integer = false): number {
   const number =
     typeof value === "number" || (typeof value === "string" && value.trim()) ? Number(value) : NaN;

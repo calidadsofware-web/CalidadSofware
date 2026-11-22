@@ -5,6 +5,7 @@ import { HttpError } from "../http.js";
 import {
   documentField,
   emailField,
+  minTextField,
   moneyField,
   numberField,
   optionField,
@@ -146,7 +147,7 @@ export async function adjustStock(input: Fields, user: AppUser): Promise<string>
   const code = textField(input.code, "Producto", 30, true);
   const stock = numberField(input.stock, "Stock contado", 0, true);
   const expected = numberField(input.expectedStock, "Stock anterior", 0, true);
-  const notes = textField(input.notes, "Motivo del ajuste", 500, true);
+  const notes = minTextField(input.notes, "Motivo del ajuste", 5, 500);
   return withTransaction(async (client) => {
     const row = (
       await client.query<{ id_producto: number; stock: number }>(

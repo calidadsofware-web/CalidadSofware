@@ -1,7 +1,7 @@
 import { POLICIES, requireRole, type AppUser } from "../auth.js";
 import { withTransaction } from "../db.js";
 import { HttpError } from "../http.js";
-import { numberField, optionField, textField, type Fields } from "./fields.js";
+import { minTextField, numberField, optionField, type Fields } from "./fields.js";
 import { currentYearInLima, nextNumber } from "./shared.js";
 import { roundMoney } from "./validation.js";
 
@@ -9,7 +9,7 @@ export async function reviewPurchase(input: Fields, user: AppUser): Promise<stri
   requireRole(user, POLICIES.administration);
   const id = numberField(input.id, "Solicitud", 1, true);
   const decision = optionField(input.decision, ["APROBADA", "RECHAZADA"], "Decisión");
-  const reason = textField(input.reason, "Motivo de la decisión", 250, true);
+  const reason = minTextField(input.reason, "Motivo de la decisión", 5, 250);
   return withTransaction(async (client) => {
     const row = (
       await client.query<{ id_proveedor: number | null; estado: string; observacion: string | null }>(
@@ -78,7 +78,7 @@ export async function updateClaim(input: Fields, user: AppUser): Promise<string>
   requireRole(user, POLICIES.sales);
   const id = numberField(input.id, "Reclamo", 1, true);
   const status = optionField(input.status, ["EN_REVISION", "ATENDIDO", "CERRADO"], "Estado");
-  const resolution = textField(input.resolution, "Seguimiento o solución", 250, true);
+  const resolution = minTextField(input.resolution, "Seguimiento o solución", 10, 250);
   const previous: Record<string, string> = {
     EN_REVISION: "REGISTRADO",
     ATENDIDO: "EN_REVISION",
@@ -101,7 +101,7 @@ export async function updateClaim(input: Fields, user: AppUser): Promise<string>
 export async function cancelQuotation(input: Fields, user: AppUser): Promise<string> {
   requireRole(user, POLICIES.quotations);
   const id = numberField(input.id, "Cotización", 1, true);
-  const reason = textField(input.reason, "Motivo de cancelación", 250, true);
+  const reason = minTextField(input.reason, "Motivo de cancelación", 5, 250);
   return withTransaction(async (client) => {
     const result = await client.query(
       "update public.solicitudes_cotizacion set estado='CANCELADA',observacion=left(coalesce(observacion,'') || $1,500) where id_solicitud_cotizacion=$2 and estado='PENDIENTE' returning id_solicitud_cotizacion",

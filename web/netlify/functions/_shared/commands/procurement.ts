@@ -1,4 +1,4 @@
-import { dateField, numberField } from "./fields.js";
+import { dateField, minTextField, numberField } from "./fields.js";
 import type { AppUser } from "../auth.js";
 import { withTransaction } from "../db.js";
 import { HttpError } from "../http.js";
@@ -49,7 +49,7 @@ export async function registerPurchaseRequest(input: PurchaseRequestInput, user:
         user.id,
         allowedOption(input.priority, "MEDIA", ["BAJA", "MEDIA", "ALTA"]),
         total,
-        optionalText(input.justification),
+        minTextField(input.justification, "Justificación", 10, 500),
       ],
     );
 
@@ -97,7 +97,12 @@ export async function registerQuotation(input: QuotationInput, user: AppUser): P
       `
       insert into public.solicitudes_cotizacion(numero, fecha, fecha_limite, id_usuario, observacion)
       values ($1, now(), $2, $3, $4) returning id_solicitud_cotizacion`,
-      [number, dateField(input.deadline, "Fecha límite", "future"), user.id, optionalText(input.notes)],
+      [
+        number,
+        dateField(input.deadline, "Fecha límite", "future"),
+        user.id,
+        minTextField(input.notes, "Condiciones y observaciones", 10, 500),
+      ],
     );
     const quotationId = quotation.rows[0].id_solicitud_cotizacion;
 
