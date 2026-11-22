@@ -1,20 +1,30 @@
 name: Quality
 
+# Pipeline de integración continua de DataCell (Grupo 08 – Calidad y Pruebas de Software).
+# Etapa 1: compilación y pruebas unitarias con cobertura.
+# Etapa 2: pruebas funcionales automatizadas (Playwright, plan PP-DC-01) y auditoría de accesibilidad (axe-core).
+# Las pruebas E2E usan el entorno local con PGlite: nunca se conectan a producción.
+
 on:
   push:
-    branches: [main]
+    branches: ["**"]
   pull_request:
+  workflow_dispatch:
 
 permissions:
   contents: read
 
+concurrency:
+  group: quality-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  verify:
+  build-unit:
+    name: Compilación y pruebas unitarias
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: web
-
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -29,8 +39,104 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Run quality checks
+      - name: Typecheck, lint, unit tests, format and build
         run: npm run quality
 
       - name: Generate coverage report
         run: npm run coverage
+
+      - name: Coverage summary
+        if: always()
+        run: |
+          node -e '
+            const fs = require("fs");
+            const f = "coverage/coverage-summary.json";
+            if (!fs.existsSync(f)) process.exit(0);
+            const t = JSON.parse(fs.readFileSync(f)).total;
+            const row = (k) => `| ${k} | ${t[k].covered}/${t[k].total} | ${t[k].pct} % |`;
+            const md = ["### Cobertura de pruebas unitarias", "| Métrica | Cubierto | % |", "|---|---|---|",
+              ...["statements", "branches", "functions", "lines"].map(row)].join("\n");
+            fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, md + "\n");'
+
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cobertura-unitarias
+          path: web/coverage
+          if-no-files-found: ignore
+          retention-days: 30
+
+  e2e:
+    name: Pruebas funcionales automatizadas (Playwright)
+    needs: build-unit
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      CI: "true"
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: |
+            web/package-lock.json
+            e2e/package-lock.json
+
+      - name: Install application dependencies
+        working-directory: web
+        run: npm ci
+
+      - name: Install test dependencies
+        working-directory: e2e
+        run: npm ci
+
+      - name: Install Chromium for Playwright
+        working-directory: e2e
+        run: npx playwright install --with-deps chromium
+
+      - name: Run functional test plan PP-DC-01 (23 cases)
+        working-directory: e2e
+        run: npx playwright test -c playwright.plan.config.ts
+        env:
+          REPORTE: ci-plan
+
+      - name: Run accessibility audit (axe-core)
+        if: always()
+        working-directory: e2e
+        run: npx playwright test -c playwright.accesibilidad.config.ts
+        env:
+          REPORTE: ci-accesibilidad
+
+      - name: Test results summary
+        if: always()
+        working-directory: e2e
+        run: |
+          node -e '
+            const fs = require("fs");
+            const lines = ["### Resultados de las pruebas automatizadas", "| Suite | Total | Aprobadas | Fallidas | Tasa de aprobación |", "|---|---|---|---|---|"];
+            for (const [name, dir] of [["Plan funcional PP-DC-01", "ci-plan"], ["Accesibilidad (axe-core)", "ci-accesibilidad"]]) {
+              const f = `reports/${dir}/resultados.json`;
+              if (!fs.existsSync(f)) { lines.push(`| ${name} | – | – | – | no ejecutada |`); continue; }
+              const s = JSON.parse(fs.readFileSync(f)).stats;
+              const total = s.expected + s.unexpected + s.flaky + s.skipped;
+              const pct = total ? ((s.expected / total) * 100).toFixed(1) : "0.0";
+              lines.push(`| ${name} | ${total} | ${s.expected} | ${s.unexpected} | ${pct} % |`);
+            }
+            fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, lines.join("\n") + "\n");'
+
+      - name: Upload test reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: reportes-playwright
+          path: |
+            e2e/reports/ci-plan
+            e2e/reports/ci-accesibilidad
+            e2e/evidencias
+          if-no-files-found: warn
+          retention-days: 30
