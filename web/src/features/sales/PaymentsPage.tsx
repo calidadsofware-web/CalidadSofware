@@ -73,8 +73,10 @@ export function PaymentsPage({ data }: { data: AppData }) {
         title="Historial de ventas y pagos"
         rows={data.payments}
         dateField="date"
-        placeholder="Comprobante, cliente o referencia"
+        placeholder="Comprobante, cliente, producto o referencia"
+        searchKeys={["products"]}
         filters={[
+          ["cashier", "Cajero"],
           ["method", "Método"],
           ["status", "Estado"],
         ]}
@@ -82,6 +84,7 @@ export function PaymentsPage({ data }: { data: AppData }) {
           ["document", "Comprobante"],
           ["client", "Cliente"],
           ["date", "Fecha"],
+          ["cashier", "Cajero"],
           ["method", "Pago"],
           ["reference", "Referencia"],
           ["status", "Estado"],

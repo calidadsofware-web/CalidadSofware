@@ -204,7 +204,6 @@ export function SalePage({ data, command }: { data: AppData; command: AppCommand
                     <input
                       type="number"
                       value={cash}
-                      required
                       min="0"
                       max="9999999"
                       aria-invalid={cashError || undefined}

@@ -121,4 +121,23 @@ describe("SalePage", () => {
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
     expect(command).not.toHaveBeenCalled();
   });
+  it("INC-10: con el efectivo vacío muestra el mensaje en la página y no la burbuja nativa del navegador", () => {
+    const command = vi.fn();
+    render(
+      <MemoryRouter>
+        <SalePage data={data} command={command} />
+      </MemoryRouter>,
+    );
+    fireEvent.change(screen.getByRole("combobox", { name: /Buscar cliente/ }), {
+      target: { value: "Cliente de Prueba" },
+    });
+    fireEvent.click(screen.getByRole("option", { name: /Cliente de Prueba/ }));
+    fireEvent.click(screen.getByRole("button", { name: "Agregar Cable USB" }));
+    const efectivo = screen.getByLabelText("Efectivo recibido (S/)");
+    expect(efectivo).not.toBeRequired();
+    fireEvent.click(screen.getByRole("button", { name: "Revisar y cobrar" }));
+    expect(screen.getByRole("alert")).toHaveTextContent("El efectivo recibido no cubre el total.");
+    expect(efectivo).toHaveAttribute("aria-invalid", "true");
+    expect(command).not.toHaveBeenCalled();
+  });
 });

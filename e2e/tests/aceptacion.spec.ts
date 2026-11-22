@@ -105,6 +105,8 @@ test("AC-01 – Venta con boleta en efectivo y descuento de stock (HU02, HU03)",
 test("AC-02 – Factura a un cliente nuevo con RUC y pago con tarjeta (HU02, RF03)", async ({ browser }, info) => {
   const { ctx, page } = await sesion(browser, CUENTA.cajero);
   const ruc = `20${String(Date.now()).slice(-9)}`;
+  // Referencia única: la suite puede ejecutarse varias veces (o en varios navegadores) sobre la misma base.
+  const voucher = `VOUCHER-AC02-${ruc.slice(-5)}`;
   await test.step("Dado que llega una empresa que no está registrada y pide factura", async () => {
     await irA(page, "Nueva venta");
     await page.getByRole("button", { name: "Nuevo cliente" }).click();
@@ -120,15 +122,15 @@ test("AC-02 – Factura a un cliente nuevo con RUC y pago con tarjeta (HU02, RF0
     await agregar(page.getByRole("group", { name: "Productos de la venta" }), "Audifonos Bluetooth", 1);
     await page.getByLabel("Tipo de comprobante").selectOption("FACTURA");
     await page.getByLabel("Método de pago").selectOption("TARJETA");
-    await page.getByLabel(/Número de operación/).fill("VOUCHER-AC02");
+    await page.getByLabel(/Número de operación/).fill(voucher);
     await page.getByRole("button", { name: "Revisar y cobrar" }).click();
     await dialogo(page).getByRole("button", { name: "Confirmar venta" }).click();
     await expect(page.locator(".success-notice")).toContainText("Venta registrada");
   });
   await test.step("Entonces se emite una factura F001 por S/ 53.10 con la referencia del voucher", async () => {
     await irA(page, "Ventas y pagos");
-    await page.getByRole("searchbox", { name: "Buscar" }).fill("VOUCHER-AC02");
-    const fila = page.getByRole("row").filter({ hasText: "VOUCHER-AC02" });
+    await page.getByRole("searchbox", { name: "Buscar" }).fill(voucher);
+    const fila = page.getByRole("row").filter({ hasText: voucher });
     await expect(fila).toContainText(/F001-\d{8}/);
     await expect(fila).toContainText("53.10");
     await evidencia(page, info, "AC-02", "01-factura-en-historial");

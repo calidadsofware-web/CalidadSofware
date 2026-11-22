@@ -3,14 +3,13 @@ import { withTransaction } from "../db.js";
 import { HttpError } from "../http.js";
 import type { ClaimInput } from "./types.js";
 import { allowedOption, normalizeText, optionalText } from "./validation.js";
-import { numberField } from "./fields.js";
+import { minTextField, numberField } from "./fields.js";
 
 export async function registerClaim(input: ClaimInput, user: AppUser): Promise<string> {
   const clientName = normalizeText(input.clientName, "", 160);
-  const description = normalizeText(input.description, "", 500);
-  if ((!clientName && !input.clientId) || !description) {
+  if (!clientName && !input.clientId)
     throw new HttpError(400, "Ingresa el cliente y la descripción del reclamo.");
-  }
+  const description = minTextField(input.description, "Descripción del reclamo", 10, 500);
 
   return withTransaction(async (client) => {
     const customer = await client.query<{ id_cliente: number }>(

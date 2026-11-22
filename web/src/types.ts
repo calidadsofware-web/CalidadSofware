@@ -71,6 +71,10 @@ export interface Payment {
   reference?: string;
   document: string;
   client: string;
+  /** Usuario que registró la venta (RF08: consulta por cajero). */
+  cashier?: string;
+  /** Productos vendidos, para buscar el historial por producto (RF08). */
+  products?: string;
   date: string;
   method: string;
   status: string;

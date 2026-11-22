@@ -1,4 +1,4 @@
-import { dateField } from "./fields.js";
+import { dateField, textField } from "./fields.js";
 import type { AppUser } from "../auth.js";
 import { withTransaction } from "../db.js";
 import { HttpError } from "../http.js";
@@ -56,7 +56,14 @@ export async function registerReceipt(input: ReceiptInput, user: AppUser): Promi
         $6
       )
       returning id_recepcion`,
-      [number, entryDate, purchaseId, user.id, optionalText(input.guide, 50), optionalText(input.notes)],
+      [
+        number,
+        entryDate,
+        purchaseId,
+        user.id,
+        textField(input.guide, "Guía / Documento de entrega", 50, true),
+        optionalText(input.notes),
+      ],
     );
     const receiptId = receipt.rows[0].id_recepcion;
 

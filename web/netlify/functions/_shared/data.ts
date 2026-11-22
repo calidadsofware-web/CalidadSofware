@@ -104,6 +104,8 @@ async function getPayments(): Promise<PaymentRow[]> {
            (select coalesce(jsonb_agg(jsonb_build_object('name',pr.nombre,'quantity',d.cantidad,'price',d.precio_unitario::float8)),'[]') from public.detalles_venta d join public.productos pr on pr.id_producto=d.id_producto where d.id_venta=v.id_venta) as items,
            concat(v.serie, '-', v.numero) as document,
            trim(concat(c.nombres, ' ', c.apellidos)) as client,
+           trim(concat(u.nombres, ' ', u.apellidos)) as cashier,
+           (select coalesce(string_agg(pr.nombre, ', ' order by pr.nombre), '') from public.detalles_venta d join public.productos pr on pr.id_producto=d.id_producto where d.id_venta=v.id_venta) as products,
            to_char(p.fecha at time zone 'America/Lima', 'DD/MM/YYYY HH24:MI') as date,
            p.metodo as method,
            p.estado as status,
@@ -111,6 +113,7 @@ async function getPayments(): Promise<PaymentRow[]> {
       from public.pagos p
       join public.ventas v on v.id_venta = p.id_venta
       join public.clientes c on c.id_cliente = v.id_cliente
+      join public.usuarios u on u.id_usuario = v.id_usuario
      order by p.fecha desc`);
   return rows.map((row) => ({ ...row, method: titleCase(row.method), status: titleCase(row.status) }));
 }

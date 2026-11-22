@@ -63,6 +63,7 @@ describe("operaciones de abastecimiento", () => {
           supplierName: "Proveedor Norte",
           priority: "ALTA",
           requiredDate: new Date(Date.now() + 86_400_000).toISOString().slice(0, 10),
+          justification: "Reposición por stock mínimo",
           items: [{ code: "P-001", quantity: 12 }],
         },
         user,
