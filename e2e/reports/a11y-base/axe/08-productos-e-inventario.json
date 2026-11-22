@@ -1,0 +1,46 @@
+{
+ "pantalla": "Productos e inventario",
+ "rol": "Administrador",
+ "url": "http://127.0.0.1:5173/productos",
+ "fecha": "2026-11-08T06:31:01.781Z",
+ "motor": {
+  "name": "axe-core",
+  "version": "4.10.3"
+ },
+ "violaciones": [
+  {
+   "id": "landmark-unique",
+   "impacto": "moderate",
+   "ayuda": "Landmarks should have a unique role or role/label/title (i.e. accessible name) combination",
+   "url": "https://dequeuniversity.com/rules/axe/4.10/landmark-unique?application=playwright",
+   "etiquetas": [
+    "cat.semantics",
+    "best-practice"
+   ],
+   "nodos": 1,
+   "ejemplos": [
+    {
+     "selector": "section",
+     "html": "<section class=\"panel collection-panel\" aria-label=\"Catálogo de productos\">",
+     "resumen": "Fix any of the following:\n  The landmark must have a unique aria-label, aria-labelledby, or title to make landmarks distinguishable"
+    }
+   ]
+  }
+ ],
+ "aprobadas": 47,
+ "incompletas": [
+  {
+   "id": "aria-prohibited-attr",
+   "impacto": "serious",
+   "ayuda": "Elements must only use permitted ARIA attributes",
+   "nodos": 1,
+   "ejemplos": [
+    {
+     "selector": ".segmented",
+     "html": "<div class=\"segmented\" aria-label=\"Vista del inventario\"><button type=\"button\" aria-pressed=\"true\">Catálogo</button><button type=\"button\" aria-pressed=\"false\">M",
+     "resumen": "Fix all of the following:\n  aria-label attribute is not well supported on a div with no valid role attribute."
+    }
+   ]
+  }
+ ]
+}

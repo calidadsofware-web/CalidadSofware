@@ -56,6 +56,15 @@ export function DataCellShell({ initialData }: { initialData: AppData | null }) 
     document.getElementById("main-content")?.focus({ preventScroll: true });
     window.scrollTo({ top: 0, behavior: "instant" });
   }, [location.pathname]);
+  // Al entrar a otro módulo se recargan los datos: otro usuario pudo vender o recibir mercadería.
+  const firstRoute = useRef(true);
+  useEffect(() => {
+    if (firstRoute.current) {
+      firstRoute.current = false;
+      return;
+    }
+    void reload();
+  }, [location.pathname, reload]);
   useEffect(() => {
     if (!menuOpen) return;
     const previous = document.activeElement;

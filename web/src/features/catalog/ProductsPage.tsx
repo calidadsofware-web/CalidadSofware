@@ -57,7 +57,7 @@ export function ProductsPage({ data, command }: { data: AppData; command: AppCom
         }
       />
       {allowed && (
-        <div className="segmented" aria-label="Vista del inventario">
+        <div className="segmented" role="group" aria-label="Vista del inventario">
           <button type="button" aria-pressed={tab === "catalog"} onClick={() => setTab("catalog")}>
             Catálogo
           </button>

@@ -23,6 +23,7 @@ export function ProductLines({
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("");
   const [page, setPage] = useState(1);
+  const [stockNotice, setStockNotice] = useState("");
   const available = products.filter(
     (product) => isActive(product.status) && (!limits || (limits.get(product.code) ?? 0) > 0),
   );
@@ -41,7 +42,15 @@ export function ProductLines({
     else onChange([...value, { code: product.code, quantity: 1 }]);
   }
   function update(code: string, amount: number) {
-    const quantity = Math.min(limits?.get(code) ?? 10_000, Math.max(1, Math.trunc(amount || 1)));
+    const limit = limits?.get(code) ?? 10_000;
+    const requested = Math.max(1, Math.trunc(amount || 1));
+    const quantity = Math.min(limit, requested);
+    const name = products.find((item) => item.code === code)?.name ?? code;
+    setStockNotice(
+      requested > limit
+        ? `Stock insuficiente: solo hay ${limit} ${limit === 1 ? "unidad" : "unidades"} de ${name}. Se ajustó la cantidad a ${limit}.`
+        : "",
+    );
     onChange(value.map((line) => (line.code === code ? { ...line, quantity } : line)));
   }
   return (
@@ -132,6 +141,9 @@ export function ProductLines({
           {value.length} {value.length === 1 ? "seleccionado" : "seleccionados"}
         </span>
       </div>
+      <p className="field-hint stock-notice" role="status" aria-live="polite">
+        {stockNotice}
+      </p>
       {!value.length ? (
         <p className="selection-empty">Busca un producto y pulsa Agregar para empezar.</p>
       ) : (

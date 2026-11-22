@@ -1,0 +1,27 @@
+{
+ "pantalla": "Nueva venta con efectivo insuficiente",
+ "rol": "Cajero",
+ "url": "http://127.0.0.1:5173/ventas/nueva",
+ "fecha": "2026-11-08T06:38:54.132Z",
+ "motor": {
+  "name": "axe-core",
+  "version": "4.10.3"
+ },
+ "violaciones": [],
+ "aprobadas": 46,
+ "incompletas": [
+  {
+   "id": "color-contrast",
+   "impacto": "serious",
+   "ayuda": "Elements must meet minimum color contrast ratio thresholds",
+   "nodos": 1,
+   "ejemplos": [
+    {
+     "selector": "textarea",
+     "html": "<textarea name=\"notes\" maxlength=\"250\" placeholder=\"Entrega, garantía o indicaciones de la venta\" style=\"\"></textarea>",
+     "resumen": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+    }
+   ]
+  }
+ ]
+}

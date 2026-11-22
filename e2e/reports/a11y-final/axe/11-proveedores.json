@@ -1,0 +1,13 @@
+{
+ "pantalla": "Proveedores",
+ "rol": "Administrador",
+ "url": "http://127.0.0.1:5173/proveedores",
+ "fecha": "2026-11-08T06:38:45.908Z",
+ "motor": {
+  "name": "axe-core",
+  "version": "4.10.3"
+ },
+ "violaciones": [],
+ "aprobadas": 47,
+ "incompletas": []
+}

@@ -1,0 +1,7 @@
+{
+ "id": "V7",
+ "criterio": "3.3.1 Identificación de errores · 4.1.3 Mensajes de estado",
+ "pantalla": "Nueva venta (cantidad mayor al stock)",
+ "resultado": "Al escribir 8 con stock 7 el campo queda en 7 y se anuncia «Stock insuficiente: solo hay 7 unidades de Power Bank 10000mAh. Se ajustó la cantidad a 7.» en una región de estado.",
+ "cumple": true
+}

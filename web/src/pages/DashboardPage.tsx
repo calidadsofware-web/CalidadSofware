@@ -80,6 +80,7 @@ export function DashboardPage({ data }: { data: AppData }) {
   ].slice(0, 8);
   const lowStock = data.products
     .filter((product) => isActive(product.status) && product.stock <= product.minStock)
+    .sort((a, b) => a.stock - b.stock || a.stock / (a.minStock || 1) - b.stock / (b.minStock || 1))
     .slice(0, 5);
   return (
     <>

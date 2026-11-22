@@ -1,0 +1,7 @@
+{
+ "id": "V7",
+ "criterio": "3.3.1 Identificación de errores · 4.1.3 Mensajes de estado",
+ "pantalla": "Nueva venta (cantidad mayor al stock)",
+ "resultado": "Al escribir 8 con stock 7 el campo queda en 7 sin aviso de estado ni de error (0 mensajes sobre el stock).",
+ "cumple": false
+}

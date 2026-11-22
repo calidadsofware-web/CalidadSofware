@@ -99,7 +99,7 @@ export function QuotationsPage({ data, command }: { data: AppData; command: AppC
               setSelected(row as unknown as Quotation);
               setError("");
             }}
-            aria-label={`Ver ${row.number}`}
+            aria-label={`Ver detalle de ${row.number}`}
           >
             Ver detalle
           </button>

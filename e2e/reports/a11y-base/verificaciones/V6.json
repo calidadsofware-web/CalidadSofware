@@ -1,0 +1,7 @@
+{
+ "id": "V6",
+ "criterio": "3.3.1 Identificación de errores",
+ "pantalla": "Nueva venta (efectivo insuficiente)",
+ "resultado": "Con S/ 10 para un total de S/ 53.10 no aparece ningún mensaje en la página (role=\"alert\": 0); solo el globo nativo del navegador «Value must be greater than or equal to 53.1.», que no forma parte del contenido y desaparece. aria-describedby: ninguno.",
+ "cumple": false
+}

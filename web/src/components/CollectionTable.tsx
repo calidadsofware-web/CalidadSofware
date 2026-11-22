@@ -13,6 +13,7 @@ export function CollectionTable({
   dateField,
   searchKeys = [],
   placeholder = "Buscar por nombre o código...",
+  summary,
 }: {
   title: string;
   rows: object[];
@@ -24,6 +25,8 @@ export function CollectionTable({
   dateField?: string;
   placeholder?: string;
   searchKeys?: readonly string[];
+  /** Contenido calculado sobre las filas visibles (por ejemplo, el resumen de un periodo). */
+  summary?: (rows: DataRow[], range: { from: string; to: string }) => ReactNode;
 }) {
   const id = useId();
   const [search, setSearch] = useState("");
@@ -125,6 +128,7 @@ export function CollectionTable({
         actions={actions}
         renderCell={renderCell}
       />
+      {summary?.(filtered, { from, to })}
     </section>
   );
 }

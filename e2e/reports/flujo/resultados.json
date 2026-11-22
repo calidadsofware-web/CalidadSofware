@@ -1,0 +1,484 @@
+{
+  "config": {
+    "argv": [
+      "/opt/node22/bin/node",
+      "/home/claude/repo/e2e/node_modules/.bin/playwright",
+      "test",
+      "tests/flujo-venta.spec.ts"
+    ],
+    "configFile": "/home/claude/repo/e2e/playwright.config.ts",
+    "rootDir": "/home/claude/repo/e2e/tests",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "/home/claude/repo/e2e/reports/artifacts",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "/home/claude/repo/e2e/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 60000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "html",
+        {
+          "outputFolder": "reports/html",
+          "open": "never"
+        }
+      ],
+      [
+        "json",
+        {
+          "outputFile": "reports/resultados.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.63.0",
+    "workers": 1,
+    "webServer": {
+      "command": "npm run dev:local",
+      "cwd": "../web",
+      "url": "http://127.0.0.1:5173",
+      "reuseExistingServer": true,
+      "timeout": 120000
+    }
+  },
+  "suites": [
+    {
+      "title": "flujo-venta.spec.ts",
+      "file": "flujo-venta.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Flujo crítico: Login y registro de venta",
+          "file": "flujo-venta.spec.ts",
+          "line": 21,
+          "column": 6,
+          "specs": [
+            {
+              "title": "CP01 - Login con contraseña incorrecta es rechazado",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2070,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "Paso 1: Abrir la pantalla de inicio de sesión",
+                          "duration": 817
+                        },
+                        {
+                          "title": "Paso 2: Ingresar correo válido y contraseña incorrecta",
+                          "duration": 390
+                        },
+                        {
+                          "title": "Validación: mensaje genérico de error y sin acceso al sistema",
+                          "duration": 430
+                        }
+                      ],
+                      "startTime": "2026-11-08T06:38:03.722Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "CP01-login-invalido · 01-pantalla-login",
+                          "contentType": "image/png",
+                          "path": "/home/claude/repo/e2e/reports/artifacts/flujo-venta-Flujo-crítico--2a97a-eña-incorrecta-es-rechazado-chromium/attachments/CP01-login-invalido-·-01-pantalla-login-7f9df70e59b5240caf022a73c771a4c6e1dc67b5.png"
+                        },
+                        {
+                          "name": "CP01-login-invalido · 02-credenciales-ingresadas",
+                          "contentType": "image/png",
+                          "path": "/home/claude/repo/e2e/reports/artifacts/flujo-venta-Flujo-crítico--2a97a-eña-incorrecta-es-rechazado-chromium/attachments/CP01-login-invalido-·-02-credenciales-ingresadas-b242ce73c96a65310ecf0b19965a8a46b0a8930c.png"
+                        },
+                        {
+                          "name": "CP01-login-invalido · 03-mensaje-error",
+                          "contentType": "image/png",
+                          "path": "/home/claude/repo/e2e/reports/artifacts/flujo-venta-Flujo-crítico--2a97a-eña-incorrecta-es-rechazado-chromium/attachments/CP01-login-invalido-·-03-mensaje-error-462dbd6cb71e66fa822e1960162962e7ccf2ef31.png"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "1b10633af6c2c902d28e-0faa184a06a7ec9e6e6d",
+              "file": "flujo-venta.spec.ts",
+              "line": 22,
+              "column": 7
+            },
+            {
+              "title": "CP02 - Login exitoso del cajero muestra solo sus módulos",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1194,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "Paso 1: Ingresar credenciales válidas del rol Cajero",
+                          "duration": 815
+                        },
+                        {
+                          "title": "Validación: acceso concedido según el rol",
+                          "duration": 245
+                        }
+                      ],
+                      "startTime": "2026-11-08T06:38:05.876Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "CP02-login-exitoso · 01-credenciales-validas",
+                          "contentType": "image/png",
+                          "path": "/home/claude/repo/e2e/reports/artifacts/flujo-venta-Flujo-crítico--c7fa6-ro-muestra-solo-sus-módulos-chromium/attachments/CP02-login-exitoso-·-01-credenciales-validas-dc9f5f55d50478c09b7cb5a5762903628a8ffc83.png"
+                        },
+                        {
+                          "name": "CP02-login-exitoso · 02-inicio-cajero",
+                          "contentType": "image/png",
+                          "path": "/home/claude/repo/e2e/reports/artifacts/flujo-venta-Flujo-crítico--c7fa6-ro-muestra-solo-sus-módulos-chromium/attachments/CP02-login-exitoso-·-02-inicio-cajero-8a63b91c7547beb3aeb4b2e6f15ead1fbeb292c2.png"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "1b10633af6c2c902d28e-b2c0638e12a22f90ec6a",
+              "file": "flujo-venta.spec.ts",
+              "line": 45,
+              "column": 7
+            },
+            {
+              "title": "CP03 - Registro de venta exitosa con pago en efectivo",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [
+                    {
+                      "type": "Stock PROD-002",
+                      "description": "85 → 83"
+                    },
+                    {
+                      "type": "Comprobante generado",
+                      "description": "B001-00000125"
+                    }
+                  ],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 3824,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "Precondición: sesión de cajero y estado inicial (historial y stock)",
+                          "duration": 1511
+                        },
+                        {
+                          "title": "Paso 1: Seleccionar cliente Maria Torres (DNI 45678912)",
+                          "duration": 202
+                        },
+                        {
+                          "title": "Paso 2: Agregar productos y cantidades",
+                          "duration": 282
+                        },
+                        {
+                          "title": "Paso 3: Elegir boleta, pago en efectivo e ingresar monto recibido",
+                          "duration": 113
+                        },
+                        {
+                          "title": "Validación: cálculo de subtotal, IGV 18 %, total y vuelto (RF03)",
+                          "duration": 116
+                        },
+                        {
+                          "title": "Paso 4: Revisar y cobrar → confirmar en el modal",
+                          "duration": 314
+                        },
+                        {
+                          "title": "Validación: venta registrada y formulario reiniciado",
+                          "duration": 118
+                        },
+                        {
+                          "title": "Validación: descuento automático de stock (RF04)",
+                          "duration": 69
+                        },
+                        {
+                          "title": "Validación: la venta aparece en el historial con su detalle (RF08)",
+                          "duration": 933
+                        }
+                      ],
+                      "startTime": "2026-11-08T06:38:07.083Z",
+                      "annotations": [
+                        {
+                          "type": "Stock PROD-002",
+                          "description": "85 → 83"
+                        },
+                        {
+                          "type": "Comprobante generado",
+                          "description": "B001-00000125"
+                        }
+                      ],
+                      "attachments": [
+                        {
+                          "name": "CP03-venta-exitosa · 01-pantalla-nueva-venta",
+                          "contentType": "image/png",
+                          "path": "/home/claude/repo/e2e/reports/artifacts/flujo-venta-Flujo-crítico--3c99d-xitosa-con-pago-en-efectivo-chromium/attachments/CP03-venta-exitosa-·-01-pantalla-nueva-venta-92d34c6429409e79003f92f64da11a7d9e9c7fe4.png"
+                        },
+                        {
+                          "name": "CP03-venta-exitosa · 02-cliente-seleccionado",
+                          "contentType": "image/png",
+                          "path": "/home/claude/repo/e2e/reports/artifacts/flujo-venta-Flujo-crítico--3c99d-xitosa-con-pago-en-efectivo-chromium/attachments/CP03-venta-exitosa-·-02-cliente-seleccionado-4da46e4c538ea995d2adda158623e81ef4aaae42.png"
+                        },
+                        {
+                          "name": "CP03-venta-exitosa · 03-productos-agregados",
+                          "contentType": "image/png",
+                          "path": "/home/claude/repo/e2e/reports/artifacts/flujo-venta-Flujo-crítico--3c99d-xitosa-con-pago-en-efectivo-chromium/attachments/CP03-venta-exitosa-·-03-productos-agregados-a1981c6f4099b8a323b6e7c2a0c51f2c7b529bb5.png"
+                        },
+                        {
+                          "name": "CP03-venta-exitosa · 04-totales-calculados",
+                          "contentType": "image/png",
+                          "path": "/home/claude/repo/e2e/reports/artifacts/flujo-venta-Flujo-crítico--3c99d-xitosa-con-pago-en-efectivo-chromium/attachments/CP03-venta-exitosa-·-04-totales-calculados-652f4c808f0d7529a2f504b867f485796af27394.png"
+                        },
+                        {
+                          "name": "CP03-venta-exitosa · 05-modal-confirmacion",
+                          "contentType": "image/png",
+                          "path": "/home/claude/repo/e2e/reports/artifacts/flujo-venta-Flujo-crítico--3c99d-xitosa-con-pago-en-efectivo-chromium/attachments/CP03-venta-exitosa-·-05-modal-confirmacion-1b015208063281215709797a6d9529c0f6701ad6.png"
+                        },
+                        {
+                          "name": "CP03-venta-exitosa · 06-venta-registrada",
+                          "contentType": "image/png",
+                          "path": "/home/claude/repo/e2e/reports/artifacts/flujo-venta-Flujo-crítico--3c99d-xitosa-con-pago-en-efectivo-chromium/attachments/CP03-venta-exitosa-·-06-venta-registrada-aabccea5c085f2dbc1d1d9a7e72e72744d559fab.png"
+                        },
+                        {
+                          "name": "CP03-venta-exitosa · 07-stock-actualizado",
+                          "contentType": "image/png",
+                          "path": "/home/claude/repo/e2e/reports/artifacts/flujo-venta-Flujo-crítico--3c99d-xitosa-con-pago-en-efectivo-chromium/attachments/CP03-venta-exitosa-·-07-stock-actualizado-dc17e258c5466d448de28f1aec72666fa5a11a02.png"
+                        },
+                        {
+                          "name": "CP03-venta-exitosa · 08-historial-ventas",
+                          "contentType": "image/png",
+                          "path": "/home/claude/repo/e2e/reports/artifacts/flujo-venta-Flujo-crítico--3c99d-xitosa-con-pago-en-efectivo-chromium/attachments/CP03-venta-exitosa-·-08-historial-ventas-19affbddbb63b30e290a26185928670625a5fd85.png"
+                        },
+                        {
+                          "name": "CP03-venta-exitosa · 09-detalle-comprobante",
+                          "contentType": "image/png",
+                          "path": "/home/claude/repo/e2e/reports/artifacts/flujo-venta-Flujo-crítico--3c99d-xitosa-con-pago-en-efectivo-chromium/attachments/CP03-venta-exitosa-·-09-detalle-comprobante-b72f92d2d332b2237f0b429cd30c293235327d1e.png"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "1b10633af6c2c902d28e-14d4bc64eddce2d05190",
+              "file": "flujo-venta.spec.ts",
+              "line": 68,
+              "column": 7
+            },
+            {
+              "title": "CP04 - Efectivo insuficiente impide registrar la venta",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [
+                    {
+                      "type": "Mensaje mostrado por el navegador",
+                      "description": "(ninguno)"
+                    }
+                  ],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1405,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "Paso 1: Preparar venta y registrar efectivo menor al total",
+                          "duration": 1160
+                        },
+                        {
+                          "title": "Validación: no se abre la confirmación ni se registra la venta",
+                          "duration": 86
+                        },
+                        {
+                          "title": "Validación: el sistema muestra el mensaje de negocio definido (HU02-CA02)",
+                          "duration": 12
+                        }
+                      ],
+                      "startTime": "2026-11-08T06:38:10.916Z",
+                      "annotations": [
+                        {
+                          "type": "Mensaje mostrado por el navegador",
+                          "description": "(ninguno)"
+                        }
+                      ],
+                      "attachments": [
+                        {
+                          "name": "CP04-efectivo-insuficiente · 01-efectivo-insuficiente",
+                          "contentType": "image/png",
+                          "path": "/home/claude/repo/e2e/reports/artifacts/flujo-venta-Flujo-crítico--a78ea-e-impide-registrar-la-venta-chromium/attachments/CP04-efectivo-insuficiente-·-01-efectivo-insuficiente-3d781495549f98d637e07cf042addcd5ab752551.png"
+                        },
+                        {
+                          "name": "CP04-efectivo-insuficiente · 02-venta-bloqueada",
+                          "contentType": "image/png",
+                          "path": "/home/claude/repo/e2e/reports/artifacts/flujo-venta-Flujo-crítico--a78ea-e-impide-registrar-la-venta-chromium/attachments/CP04-efectivo-insuficiente-·-02-venta-bloqueada-309ea02adc88f727c20fe3f5b1a7910b69cbae2a.png"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "1b10633af6c2c902d28e-2a283016cc910ebb67db",
+              "file": "flujo-venta.spec.ts",
+              "line": 159,
+              "column": 7
+            },
+            {
+              "title": "CP05 - La cantidad no puede superar el stock disponible",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1602,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "Paso 1: Agregar producto con stock bajo e ingresar cantidad excesiva",
+                          "duration": 1466,
+                          "steps": [
+                            {
+                              "title": "Validación: la cantidad se limita al stock (7 unidades)",
+                              "duration": 14
+                            }
+                          ]
+                        }
+                      ],
+                      "startTime": "2026-11-08T06:38:12.330Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "CP05-limite-stock · 01-cantidad-limitada-al-stock",
+                          "contentType": "image/png",
+                          "path": "/home/claude/repo/e2e/reports/artifacts/flujo-venta-Flujo-crítico--18a94-superar-el-stock-disponible-chromium/attachments/CP05-limite-stock-·-01-cantidad-limitada-al-stock-94d0535c1a12f80595a59470dd20fa1dd25ef5a1.png"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "1b10633af6c2c902d28e-d519ac0fe783ecb2fc8d",
+              "file": "flujo-venta.spec.ts",
+              "line": 188,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-11-08T06:38:00.325Z",
+    "duration": 13713.167,
+    "expected": 5,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}
