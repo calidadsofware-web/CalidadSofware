@@ -132,7 +132,10 @@ test.describe("Accesibilidad WCAG 2.2 AA con axe-core", () => {
  * Verificaciones complementarias (criterios WCAG que axe no puede resolver solo).
  * ---------------------------------------------------------------------------------------------- */
 type Verificacion = { id: string; criterio: string; pantalla: string; resultado: string; cumple: boolean };
-const registrar = (v: Verificacion) => writeFileSync(`${DIR}/verificaciones/${v.id}.json`, JSON.stringify(v, null, 1));
+const registrar = (v: Verificacion) => {
+  writeFileSync(`${DIR}/verificaciones/${v.id}.json`, JSON.stringify(v, null, 1));
+  expect.soft(v.cumple, `${v.id} – ${v.criterio}: ${v.resultado}`).toBe(true); // la verificación falla si no se cumple
+};
 
 /** Razón de contraste WCAG entre dos colores rgb(a). */
 function contraste(a: string, b: string) {
@@ -263,12 +266,19 @@ test.describe("Verificaciones complementarias de accesibilidad", () => {
     await page.waitForTimeout(800);
     const venta = await page.evaluate(() => document.documentElement.scrollWidth);
     await page.screenshot({ path: `${DIR}/capturas/v5-venta-320.png`, fullPage: true });
+    // INC-13: el «Resumen del periodo» de Ventas y pagos desbordaba la página a 320 px.
+    await page.getByRole("button", { name: "Menú", exact: true }).click();
+    await page.getByRole("navigation", { name: "Navegación principal" }).getByRole("link", { name: "Ventas y pagos" }).click();
+    await expect(page.locator("main h1").first()).toBeVisible();
+    await page.waitForTimeout(800);
+    const pagos = await page.evaluate(() => document.documentElement.scrollWidth);
+    await page.screenshot({ path: `${DIR}/capturas/v5-pagos-320.png`, fullPage: true });
     registrar({
       id: "V5",
       criterio: "1.4.10 Reajuste del contenido (320 px)",
-      pantalla: "Iniciar sesión y Nueva venta",
-      resultado: `Ancho del documento a 320 px: acceso ${ancho} px y Nueva venta ${venta} px.`,
-      cumple: ancho <= 320 && venta <= 320,
+      pantalla: "Iniciar sesión, Nueva venta y Ventas y pagos",
+      resultado: `Ancho del documento a 320 px: acceso ${ancho} px, Nueva venta ${venta} px y Ventas y pagos ${pagos} px.`,
+      cumple: ancho <= 320 && venta <= 320 && pagos <= 320,
     });
     await ctx.close();
   });

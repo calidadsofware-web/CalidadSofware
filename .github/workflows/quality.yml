@@ -148,3 +148,66 @@ jobs:
             e2e/evidencias
           if-no-files-found: warn
           retention-days: 30
+
+  compatibilidad:
+    name: Compatibilidad entre navegadores (Chromium, Firefox, WebKit)
+    needs: build-unit
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    continue-on-error: true
+    env:
+      CI: "true"
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: |
+            web/package-lock.json
+            e2e/package-lock.json
+
+      - name: Install application dependencies
+        working-directory: web
+        run: npm ci
+
+      - name: Install test dependencies
+        working-directory: e2e
+        run: npm ci
+
+      - name: Install Chromium, Firefox and WebKit
+        working-directory: e2e
+        run: npx playwright install --with-deps chromium firefox webkit
+
+      - name: Run acceptance scenarios in three browser engines
+        working-directory: e2e
+        run: npx playwright test -c playwright.compatibilidad.config.ts
+        env:
+          REPORTE: ci-compatibilidad
+
+      - name: Compatibility summary
+        if: always()
+        working-directory: e2e
+        run: |
+          node -e '
+            const fs = require("fs");
+            const f = "reports/ci-compatibilidad/resultados.json";
+            if (!fs.existsSync(f)) process.exit(0);
+            const por = {};
+            const walk = (s) => { for (const sp of s.specs ?? []) for (const t of sp.tests) { const p = t.projectName; por[p] ??= { ok: 0, total: 0 }; por[p].total++; if (t.status === "expected") por[p].ok++; } (s.suites ?? []).forEach(walk); };
+            JSON.parse(fs.readFileSync(f)).suites.forEach(walk);
+            const lines = ["### Compatibilidad entre navegadores", "| Motor | Escenarios aprobados |", "|---|---|", ...Object.entries(por).map(([p, v]) => `| ${p} | ${v.ok}/${v.total} |`)];
+            fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, lines.join("\n") + "\n");'
+
+      - name: Upload compatibility report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: reporte-compatibilidad
+          path: e2e/reports/ci-compatibilidad
+          if-no-files-found: warn
+          retention-days: 30
+

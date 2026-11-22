@@ -797,6 +797,10 @@ td {
   border-top: 1px solid var(--border);
   padding-top: 1rem;
 }
+/* INC-13: los hijos de la grilla no deben crecer más que la pantalla; la tabla se desplaza en su propio contenedor. */
+.period-summary > * {
+  min-width: 0;
+}
 .period-summary h2 {
   margin: 0;
   font-size: 1.05rem;
