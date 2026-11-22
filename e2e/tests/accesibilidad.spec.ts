@@ -311,8 +311,12 @@ test.describe("Verificaciones complementarias de accesibilidad", () => {
     await page.reload();
     await sale.abrirDesdeMenu();
     await sale.seleccionarCliente("70011223", "Camila Rojas");
+    // La cantidad se toma del stock real (stock + 1) para que la verificación no dependa del estado de la base.
+    await sale.buscarProducto.fill("PROD-005");
+    const tarjeta = await page.getByRole("button", { name: "Agregar Power Bank 10000mAh" }).locator("..").innerText();
+    const stock = Number(/(\d+) disponibles/.exec(tarjeta)?.[1] ?? 7);
     const cantidad = await sale.agregarProducto("PROD-005", "Power Bank 10000mAh", 1);
-    await cantidad.fill("8");
+    await cantidad.fill(String(stock + 1));
     await cantidad.blur();
     await page.waitForTimeout(500);
     const valor = await cantidad.inputValue();
@@ -324,8 +328,8 @@ test.describe("Verificaciones complementarias de accesibilidad", () => {
       criterio: "3.3.1 Identificación de errores · 4.1.3 Mensajes de estado",
       pantalla: "Nueva venta (cantidad mayor al stock)",
       resultado: sobreStock.length
-        ? `Al escribir 8 con stock 7 el campo queda en ${valor} y se anuncia «${sobreStock[0].trim()}» en una región de estado.`
-        : `Al escribir 8 con stock 7 el campo queda en ${valor} sin aviso de estado ni de error (0 mensajes sobre el stock).`,
+        ? `Al escribir ${stock + 1} con stock ${stock} el campo queda en ${valor} y se anuncia «${sobreStock[0].trim()}» en una región de estado.`
+        : `Al escribir ${stock + 1} con stock ${stock} el campo queda en ${valor} sin aviso de estado ni de error (0 mensajes sobre el stock).`,
       cumple: sobreStock.length > 0,
     });
   });
